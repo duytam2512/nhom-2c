@@ -30,11 +30,18 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const scrollToSection = (id: string) => {
+  const handleLinkClick = (path: string, id?: string) => {
     setMobileMenuOpen(false);
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+    if (typeof window !== 'undefined') {
+      window.history.pushState(null, '', path);
+    }
+    if (id) {
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -59,14 +66,22 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
         {/* Left: Brand Logo */}
         <div className="flex items-center gap-6">
-          <a href="#" className="flex items-center gap-2" title="Go & Grab Coffee">
+          <a
+            href="/"
+            onClick={(e) => {
+              e.preventDefault();
+              handleLinkClick('/', 'top');
+            }}
+            className="flex items-center gap-2"
+            title="Go & Grab Coffee"
+          >
             <Logo size="md" />
           </a>
 
           {/* Desktop Store Pill */}
           <button
-            onClick={() => scrollToSection('stores')}
-            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-100/60 hover:bg-amber-100 border border-amber-300/60 text-xs text-amber-950 transition"
+            onClick={() => handleLinkClick('/cua-hang', 'stores')}
+            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-100/60 hover:bg-amber-100 border border-amber-300/60 text-xs text-amber-950 transition cursor-pointer"
           >
             <MapPin className="w-3.5 h-3.5 text-amber-800" />
             <span className="font-semibold">{selectedStore.district}:</span>
@@ -76,27 +91,39 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Center: Desktop Navigation Links */}
         <nav className="hidden md:flex items-center gap-7 text-xs font-semibold uppercase tracking-wider text-stone-700">
-          <button
-            onClick={() => scrollToSection('menu')}
-            className="hover:text-amber-800 transition"
+          <a
+            href="/thuc-don"
+            onClick={(e) => {
+              e.preventDefault();
+              handleLinkClick('/thuc-don', 'menu');
+            }}
+            className="hover:text-amber-800 transition cursor-pointer"
           >
             Thực Đơn Cà Phê
-          </button>
-          <button
-            onClick={() => scrollToSection('story')}
-            className="hover:text-amber-800 transition"
+          </a>
+          <a
+            href="/cau-chuyen"
+            onClick={(e) => {
+              e.preventDefault();
+              handleLinkClick('/cau-chuyen', 'story');
+            }}
+            className="hover:text-amber-800 transition cursor-pointer"
           >
             Hạt Cầu Đất
-          </button>
-          <button
-            onClick={() => scrollToSection('stores')}
-            className="hover:text-amber-800 transition"
+          </a>
+          <a
+            href="/cua-hang"
+            onClick={(e) => {
+              e.preventDefault();
+              handleLinkClick('/cua-hang', 'stores');
+            }}
+            className="hover:text-amber-800 transition cursor-pointer"
           >
             Điểm Lấy Hàng
-          </button>
+          </a>
           <button
             onClick={onOpenSeoShare}
-            className="text-amber-800 hover:text-amber-950 transition flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200"
+            className="text-amber-800 hover:text-amber-950 transition flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 cursor-pointer"
           >
             <Share2 className="w-3.5 h-3.5" />
             SEO & URL Share
@@ -150,24 +177,36 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           <div className="space-y-2 pt-1 text-sm font-semibold text-stone-800">
-            <button
-              onClick={() => scrollToSection('menu')}
-              className="block w-full text-left py-2 px-3 rounded-lg hover:bg-stone-100"
+            <a
+              href="/thuc-don"
+              onClick={(e) => {
+                e.preventDefault();
+                handleLinkClick('/thuc-don', 'menu');
+              }}
+              className="block w-full text-left py-2 px-3 rounded-lg hover:bg-stone-100 cursor-pointer"
             >
               Thực Đơn Cà Phê
-            </button>
-            <button
-              onClick={() => scrollToSection('story')}
-              className="block w-full text-left py-2 px-3 rounded-lg hover:bg-stone-100"
+            </a>
+            <a
+              href="/cau-chuyen"
+              onClick={(e) => {
+                e.preventDefault();
+                handleLinkClick('/cau-chuyen', 'story');
+              }}
+              className="block w-full text-left py-2 px-3 rounded-lg hover:bg-stone-100 cursor-pointer"
             >
               Hạt Cà Phê Cầu Đất & Rang Mộc
-            </button>
-            <button
-              onClick={() => scrollToSection('stores')}
-              className="block w-full text-left py-2 px-3 rounded-lg hover:bg-stone-100"
+            </a>
+            <a
+              href="/cua-hang"
+              onClick={(e) => {
+                e.preventDefault();
+                handleLinkClick('/cua-hang', 'stores');
+              }}
+              className="block w-full text-left py-2 px-3 rounded-lg hover:bg-stone-100 cursor-pointer"
             >
               Điểm Lấy Hàng Go & Grab
-            </button>
+            </a>
             <button
               onClick={() => {
                 setMobileMenuOpen(false);

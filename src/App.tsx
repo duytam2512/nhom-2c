@@ -104,7 +104,41 @@ export default function App() {
 
   const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
+  // Sync scroll & state with URL pathname (/thuc-don, /cau-chuyen, /cua-hang, /gio-hang)
+  React.useEffect(() => {
+    const handleUrlRoute = () => {
+      if (typeof window === 'undefined') return;
+      const path = window.location.pathname;
+
+      if (path === '/thuc-don' || path === '/menu') {
+        setTimeout(() => {
+          const el = document.getElementById('menu');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      } else if (path === '/cau-chuyen') {
+        setTimeout(() => {
+          const el = document.getElementById('story');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      } else if (path === '/cua-hang') {
+        setTimeout(() => {
+          const el = document.getElementById('stores');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      } else if (path === '/gio-hang') {
+        setIsCartOpen(true);
+      }
+    };
+
+    handleUrlRoute();
+    window.addEventListener('popstate', handleUrlRoute);
+    return () => window.removeEventListener('popstate', handleUrlRoute);
+  }, []);
+
   const scrollToMenu = () => {
+    if (typeof window !== 'undefined') {
+      window.history.pushState(null, '', '/thuc-don');
+    }
     const el = document.getElementById('menu');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };

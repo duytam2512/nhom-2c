@@ -59,18 +59,47 @@ export const SeoShareModal: React.FC<SeoShareModalProps> = ({ isOpen, onClose })
           </button>
         </div>
 
-        {/* Quick URL Copy Bar */}
-        <div className="p-4 bg-amber-50/50 border-b border-amber-100 flex flex-col sm:flex-row items-center gap-3">
-          <div className="flex-1 w-full bg-white px-3.5 py-2.5 rounded-xl border border-amber-200 text-xs font-mono text-stone-700 truncate select-all">
-            {currentUrl}
+        {/* Quick URL Copy Bar with /thuc-don selector */}
+        <div className="p-4 bg-amber-50/50 border-b border-amber-100 space-y-2.5">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs font-semibold">
+            <span className="text-stone-500 text-[11px] shrink-0">Chọn đường dẫn URL:</span>
+            {[
+              { path: '/thuc-don', label: '📋 Thực đơn (/thuc-don)' },
+              { path: '/', label: '🏠 Trang chủ (/)' },
+              { path: '/cua-hang', label: '📍 Cửa hàng (/cua-hang)' },
+              { path: '/cau-chuyen', label: '☕ Nông trại (/cau-chuyen)' },
+            ].map((r) => (
+              <button
+                key={r.path}
+                type="button"
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    window.history.pushState(null, '', r.path);
+                  }
+                }}
+                className={`px-2.5 py-1 rounded-lg text-[11px] whitespace-nowrap transition cursor-pointer ${
+                  (typeof window !== 'undefined' ? window.location.pathname : '') === r.path
+                    ? 'bg-amber-800 text-white font-bold shadow-2xs'
+                    : 'bg-white text-stone-700 border border-stone-200 hover:bg-stone-50'
+                }`}
+              >
+                {r.label}
+              </button>
+            ))}
           </div>
-          <button
-            onClick={handleCopyLink}
-            className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white text-xs font-semibold flex items-center justify-center gap-2 transition shadow-sm"
-          >
-            {copied ? <Check className="w-4 h-4 text-emerald-300" /> : <Copy className="w-4 h-4" />}
-            {copied ? 'Đã sao chép link!' : 'Sao chép link gửi bạn bè'}
-          </button>
+
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <div className="flex-1 w-full bg-white px-3.5 py-2.5 rounded-xl border border-amber-200 text-xs font-mono text-stone-700 truncate select-all">
+              {currentUrl}
+            </div>
+            <button
+              onClick={handleCopyLink}
+              className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white text-xs font-semibold flex items-center justify-center gap-2 transition shadow-sm cursor-pointer"
+            >
+              {copied ? <Check className="w-4 h-4 text-emerald-300" /> : <Copy className="w-4 h-4" />}
+              {copied ? 'Đã sao chép link!' : 'Sao chép link gửi bạn bè'}
+            </button>
+          </div>
         </div>
 
         {/* Tabs */}

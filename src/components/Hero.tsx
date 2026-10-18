@@ -49,15 +49,21 @@ export const Hero: React.FC<HeroProps> = ({ onOrderNow, onOpenSeoShare }) => {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-2">
-              <button
-                type="button"
-                onClick={onOrderNow}
+              <a
+                href="/thuc-don"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (typeof window !== 'undefined') {
+                    window.history.pushState(null, '', '/thuc-don');
+                  }
+                  onOrderNow();
+                }}
                 className="w-full sm:w-auto px-7 py-4 rounded-2xl bg-gradient-to-r from-amber-800 via-amber-900 to-stone-900 hover:from-amber-700 hover:to-stone-800 text-white font-bold text-sm sm:text-base shadow-xl shadow-amber-950/20 flex items-center justify-center gap-2.5 transition active:scale-95 group cursor-pointer"
               >
                 <Zap className="w-4 h-4 text-amber-300" />
                 <span>Đặt Món Mang Đi Ngay</span>
                 <ArrowRight className="w-4 h-4 text-amber-200 group-hover:translate-x-1 transition-transform" />
-              </button>
+              </a>
 
               <button
                 type="button"
@@ -122,8 +128,13 @@ export const Hero: React.FC<HeroProps> = ({ onOrderNow, onOpenSeoShare }) => {
                   <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/20">
                     <span className="text-lg font-black text-amber-300">39.000đ</span>
                     <button
-                      onClick={onOrderNow}
-                      className="text-xs bg-white text-stone-900 font-bold px-3 py-1.5 rounded-lg hover:bg-amber-100 transition"
+                      onClick={() => {
+                        if (typeof window !== 'undefined') {
+                          window.history.pushState(null, '', '/thuc-don');
+                        }
+                        onOrderNow();
+                      }}
+                      className="text-xs bg-white text-stone-900 font-bold px-3 py-1.5 rounded-lg hover:bg-amber-100 transition cursor-pointer"
                     >
                       Chọn món ngay
                     </button>
