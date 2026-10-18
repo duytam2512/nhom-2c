@@ -8,15 +8,21 @@ import {
   Sparkles, 
   Clock, 
   MapPin, 
-  QrCode 
+  QrCode,
+  Armchair
 } from 'lucide-react';
 
 interface HeroProps {
   onOrderNow: () => void;
   onOpenSeoShare: () => void;
+  onOpenTableBooking?: () => void;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onOrderNow, onOpenSeoShare }) => {
+export const Hero: React.FC<HeroProps> = ({ 
+  onOrderNow, 
+  onOpenSeoShare,
+  onOpenTableBooking 
+}) => {
   return (
     <section className="relative overflow-hidden pt-6 pb-16 lg:py-20 bg-gradient-to-b from-[#faf7f2] via-[#f7f2ea] to-[#faf7f2]">
       {/* Decorative background coffee bean orbs */}
@@ -65,10 +71,27 @@ export const Hero: React.FC<HeroProps> = ({ onOrderNow, onOpenSeoShare }) => {
                 <ArrowRight className="w-4 h-4 text-amber-200 group-hover:translate-x-1 transition-transform" />
               </a>
 
+              {onOpenTableBooking && (
+                <a
+                  href="/dat-ban"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (typeof window !== 'undefined') {
+                      window.history.pushState(null, '', '/dat-ban');
+                    }
+                    onOpenTableBooking();
+                  }}
+                  className="w-full sm:w-auto px-6 py-4 rounded-2xl bg-amber-100/90 hover:bg-amber-200/90 border border-amber-300 text-amber-950 font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-sm transition active:scale-95 cursor-pointer"
+                >
+                  <Armchair className="w-4 h-4 text-amber-800" />
+                  <span>Đặt Bàn Trước</span>
+                </a>
+              )}
+
               <button
                 type="button"
                 onClick={onOpenSeoShare}
-                className="w-full sm:w-auto px-6 py-4 rounded-2xl bg-white hover:bg-stone-50 border border-stone-300 text-stone-800 font-semibold text-sm flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
+                className="w-full sm:w-auto px-5 py-4 rounded-2xl bg-white hover:bg-stone-50 border border-stone-300 text-stone-800 font-semibold text-sm flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
               >
                 <QrCode className="w-4 h-4 text-amber-800" />
                 <span>Chia Sẻ Link & SEO Tags</span>

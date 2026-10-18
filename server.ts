@@ -108,6 +108,60 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
+// Google Sheets Webhook configuration & proxy
+let googleSheetsWebhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL || '';
+
+app.get('/api/booking/webhook', (_req, res) => {
+  return res.json({
+    webhookUrl: googleSheetsWebhookUrl,
+    isConfigured: Boolean(googleSheetsWebhookUrl),
+  });
+});
+
+app.post('/api/booking/webhook', (req, res) => {
+  const { webhookUrl } = req.body;
+  googleSheetsWebhookUrl = (webhookUrl || '').trim();
+  return res.json({
+    success: true,
+    webhookUrl: googleSheetsWebhookUrl,
+    isConfigured: Boolean(googleSheetsWebhookUrl),
+  });
+});
+
+app.post('/api/booking', async (req, res) => {
+  const reservationData = req.body;
+  const targetUrl = req.body.webhookUrl || googleSheetsWebhookUrl;
+
+  if (!targetUrl) {
+    return res.json({
+      status: 'saved_locally',
+      message: 'Đặt bàn thành công! Chưa cài link Google Sheets Webhook.',
+      data: reservationData,
+    });
+  }
+
+  try {
+    const sheetResponse = await fetch(targetUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(reservationData),
+    });
+
+    const result = await sheetResponse.json().catch(() => ({ status: 'success' }));
+    return res.json({
+      status: 'synced_to_sheets',
+      message: 'Đã đẩy dữ liệu đặt bàn về Google Sheet thành công!',
+      result,
+    });
+  } catch (err: any) {
+    console.error('Google Sheets forwarding error:', err);
+    return res.json({
+      status: 'warning',
+      message: 'Đặt bàn thành công, lỗi gửi webhook: ' + err.message,
+    });
+  }
+});
+
 async function startServer() {
   // Mount Vite middleware in development
   if (process.env.NODE_ENV !== 'production') {

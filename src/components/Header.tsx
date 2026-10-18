@@ -8,7 +8,8 @@ import {
   Coffee, 
   Sparkles,
   Search,
-  ExternalLink
+  ExternalLink,
+  Armchair
 } from 'lucide-react';
 import { Logo } from './Logo';
 import { StoreLocation } from '../types/coffee';
@@ -17,6 +18,7 @@ interface HeaderProps {
   cartCount: number;
   onOpenCart: () => void;
   onOpenSeoShare: () => void;
+  onOpenTableBooking: () => void;
   selectedStore: StoreLocation;
   onOpenStoreModal?: () => void;
 }
@@ -25,6 +27,7 @@ export const Header: React.FC<HeaderProps> = ({
   cartCount,
   onOpenCart,
   onOpenSeoShare,
+  onOpenTableBooking,
   selectedStore,
   onOpenStoreModal,
 }) => {
@@ -121,6 +124,18 @@ export const Header: React.FC<HeaderProps> = ({
           >
             Điểm Lấy Hàng
           </a>
+          <a
+            href="/dat-ban"
+            onClick={(e) => {
+              e.preventDefault();
+              onOpenTableBooking();
+              handleLinkClick('/dat-ban');
+            }}
+            className="hover:text-amber-800 transition cursor-pointer flex items-center gap-1 text-amber-950 font-bold bg-amber-100/80 hover:bg-amber-200/80 px-2.5 py-1 rounded-lg border border-amber-300/80 shadow-2xs"
+          >
+            <Armchair className="w-3.5 h-3.5 text-amber-800" />
+            <span>Đặt Bàn</span>
+          </a>
           <button
             onClick={onOpenSeoShare}
             className="text-amber-800 hover:text-amber-950 transition flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 cursor-pointer"
@@ -206,6 +221,19 @@ export const Header: React.FC<HeaderProps> = ({
               className="block w-full text-left py-2 px-3 rounded-lg hover:bg-stone-100 cursor-pointer"
             >
               Điểm Lấy Hàng Go & Grab
+            </a>
+            <a
+              href="/dat-ban"
+              onClick={(e) => {
+                e.preventDefault();
+                setMobileMenuOpen(false);
+                onOpenTableBooking();
+                handleLinkClick('/dat-ban');
+              }}
+              className="block w-full text-left py-2 px-3 rounded-lg bg-amber-100/80 text-amber-950 font-bold border border-amber-300/80 flex items-center gap-2 cursor-pointer"
+            >
+              <Armchair className="w-4 h-4 text-amber-800" />
+              <span>Đặt Bàn Trước (Giữ Chỗ Miễn Phí)</span>
             </a>
             <button
               onClick={() => {

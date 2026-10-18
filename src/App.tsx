@@ -16,8 +16,9 @@ import { CheckoutModal } from './components/CheckoutModal';
 import { OrderTrackerModal } from './components/OrderTrackerModal';
 import { SeoShareModal } from './components/SeoShareModal';
 import { ChatbotWidget } from './components/ChatbotWidget';
+import { TableBookingModal } from './components/TableBookingModal';
 import { STORES } from './data/coffeeData';
-import { CartItem, MenuItem, Order, StoreLocation, Voucher } from './types/coffee';
+import { CartItem, MenuItem, Order, StoreLocation, Voucher, TableReservation } from './types/coffee';
 import { ShoppingBag, CheckCircle, Sparkles, ArrowUp } from 'lucide-react';
 
 export default function App() {
@@ -34,6 +35,7 @@ export default function App() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isOrderTrackerOpen, setIsOrderTrackerOpen] = useState(false);
   const [isSeoShareOpen, setIsSeoShareOpen] = useState(false);
+  const [isTableBookingOpen, setIsTableBookingOpen] = useState(false);
   const [currentOrder, setCurrentOrder] = useState<Order | null>(null);
 
   // Toast feedback
@@ -125,6 +127,8 @@ export default function App() {
           const el = document.getElementById('stores');
           if (el) el.scrollIntoView({ behavior: 'smooth' });
         }, 100);
+      } else if (path === '/dat-ban') {
+        setIsTableBookingOpen(true);
       } else if (path === '/gio-hang') {
         setIsCartOpen(true);
       }
@@ -158,6 +162,7 @@ export default function App() {
         cartCount={totalCartCount}
         onOpenCart={() => setIsCartOpen(true)}
         onOpenSeoShare={() => setIsSeoShareOpen(true)}
+        onOpenTableBooking={() => setIsTableBookingOpen(true)}
         selectedStore={selectedStore}
       />
 
@@ -166,6 +171,7 @@ export default function App() {
         <Hero
           onOrderNow={scrollToMenu}
           onOpenSeoShare={() => setIsSeoShareOpen(true)}
+          onOpenTableBooking={() => setIsTableBookingOpen(true)}
         />
 
         {/* Menu Section */}
@@ -252,6 +258,20 @@ export default function App() {
       <SeoShareModal
         isOpen={isSeoShareOpen}
         onClose={() => setIsSeoShareOpen(false)}
+      />
+
+      {/* Table Reservation Modal */}
+      <TableBookingModal
+        isOpen={isTableBookingOpen}
+        onClose={() => {
+          setIsTableBookingOpen(false);
+          if (typeof window !== 'undefined' && window.location.pathname === '/dat-ban') {
+            window.history.pushState(null, '', '/');
+          }
+        }}
+        selectedStore={selectedStore}
+        onBookingSuccess={(res) => showToast(`Đặt bàn thành công cho ${res.guestCount} khách! Mã vé: ${res.code}`)}
+        onGoToMenu={scrollToMenu}
       />
 
       {/* AI Barista Chatbot Widget */}

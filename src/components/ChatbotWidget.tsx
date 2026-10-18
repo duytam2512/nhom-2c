@@ -46,6 +46,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({ onSelectItem }) =>
   const inputRef = useRef<HTMLInputElement>(null);
 
   const quickPrompts = [
+    { label: '🪑 Đặt bàn trước', query: 'Tôi muốn đặt bàn trước cho nhóm bạn thì làm thế nào?' },
     { label: '🔥 Món bán chạy nhất?', query: 'Quán có những món nào bán chạy nhất?' },
     { label: '☕ Cà phê muối có vị gì?', query: 'Cà phê muối xứ Huế của quán có gì đặc biệt?' },
     { label: '🏷️ Mã giảm giá hôm nay', query: 'Hôm nay có những mã voucher ưu đãi nào?' },
@@ -132,6 +133,8 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({ onSelectItem }) =>
         fallbackReply = 'Nếu bạn thích thanh mát nhẹ nhàng, mình khuyên bạn nên thử: Cold Brew Cam Vàng Sả (46k - ủ lạnh 24h chỉ 55 kcal) hoặc Oatly Vanilla Latte (52k - sữa yến mạch thuần chay không đường lactose).';
       } else if (qLower.includes('5 phút') || qLower.includes('lấy') || qLower.includes('nhận hàng')) {
         fallbackReply = 'Với dịch vụ Go & Grab, bạn chỉ cần đặt món và thanh toán qua VietQR trên website trước khi xuất phát 5 phút. Khi tới quầy, đồ uống đã sẵn sàng tại tủ giữ nhiệt/kệ ưu tiên, bạn chỉ cần đọc mã đơn là lấy ngay!';
+      } else if (qLower.includes('đặt bàn') || qLower.includes('dat ban') || qLower.includes('bàn') || qLower.includes('chỗ')) {
+        fallbackReply = 'Go & Grab Coffee hỗ trợ giữ chỗ và đặt bàn hoàn toàn miễn phí! Bạn hãy bấm nút "Đặt Bàn" trên menu, điền Họ tên, Số điện thoại, Email và Số lượng khách tham gia. Quán sẽ gửi vé xác nhận điện tử và chuẩn bị sẵn không gian đẹp nhất cho bạn!';
       }
 
       const recommended = detectRecommendedItem(fallbackReply);

@@ -65,6 +65,7 @@ export const SeoShareModal: React.FC<SeoShareModalProps> = ({ isOpen, onClose })
             <span className="text-stone-500 text-[11px] shrink-0">Chọn đường dẫn URL:</span>
             {[
               { path: '/thuc-don', label: '📋 Thực đơn (/thuc-don)' },
+              { path: '/dat-ban', label: '🪑 Đặt bàn (/dat-ban)' },
               { path: '/', label: '🏠 Trang chủ (/)' },
               { path: '/cua-hang', label: '📍 Cửa hàng (/cua-hang)' },
               { path: '/cau-chuyen', label: '☕ Nông trại (/cau-chuyen)' },

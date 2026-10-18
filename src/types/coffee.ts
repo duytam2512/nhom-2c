@@ -88,3 +88,20 @@ export interface Voucher {
   minOrder: number;
   description: string;
 }
+
+export interface TableReservation {
+  id: string;
+  code: string;
+  customerName: string;
+  customerPhone: string;
+  customerEmail: string;
+  guestCount: number;
+  date: string;
+  timeSlot: string;
+  store: StoreLocation;
+  seatingArea: string;
+  note?: string;
+  status: 'confirmed' | 'cancelled';
+  createdAt: string;
+}
+
