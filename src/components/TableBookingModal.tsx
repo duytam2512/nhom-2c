@@ -24,7 +24,9 @@ import {
   Bot,
   MessageSquare,
   ShieldCheck,
-  RefreshCw
+  RefreshCw,
+  HelpCircle,
+  AlertTriangle
 } from 'lucide-react';
 import { StoreLocation, TableReservation } from '../types/coffee';
 import { STORES } from '../data/coffeeData';
@@ -38,120 +40,160 @@ interface TableBookingModalProps {
 }
 
 const APPS_SCRIPT_CODE = `/**
- * GO & GRAB COFFEE - TỰ ĐỘNG GHI ĐẶT BÀN VÀO GOOGLE SHEET & BẮN TIN TELEGRAM
+ * GO & GRAB COFFEE - APPS SCRIPT ĐỒNG BỘ GOOGLE SHEET & TELEGRAM BOT
  * Bot Telegram: @Duyaasaa_bot (Token: 8910810986:AAGiT37Uh5zlmRIzGghPsdQXuxA2WITobHw)
- * Email: duykhaikhan@gmail.com
+ * Email chủ quán: duykhaikhan@gmail.com
+ *
+ * ⚠️ QUAN TRỌNG KHI TRIỂN KHAI (DEPLOY):
+ * 1. Mở sheets.new -> Tiện ích mở rộng -> Apps Script -> dán mã này -> Lưu (Ctrl + S)
+ * 2. Triển khai (Deploy) -> Tùy chọn triển khai mới (New deployment)
+ * 3. Loại: Ứng dụng web (Web app)
+ * 4. Thực thi dưới dạng: Tôi (duykhaikhan@gmail.com)
+ * 5. BẮT BUỘC: "Ai có quyền truy cập" (Who has access) -> Chọn "Bất kỳ ai" (Anyone)
+ * 6. Copy Web App URL kết thúc bằng /exec và dán vào website Go & Grab!
  */
+
 var TELEGRAM_BOT_TOKEN = "8910810986:AAGiT37Uh5zlmRIzGghPsdQXuxA2WITobHw";
+var DEFAULT_TELEGRAM_CHAT_ID = ""; // Có thể điền Chat ID của bạn ở đây
+
+function recordBooking(data) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow([
+      "Thời Gian Đặt",
+      "Mã Đặt Bàn",
+      "Họ Và Tên",
+      "Số Điện Thoại",
+      "Email",
+      "Số Lượng Khách",
+      "Ngày Nhận Bàn",
+      "Khung Giờ",
+      "Chi Nhánh",
+      "Khu Vực Bàn",
+      "Yêu Cầu Đặc Biệt",
+      "Trạng Thái"
+    ]);
+
+    var headerRange = sheet.getRange(1, 1, 1, 12);
+    headerRange.setBackground("#382215");
+    headerRange.setFontColor("#FFFFFF");
+    headerRange.setFontWeight("bold");
+    headerRange.setHorizontalAlignment("center");
+    sheet.setRowHeight(1, 35);
+    sheet.setFrozenRows(1);
+  }
+
+  var timestamp = Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "dd/MM/yyyy HH:mm:ss");
+  var code = data.code || ("TB-" + Math.floor(1000 + Math.random() * 9000));
+  var name = data.customerName || data.name || "Khách Hàng";
+  var phone = "'" + (data.customerPhone || data.phone || "");
+  var email = data.customerEmail || data.email || "";
+  var guests = data.guestCount || data.guests || 2;
+  var date = data.date || Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "yyyy-MM-dd");
+  var timeSlot = data.timeSlot || "09:00";
+  var storeName = data.storeName || (data.store ? data.store.name : "Go & Grab Coffee");
+  var seatingArea = data.seatingArea || "Khu vực chuẩn";
+  var note = data.note || "Không có";
+
+  sheet.appendRow([
+    timestamp,
+    code,
+    name,
+    phone,
+    email,
+    guests,
+    date,
+    timeSlot,
+    storeName,
+    seatingArea,
+    note,
+    "Đã xác nhận"
+  ]);
+
+  var lastRow = sheet.getLastRow();
+  sheet.getRange(lastRow, 2).setHorizontalAlignment("center");
+  sheet.getRange(lastRow, 6).setHorizontalAlignment("center");
+  sheet.getRange(lastRow, 7).setHorizontalAlignment("center");
+  sheet.getRange(lastRow, 8).setHorizontalAlignment("center");
+  sheet.getRange(lastRow, 12).setHorizontalAlignment("center");
+
+  // Gửi thông báo đến Telegram Bot nếu có chat_id
+  var chatId = data.telegramChatId || DEFAULT_TELEGRAM_CHAT_ID;
+  if (chatId && TELEGRAM_BOT_TOKEN) {
+    try {
+      var msg = "🔔 <b>CÓ KHÁCH ĐẶT BÀN MỚI TẠI GO & GRAB COFFEE!</b>\\n"
+        + "━━━━━━━━━━━━━━━━━━━━\\n"
+        + "📋 <b>Mã đặt bàn:</b> <code>" + code + "</code>\\n"
+        + "👤 <b>Họ và tên:</b> <b>" + name + "</b>\\n"
+        + "📞 <b>Điện thoại:</b> <code>" + (data.customerPhone || data.phone || "") + "</code>\\n"
+        + "📧 <b>Email:</b> " + email + "\\n"
+        + "👥 <b>Số lượng:</b> <b>" + guests + " người</b>\\n"
+        + "📅 <b>Ngày đến:</b> " + date + "\\n"
+        + "⏰ <b>Khung giờ:</b> " + timeSlot + "\\n"
+        + "📍 <b>Chi nhánh:</b> " + storeName + "\\n"
+        + "🪑 <b>Khu vực:</b> " + seatingArea + "\\n"
+        + "📝 <b>Ghi chú:</b> <i>" + note + "</i>\\n"
+        + "⏰ <b>Thời gian:</b> " + timestamp;
+
+      UrlFetchApp.fetch("https://api.telegram.org/bot" + TELEGRAM_BOT_TOKEN + "/sendMessage", {
+        method: "post",
+        contentType: "application/json",
+        payload: JSON.stringify({
+          chat_id: chatId,
+          text: msg,
+          parse_mode: "HTML"
+        }),
+        muteHttpExceptions: true
+      });
+    } catch (tgErr) {}
+  }
+
+  return { success: true, code: code, row: lastRow, timestamp: timestamp };
+}
 
 function doPost(e) {
   var lock = LockService.getScriptLock();
-  lock.tryLock(10000);
-
+  lock.tryLock(15000);
   try {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-
-    // Tự động tạo dòng tiêu đề nếu bảng còn mới
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow([
-        "Thời Gian Gửi",
-        "Mã Đặt Bàn",
-        "Họ Và Tên",
-        "Số Điện Thoại",
-        "Email",
-        "Số Lượng Khách",
-        "Ngày Nhận Bàn",
-        "Khung Giờ",
-        "Chi Nhánh",
-        "Khu Vực Bàn",
-        "Yêu Cầu Đặc Biệt",
-        "Trạng Thái"
-      ]);
-
-      var headerRange = sheet.getRange(1, 1, 1, 12);
-      headerRange.setBackground("#382215");
-      headerRange.setFontColor("#FFFFFF");
-      headerRange.setFontWeight("bold");
-      sheet.setFrozenRows(1);
-    }
-
     var data = {};
     if (e && e.postData && e.postData.contents) {
-      data = JSON.parse(e.postData.contents);
+      try { data = JSON.parse(e.postData.contents); } catch (err) { data = e.parameter || {}; }
+    } else if (e && e.parameter) {
+      data = e.parameter;
     }
-
-    var timestamp = new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
-    var code = data.code || ("TB-" + Math.floor(1000 + Math.random() * 9000));
-    var name = data.customerName || "Khách hàng";
-    var phone = "'" + (data.customerPhone || "");
-    var email = data.customerEmail || "";
-    var guests = data.guestCount || 1;
-    var date = data.date || "";
-    var timeSlot = data.timeSlot || "";
-    var storeName = data.storeName || (data.store ? data.store.name : "Go & Grab Coffee");
-    var seatingArea = data.seatingArea || "Khu vực chuẩn";
-    var note = data.note || "Không có";
-
-    // 1. Ghi vào Google Sheet
-    sheet.appendRow([
-      timestamp,
-      code,
-      name,
-      phone,
-      email,
-      guests,
-      date,
-      timeSlot,
-      storeName,
-      seatingArea,
-      note,
-      "Đã xác nhận"
-    ]);
-
-    // 2. Gửi thông báo đến Telegram Bot
-    var chatId = data.telegramChatId || "";
-    if (chatId && TELEGRAM_BOT_TOKEN) {
-      try {
-        var msg = "🔔 <b>CÓ KHÁCH ĐẶT BÀN MỚI TẠI GO & GRAB COFFEE!</b>\\n"
-          + "━━━━━━━━━━━━━━━━━━━━\\n"
-          + "📋 <b>Mã đặt bàn:</b> <code>" + code + "</code>\\n"
-          + "👤 <b>Họ và tên:</b> <b>" + name + "</b>\\n"
-          + "📞 <b>Điện thoại:</b> <code>" + (data.customerPhone || "") + "</code>\\n"
-          + "📧 <b>Email:</b> " + email + "\\n"
-          + "👥 <b>Số lượng:</b> <b>" + guests + " người</b>\\n"
-          + "📅 <b>Ngày đến:</b> " + date + "\\n"
-          + "⏰ <b>Khung giờ:</b> " + timeSlot + "\\n"
-          + "📍 <b>Chi nhánh:</b> " + storeName + "\\n"
-          + "🪑 <b>Khu vực:</b> " + seatingArea + "\\n"
-          + "📝 <b>Ghi chú:</b> <i>" + note + "</i>\\n"
-          + "⏰ <b>Thời gian:</b> " + timestamp;
-
-        UrlFetchApp.fetch("https://api.telegram.org/bot" + TELEGRAM_BOT_TOKEN + "/sendMessage", {
-          method: "post",
-          contentType: "application/json",
-          payload: JSON.stringify({
-            chat_id: chatId,
-            text: msg,
-            parse_mode: "HTML"
-          }),
-          muteHttpExceptions: true
-        });
-      } catch (tgErr) {
-        // Bỏ qua lỗi telegram để không ngắt sheet
-      }
-    }
-
-    return ContentService
-      .createTextOutput(JSON.stringify({ status: "success", message: "Đã lưu vào Google Sheet và Telegram thành công!" }))
-      .setMimeType(ContentService.MimeType.JSON);
-
-  } catch (error) {
-    return ContentService
-      .createTextOutput(JSON.stringify({ status: "error", message: error.toString() }))
-      .setMimeType(ContentService.MimeType.JSON);
+    var res = recordBooking(data);
+    return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Đã lưu vào Google Sheet thành công!", code: res.code, row: res.row })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() })).setMimeType(ContentService.MimeType.JSON);
   } finally {
     lock.releaseLock();
   }
+}
+
+function doGet(e) {
+  if (e && e.parameter && (e.parameter.customerName || e.parameter.name || e.parameter.test === "1")) {
+    var res = recordBooking(e.parameter);
+    return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Đã ghi dòng mới vào Google Sheet!", row: res.row })).setMimeType(ContentService.MimeType.JSON);
+  }
+  return ContentService.createTextOutput(JSON.stringify({ status: "online", message: "Go & Grab Coffee Webhook đang hoạt động tốt!" })).setMimeType(ContentService.MimeType.JSON);
+}
+
+// Bấm Run (Chạy) hàm này trong Apps Script Editor để thử ghi 1 dòng mẫu ngay lập tức!
+function testBookingScript() {
+  var res = recordBooking({
+    code: "TEST-KHAI-01",
+    customerName: "Duy Khải (Chủ Quán Test)",
+    customerPhone: "0909123456",
+    customerEmail: "duykhaikhan@gmail.com",
+    guestCount: 2,
+    date: Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "yyyy-MM-dd"),
+    timeSlot: "09:00",
+    storeName: "Go & Grab Coffee",
+    seatingArea: "Khu làm việc yên tĩnh",
+    note: "Dòng thử nghiệm kiểm tra kết nối từ Apps Script"
+  });
+  Logger.log("Đã thêm thành công vào dòng: " + res.row);
 }`;
 
 export const TableBookingModal: React.FC<TableBookingModalProps> = ({
@@ -179,7 +221,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
   // Apps Script Webhook config
   const [webhookUrl, setWebhookUrl] = useState<string>('');
   const [isTestingWebhook, setIsTestingWebhook] = useState(false);
-  const [webhookTestStatus, setWebhookTestStatus] = useState<string | null>(null);
+  const [webhookTestStatus, setWebhookTestStatus] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
   const [copiedScript, setCopiedScript] = useState(false);
 
   // Telegram Bot config & auto-discovery
@@ -195,7 +237,8 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
   const [confirmedReservation, setConfirmedReservation] = useState<TableReservation | null>(null);
   const [copiedCode, setCopiedCode] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  const [sheetsSyncStatus, setSheetsSyncStatus] = useState<'synced' | 'pending' | 'none'>('none');
+  const [sheetsSyncStatus, setSheetsSyncStatus] = useState<'synced' | 'failed' | 'not_configured'>('not_configured');
+  const [sheetsSyncError, setSheetsSyncError] = useState<string | null>(null);
   const [telegramSyncStatus, setTelegramSyncStatus] = useState<'synced' | 'pending' | 'none'>('none');
 
   useEffect(() => {
@@ -260,43 +303,71 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
       body: JSON.stringify({ webhookUrl: url }),
     }).catch(() => {});
 
-    setWebhookTestStatus('Đã lưu cấu hình link Google Apps Script thành công!');
-    setTimeout(() => setWebhookTestStatus(null), 3500);
+    if (url.includes('docs.google.com/spreadsheets')) {
+      setWebhookTestStatus({
+        type: 'error',
+        text: '⚠️ Chú ý: Bạn vừa lưu link file bảng tính Google Sheet (docs.google.com/spreadsheets). Để đồng bộ tự động, bạn cần lấy link Web App từ Apps Script (script.google.com/macros/s/.../exec).',
+      });
+    } else {
+      setWebhookTestStatus({
+        type: 'success',
+        text: '✅ Đã lưu cấu hình link Web App Google Apps Script thành công! Bấm "Gửi thử test" để kiểm tra.',
+      });
+    }
+    setTimeout(() => setWebhookTestStatus(null), 5000);
   };
 
   const handleTestWebhook = async () => {
-    if (!webhookUrl.trim()) {
-      setWebhookTestStatus('Vui lòng dán Web App URL của Google Apps Script trước.');
+    const cleanUrl = webhookUrl.trim();
+    if (!cleanUrl) {
+      setWebhookTestStatus({
+        type: 'error',
+        text: 'Vui lòng dán Web App URL của Google Apps Script trước khi kiểm tra.',
+      });
+      return;
+    }
+
+    if (cleanUrl.includes('docs.google.com/spreadsheets')) {
+      setWebhookTestStatus({
+        type: 'error',
+        text: '⚠️ Bạn đang dán link bảng tính Google Sheet (docs.google.com/spreadsheets). Cần dán link Web App của Google Apps Script (bắt đầu bằng https://script.google.com/macros/s/.../exec).',
+      });
       return;
     }
 
     setIsTestingWebhook(true);
-    setWebhookTestStatus('Đang gửi dòng thử nghiệm đến Google Sheet...');
+    setWebhookTestStatus({
+      type: 'info',
+      text: 'Đang gửi dòng thử nghiệm đến Google Sheet của bạn...',
+    });
 
     try {
-      const res = await fetch('/api/booking', {
+      const res = await fetch('/api/booking/test-sheets', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          code: 'TEST-SHEET',
-          customerName: 'Kiểm Tra Hệ Thống',
-          customerPhone: '0909123456',
-          customerEmail: 'duykhaikhan@gmail.com',
-          guestCount: 2,
-          date: bookingDate,
-          timeSlot: '09:00',
-          storeName: store.name,
-          seatingArea: 'Khu làm việc thử nghiệm',
-          note: 'Tin nhắn thử nghiệm tự động từ website Go & Grab',
-          webhookUrl: webhookUrl.trim(),
+          webhookUrl: cleanUrl,
           telegramChatId: telegramChatId.trim(),
         }),
       });
 
       const data = await res.json();
-      setWebhookTestStatus('✅ Kết nối thành công! Dữ liệu mẫu đã xuất hiện trên Google Sheet của bạn.');
+      if (data.ok) {
+        setWebhookTestStatus({
+          type: 'success',
+          text: '🎉 THÀNH CÔNG RỰC RỠ! Dữ liệu mẫu đã được ghi vào Google Sheet của bạn. Hãy mở file Sheet để kiểm tra ngay!',
+        });
+      } else {
+        setWebhookTestStatus({
+          type: 'error',
+          text: data.error || 'Google Sheet chưa nhận được dữ liệu. Vui lòng kiểm tra quyền "Bất kỳ ai (Anyone)".',
+        });
+      }
     } catch (e: any) {
-      setWebhookTestStatus('⚠️ Không thể gửi tới webhook: ' + (e.message || 'Kiểm tra lại quyền Anyone'));
+      setWebhookTestStatus({
+        type: 'error',
+        text: '⚠️ Không thể gửi tới webhook: ' + (e.message || 'Kiểm tra lại quyền truy cập hoặc link URL'),
+      });
     } finally {
       setIsTestingWebhook(false);
     }
@@ -455,20 +526,28 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
       });
       const data = await response.json();
 
-      if (data && (data.status === 'synced_to_sheets_and_telegram' || data.status === 'synced_to_sheets')) {
+      if (data && data.sheetResult?.ok) {
         setSheetsSyncStatus('synced');
+        setSheetsSyncError(null);
       } else {
-        setSheetsSyncStatus(targetWebhook ? 'synced' : 'pending');
+        if (!targetWebhook) {
+          setSheetsSyncStatus('not_configured');
+          setSheetsSyncError('Chưa cấu hình URL Web App Google Apps Script.');
+        } else {
+          setSheetsSyncStatus('failed');
+          setSheetsSyncError(data?.sheetResult?.error || 'Không thể ghi vào Google Sheet. Kiểm tra quyền "Bất kỳ ai (Anyone)".');
+        }
       }
 
       if (data && (data.telegram?.ok || data.status === 'synced_to_telegram' || data.status === 'synced_to_sheets_and_telegram')) {
         setTelegramSyncStatus('synced');
       } else {
-        setTelegramSyncStatus(targetTg ? 'synced' : 'pending');
+        setTelegramSyncStatus(targetTg ? 'pending' : 'none');
       }
-    } catch (err) {
-      setSheetsSyncStatus('pending');
-      setTelegramSyncStatus('pending');
+    } catch (err: any) {
+      setSheetsSyncStatus('failed');
+      setSheetsSyncError(err.message || 'Lỗi mạng khi gửi về Google Sheet.');
+      setTelegramSyncStatus('none');
     }
 
     // Celebration
@@ -497,10 +576,16 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
   };
 
   const handleResetAndClose = () => {
+    setCustomerName('');
+    setCustomerPhone('');
+    setCustomerEmail('');
+    setNote('');
     setConfirmedReservation(null);
     setActiveTab('form');
     onClose();
   };
+
+  const isSheetConfigured = Boolean(webhookUrl && !webhookUrl.includes('docs.google.com/spreadsheets'));
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
@@ -518,11 +603,11 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                   Đặt Bàn Go & Grab Coffee
                 </h3>
                 <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 rounded-full">
-                  Đồng Bộ Tự Động
+                  Google Sheet & Telegram
                 </span>
               </div>
               <p className="text-xs text-amber-200/80 line-clamp-1">
-                Tự động gửi thông tin về Google Sheet & Telegram Bot
+                Tự động đẩy thông tin đặt bàn về Google Sheet & Telegram Bot quán
               </p>
             </div>
           </div>
@@ -550,18 +635,6 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
           </button>
 
           <button
-            onClick={() => setActiveTab('telegram')}
-            className={`flex-1 min-w-[140px] py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${
-              activeTab === 'telegram'
-                ? 'bg-sky-600 text-white shadow-sm'
-                : 'text-sky-900 bg-sky-50/80 hover:bg-sky-100 border border-sky-200'
-            }`}
-          >
-            <Bot className="w-3.5 h-3.5" />
-            <span>2. Telegram Bot (@{botUsername})</span>
-          </button>
-
-          <button
             onClick={() => setActiveTab('sheets')}
             className={`flex-1 min-w-[130px] py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${
               activeTab === 'sheets'
@@ -570,186 +643,70 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
             }`}
           >
             <FileSpreadsheet className="w-3.5 h-3.5" />
-            <span>3. Google Sheet</span>
+            <span>2. Google Sheet</span>
+            {isSheetConfigured ? (
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+            ) : (
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+            )}
+          </button>
+
+          <button
+            onClick={() => setActiveTab('telegram')}
+            className={`flex-1 min-w-[140px] py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${
+              activeTab === 'telegram'
+                ? 'bg-sky-600 text-white shadow-sm'
+                : 'text-sky-900 bg-sky-50/80 hover:bg-sky-100 border border-sky-200'
+            }`}
+          >
+            <Bot className="w-3.5 h-3.5" />
+            <span>3. Telegram (@{botUsername})</span>
           </button>
         </div>
 
         {/* Modal Body */}
         <div className="p-4 sm:p-5 overflow-y-auto space-y-5">
           
-          {/* TAB 1: TELEGRAM BOT SETTINGS */}
-          {activeTab === 'telegram' ? (
+          {/* TAB: GOOGLE SHEETS SETUP */}
+          {activeTab === 'sheets' ? (
             <div className="space-y-4 animate-in fade-in">
-              {/* Telegram Bot Card */}
-              <div className="p-4 bg-gradient-to-br from-sky-500/10 via-sky-50 to-blue-50 border border-sky-200 rounded-2xl space-y-3">
-                <div className="flex items-center justify-between flex-wrap gap-2">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-xl bg-sky-600 text-white flex items-center justify-center shadow-md">
-                      <Bot className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-extrabold text-sm text-sky-950 font-display">
-                          Telegram Bot: @{botUsername}
-                        </span>
-                        <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full border border-emerald-300 flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                          Online
-                        </span>
-                      </div>
-                      <span className="text-xs text-stone-600">
-                        Token: <code className="bg-white/80 px-1 py-0.5 rounded border border-sky-200 font-mono text-[11px] text-sky-900">8910810986:AAGiT3...WITobHw</code>
-                      </span>
-                    </div>
-                  </div>
-
-                  <a
-                    href={`https://t.me/${botUsername}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition"
-                  >
-                    <span>Mở Bot Trên Telegram</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                </div>
-
-                <p className="text-xs text-sky-950 leading-relaxed bg-white/70 p-3 rounded-xl border border-sky-100">
-                  ⚡ Mỗi khi khách hàng điền đặt bàn (Tên, SĐT, Email, Số khách, Giờ đến), Bot <strong>@{botUsername}</strong> sẽ tự động bắn tin nhắn thông báo tức thì đến Telegram cá nhân hoặc Group chat của bạn.
-                </p>
-              </div>
-
-              {/* Chat ID Setup & Auto-discovery */}
-              <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200/90 space-y-3">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-stone-900 flex items-center gap-1.5">
-                    <MessageSquare className="w-4 h-4 text-sky-600" />
-                    <span>Telegram Chat ID nhận thông báo:</span>
-                  </label>
-                  <span className="text-[11px] text-stone-500">
-                    (Có thể là ID cá nhân hoặc ID Group quán)
-                  </span>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <input
-                    type="text"
-                    placeholder="VD: 123456789 hoặc -100xxxxxxxxxx"
-                    value={telegramChatId}
-                    onChange={(e) => setTelegramChatId(e.target.value)}
-                    className="flex-1 text-xs px-3.5 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-sky-500 font-mono font-medium"
-                  />
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      disabled={isDetectingTelegram}
-                      onClick={handleAutoDetectTelegram}
-                      className="px-3.5 py-2.5 rounded-xl bg-sky-100 hover:bg-sky-200 text-sky-900 border border-sky-300 text-xs font-bold flex items-center gap-1 transition cursor-pointer"
-                      title="Tự động nhận diện khi bạn vừa gửi /start tới bot"
-                    >
-                      <RefreshCw className={`w-3.5 h-3.5 ${isDetectingTelegram ? 'animate-spin' : ''}`} />
-                      <span>{isDetectingTelegram ? 'Đang dò...' : 'Tự động tìm ID'}</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleSaveTelegramChatId()}
-                      className="px-3.5 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold transition cursor-pointer"
-                    >
-                      Lưu ID
-                    </button>
-                    <button
-                      type="button"
-                      disabled={isTestingTelegram}
-                      onClick={handleTestTelegram}
-                      className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-bold flex items-center gap-1 transition cursor-pointer shadow-sm"
-                    >
-                      <Send className="w-3.5 h-3.5" />
-                      <span>{isTestingTelegram ? 'Đang gửi...' : 'Test Bot'}</span>
-                    </button>
-                  </div>
-                </div>
-
-                {telegramStatusMsg && (
-                  <div className={`p-3 rounded-xl text-xs font-medium flex items-start gap-2 ${
-                    telegramStatusMsg.type === 'success'
-                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                      : telegramStatusMsg.type === 'info'
-                      ? 'bg-sky-50 text-sky-800 border border-sky-200'
-                      : 'bg-rose-50 text-rose-800 border border-rose-200'
-                  }`}>
-                    <span className="font-bold shrink-0">
-                      {telegramStatusMsg.type === 'success' ? '✅' : telegramStatusMsg.type === 'info' ? 'ℹ️' : '⚠️'}
-                    </span>
-                    <span>{telegramStatusMsg.text}</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Instructions on how to connect Telegram */}
-              <div className="p-4 rounded-2xl bg-sky-50/50 border border-sky-200 text-xs text-stone-700 space-y-2">
-                <h4 className="font-bold text-sky-950 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-                  <span>📌 Cách kết nối Telegram chỉ với 2 bước:</span>
-                </h4>
-                <ol className="space-y-1.5 list-decimal pl-4 leading-relaxed">
-                  <li>
-                    Nhấn vào nút <strong>"Mở Bot Trên Telegram"</strong> ở trên (hoặc gõ tìm <strong>@{botUsername}</strong> trong Telegram).
-                  </li>
-                  <li>
-                    Nhấn nút <strong>START</strong> để kích hoạt cuộc trò chuyện với Bot.
-                  </li>
-                  <li>
-                    Quay lại đây và nhấn nút <strong>"Tự động tìm ID"</strong>, hoặc nhấn <strong>"Test Bot"</strong> để nhận tin nhắn kiểm tra ngay tức thì!
-                  </li>
-                </ol>
-              </div>
-
-              <div className="flex justify-between items-center pt-2">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('sheets')}
-                  className="px-4 py-2.5 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 text-xs font-bold transition cursor-pointer"
-                >
-                  Xem cài đặt Google Sheet →
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('form')}
-                  className="px-5 py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white text-xs font-bold transition cursor-pointer"
-                >
-                  Quay lại biểu mẫu Đặt Bàn
-                </button>
-              </div>
-            </div>
-          ) : activeTab === 'sheets' ? (
-            /* TAB 2: GOOGLE SHEETS SETUP */
-            <div className="space-y-4 animate-in fade-in">
-              <div className="p-4 bg-emerald-50/80 border border-emerald-200 rounded-2xl space-y-2 text-emerald-950">
+              <div className="p-4 bg-emerald-50/90 border border-emerald-200 rounded-2xl space-y-2 text-emerald-950">
                 <div className="flex items-center justify-between flex-wrap gap-2">
                   <span className="font-bold text-xs uppercase tracking-wider flex items-center gap-1.5">
                     <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
                     Đồng Bộ Tự Động Về Google Sheet (duykhaikhan@gmail.com)
                   </span>
-                  <span className="text-[11px] font-bold text-emerald-700 bg-white px-2 py-0.5 rounded-md border border-emerald-300">
-                    {webhookUrl ? '🟢 Đã cài Webhook' : '⚪ Chưa có URL'}
+                  <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md border ${
+                    isSheetConfigured 
+                      ? 'bg-emerald-100 text-emerald-800 border-emerald-300' 
+                      : 'bg-amber-100 text-amber-800 border-amber-300'
+                  }`}>
+                    {isSheetConfigured ? '🟢 Đã cấu hình Webhook' : '⚪ Chưa có URL Web App'}
                   </span>
                 </div>
                 <p className="text-xs text-emerald-900 leading-relaxed">
-                  Khi khách hàng điền <strong>Tên, Số điện thoại, Email, Số lượng người</strong>, hệ thống sẽ đẩy thẳng một dòng mới vào Google Sheet của bạn qua Google Apps Script Webhook.
+                  Khi khách hàng điền <strong>Tên, Số điện thoại, Email, Số khách</strong>, hệ thống sẽ đẩy thẳng một dòng mới vào Google Sheet của bạn.
                 </p>
               </div>
 
               {/* Webhook URL Input Bar */}
-              <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200/80 space-y-2">
-                <label className="block text-xs font-bold text-stone-800">
-                  Dán URL Web App Google Apps Script của bạn:
-                </label>
+              <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200/80 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-bold text-stone-800">
+                    Dán URL Web App Google Apps Script của bạn:
+                  </label>
+                  <span className="text-[10px] font-mono text-stone-500">
+                    Dạng: https://script.google.com/macros/s/.../exec
+                  </span>
+                </div>
+
                 <div className="flex flex-col sm:flex-row gap-2">
                   <input
                     type="url"
                     placeholder="https://script.google.com/macros/s/AKfycb.../exec"
                     value={webhookUrl}
                     onChange={(e) => setWebhookUrl(e.target.value)}
-                    className="flex-1 text-xs px-3.5 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-1 focus:ring-amber-800 font-mono"
+                    className="flex-1 text-xs px-3.5 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-1 focus:ring-emerald-700 font-mono"
                   />
                   <div className="flex gap-2">
                     <button
@@ -763,25 +720,97 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                       type="button"
                       disabled={isTestingWebhook}
                       onClick={handleTestWebhook}
-                      className="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white text-xs font-bold flex items-center gap-1 transition cursor-pointer"
+                      className="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
                     >
-                      <Send className="w-3.5 h-3.5" />
-                      <span>{isTestingWebhook ? 'Đang gửi...' : 'Gửi thử test'}</span>
+                      {isTestingWebhook ? (
+                        <>
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                          <span>Đang test...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-3.5 h-3.5" />
+                          <span>Gửi thử test</span>
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>
 
+                {/* Instant URL validation warning if user pasted Spreadsheet URL */}
+                {webhookUrl.includes('docs.google.com/spreadsheets') && (
+                  <div className="p-3 rounded-xl bg-rose-50 border border-rose-300 text-rose-900 text-xs space-y-1">
+                    <div className="font-bold flex items-center gap-1.5 text-rose-800">
+                      <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                      <span>Bạn vừa dán link file bảng tính Google Sheet (docs.google.com)!</span>
+                    </div>
+                    <p className="text-[11px] leading-relaxed">
+                      Để website có thể tự động ghi dữ liệu vào Sheet, bạn cần tạo <strong>Ứng dụng web (Web App)</strong> từ Apps Script để lấy link có dạng <code className="bg-white px-1 py-0.5 rounded border border-rose-200 font-mono text-[10px]">https://script.google.com/macros/s/.../exec</code> theo 4 bước dưới đây.
+                    </p>
+                  </div>
+                )}
+
+                {/* Live Diagnostic Message */}
                 {webhookTestStatus && (
-                  <p className="text-xs font-semibold text-stone-700 pt-1">
-                    {webhookTestStatus}
-                  </p>
+                  <div className={`p-3 rounded-xl text-xs font-medium border flex items-start gap-2 ${
+                    webhookTestStatus.type === 'success'
+                      ? 'bg-emerald-50 text-emerald-900 border-emerald-300'
+                      : webhookTestStatus.type === 'error'
+                      ? 'bg-rose-50 text-rose-900 border-rose-300'
+                      : 'bg-sky-50 text-sky-900 border-sky-300'
+                  }`}>
+                    {webhookTestStatus.type === 'success' ? (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                    ) : webhookTestStatus.type === 'error' ? (
+                      <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                    ) : (
+                      <RefreshCw className="w-4 h-4 text-sky-600 shrink-0 mt-0.5 animate-spin" />
+                    )}
+                    <span className="leading-relaxed">{webhookTestStatus.text}</span>
+                  </div>
                 )}
               </div>
 
+              {/* Troubleshooting Card: 4 common reasons why Google Sheet hasn't received data */}
+              <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-300 space-y-2.5 text-xs text-stone-800">
+                <div className="flex items-center gap-1.5 font-extrabold text-amber-950 uppercase tracking-wider text-[11px]">
+                  <HelpCircle className="w-4 h-4 text-amber-800" />
+                  <span>🔍 Tại Sao Google Sheet Chưa Nhận Được Dữ Liệu? (Kiểm Tra 4 Điểm Sau)</span>
+                </div>
+
+                <div className="space-y-2 text-[11px] leading-relaxed">
+                  <div className="p-2.5 bg-white/80 rounded-xl border border-amber-200">
+                    <strong className="text-amber-900">1. Chưa dán Web App URL vào ô bên trên:</strong>
+                    <p className="text-stone-600">Bạn đã dán link Web App vào ô phía trên và bấm nút "Lưu URL" chưa? Nếu ô URL còn trống thì hệ thống chưa biết gửi về đâu.</p>
+                  </div>
+
+                  <div className="p-2.5 bg-white/80 rounded-xl border border-amber-200">
+                    <strong className="text-rose-900">2. Lỗi Quyền "Chỉ mình tôi" (LỖI PHỔ BIẾN NHẤT 95%):</strong>
+                    <p className="text-stone-600">
+                      Khi bấm <strong>Triển khai (Deploy) → Tùy chọn triển khai mới</strong>, ở mục <strong>"Ai có quyền truy cập" (Who has access)</strong>, bạn <strong>PHẢI CHỌN "Bất kỳ ai" (Anyone)</strong>. Nếu để mặc định là "Chỉ mình tôi", Google sẽ bắt đăng nhập và chặn website không cho ghi!
+                    </p>
+                  </div>
+
+                  <div className="p-2.5 bg-white/80 rounded-xl border border-amber-200">
+                    <strong className="text-amber-900">3. Dán nhầm link file Google Sheet thay vì link Apps Script:</strong>
+                    <p className="text-stone-600">
+                      Link đúng bắt đầu bằng: <code className="bg-amber-100/80 px-1 py-0.5 rounded font-mono text-[10px]">https://script.google.com/macros/s/.../exec</code>. Link sai: <code className="bg-rose-100 px-1 py-0.5 rounded font-mono text-[10px]">https://docs.google.com/spreadsheets/...</code>
+                    </p>
+                  </div>
+
+                  <div className="p-2.5 bg-white/80 rounded-xl border border-amber-200">
+                    <strong className="text-stone-800">4. Thử bấm "Run" (Chạy) trực tiếp trong Google Apps Script:</strong>
+                    <p className="text-stone-600">
+                      Trong trình soạn thảo Apps Script, bạn có thể chọn hàm <strong>testBookingScript</strong> ở trên thanh công cụ rồi bấm nút <strong>Chạy (Run)</strong>. Nó sẽ tự động ghi ngay 1 dòng mẫu vào Sheet của bạn để bạn kiểm tra!
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               {/* 4-Step Instructions */}
-              <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-200 space-y-2 text-xs text-stone-700">
+              <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200 space-y-2 text-xs text-stone-700">
                 <h4 className="font-bold text-stone-900 uppercase tracking-wider text-[11px]">
-                  📌 Hướng dẫn cài đặt Apps Script (Chỉ mất 1 phút):
+                  📌 Các bước triển khai Google Apps Script (Chỉ mất 1 phút):
                 </h4>
                 <ol className="space-y-1.5 list-decimal pl-4 leading-relaxed">
                   <li>
@@ -791,14 +820,14 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                     Trên menu chọn: <strong>Tiện ích mở rộng (Extensions) → Apps Script</strong>.
                   </li>
                   <li>
-                    Sao chép toàn bộ mã nguồn bên dưới (đã tích hợp sẵn Token Telegram bot của bạn) và dán đè vào trình soạn thảo. Bấm <strong>Lưu (Ctrl + S)</strong>.
+                    Sao chép toàn bộ mã nguồn bên dưới (đã tích hợp Token bot @Duyaasaa_bot) và dán đè vào trình soạn thảo. Bấm <strong>Lưu (Ctrl + S)</strong>.
                   </li>
                   <li>
                     Bấm <strong>Triển khai (Deploy) → Tùy chọn triển khai mới (New deployment)</strong>:
-                    <div className="pl-2 pt-1 text-[11px] text-stone-600">
-                      • Loại: <strong>Ứng dụng web (Web app)</strong><br />
-                      • Thực thi dưới dạng: <strong>Tôi (duykhaikhan@gmail.com)</strong><br />
-                      • Ai có quyền truy cập: <strong>Bất kỳ ai (Anyone)</strong> (Bắt buộc để web gửi vào)<br />
+                    <div className="pl-2 pt-1 text-[11px] text-stone-600 space-y-0.5">
+                      <div>• Loại: <strong>Ứng dụng web (Web app)</strong></div>
+                      <div>• Thực thi dưới dạng: <strong>Tôi (duykhaikhan@gmail.com)</strong></div>
+                      <div className="text-amber-900 font-bold">• Ai có quyền truy cập: <strong>Bất kỳ ai (Anyone)</strong> (BẮT BUỘC)</div>
                     </div>
                   </li>
                   <li>
@@ -812,7 +841,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-stone-800 flex items-center gap-1.5">
                     <Code2 className="w-4 h-4 text-amber-800" />
-                    Mã Google Apps Script (Tự động ghi Google Sheet & Telegram Bot)
+                    Mã Google Apps Script (Copy 1-click)
                   </span>
                   <button
                     onClick={handleCopyAppsScript}
@@ -841,14 +870,191 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                   onClick={() => setActiveTab('form')}
                   className="px-5 py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white text-xs font-bold transition cursor-pointer"
                 >
+                  Quay lại biểu mẫu Đặt Bàn →
+                </button>
+              </div>
+            </div>
+          ) : activeTab === 'telegram' ? (
+            /* TAB: TELEGRAM BOT SETTINGS */
+            <div className="space-y-4 animate-in fade-in">
+              <div className="p-4 bg-gradient-to-br from-sky-500/10 via-sky-50 to-blue-50 border border-sky-200 rounded-2xl space-y-3">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-sky-600 text-white flex items-center justify-center shadow-md">
+                      <Bot className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-extrabold text-sm text-sky-950 font-display">
+                          Telegram Bot: @{botUsername}
+                        </span>
+                        <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full border border-emerald-300 flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                          Online
+                        </span>
+                      </div>
+                      <span className="text-xs text-stone-600">
+                        Token: <code className="font-mono text-[11px] bg-white px-1.5 py-0.5 rounded border border-sky-200">8910810986:AAGi...</code>
+                      </span>
+                    </div>
+                  </div>
+
+                  <a
+                    href="https://t.me/Duyaasaa_bot"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3.5 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-sm"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>Mở @Duyaasaa_bot</span>
+                  </a>
+                </div>
+
+                <p className="text-xs text-sky-950 leading-relaxed">
+                  Khi khách đặt bàn, bot sẽ ngay lập tức gửi tin nhắn thông báo kèm thông tin chi tiết: <strong>Mã đơn, Tên khách, Điện thoại, Email, Số khách, Giờ đến và Chi nhánh</strong>.
+                </p>
+              </div>
+
+              {/* Chat ID Setup */}
+              <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200/80 space-y-3">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <label className="block text-xs font-bold text-stone-800">
+                    Chat ID Telegram của bạn:
+                  </label>
+                  <button
+                    type="button"
+                    disabled={isDetectingTelegram}
+                    onClick={handleAutoDetectTelegram}
+                    className="text-xs text-sky-700 hover:text-sky-900 font-bold flex items-center gap-1 underline cursor-pointer disabled:opacity-50"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${isDetectingTelegram ? 'animate-spin' : ''}`} />
+                    <span>Tự động tìm ID (Khi vừa bấm /start)</span>
+                  </button>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="text"
+                    placeholder="VD: 123456789 (hoặc ID nhóm -100xxx)"
+                    value={telegramChatId}
+                    onChange={(e) => setTelegramChatId(e.target.value)}
+                    className="flex-1 text-xs px-3.5 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-1 focus:ring-sky-600 font-mono"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleSaveTelegramChatId()}
+                      className="px-4 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold transition cursor-pointer"
+                    >
+                      Lưu ID
+                    </button>
+                    <button
+                      type="button"
+                      disabled={isTestingTelegram}
+                      onClick={handleTestTelegram}
+                      className="px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 disabled:opacity-50 text-white text-xs font-bold flex items-center gap-1 transition cursor-pointer"
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                      <span>{isTestingTelegram ? 'Đang gửi...' : 'Test Bot'}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {telegramStatusMsg && (
+                  <div className={`p-3 rounded-xl text-xs font-medium border flex items-center gap-2 ${
+                    telegramStatusMsg.type === 'success'
+                      ? 'bg-emerald-50 text-emerald-900 border-emerald-300'
+                      : telegramStatusMsg.type === 'error'
+                      ? 'bg-rose-50 text-rose-900 border-rose-300'
+                      : 'bg-sky-50 text-sky-900 border-sky-300'
+                  }`}>
+                    {telegramStatusMsg.type === 'success' ? (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    ) : telegramStatusMsg.type === 'error' ? (
+                      <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                    ) : (
+                      <RefreshCw className="w-4 h-4 text-sky-600 shrink-0 animate-spin" />
+                    )}
+                    <span>{telegramStatusMsg.text}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Instructions */}
+              <div className="p-4 rounded-2xl bg-sky-50/50 border border-sky-200 space-y-2 text-xs text-stone-700">
+                <h4 className="font-bold text-sky-950 uppercase tracking-wider text-[11px]">
+                  📌 Các bước kích hoạt bot trên điện thoại:
+                </h4>
+                <ol className="space-y-1.5 list-decimal pl-4 leading-relaxed text-stone-700">
+                  <li>
+                    Nhấn vào link: <a href="https://t.me/Duyaasaa_bot" target="_blank" rel="noreferrer" className="text-sky-700 font-bold underline">https://t.me/Duyaasaa_bot</a>
+                  </li>
+                  <li>
+                    Bấm nút <strong>START</strong> (hoặc gõ <code>/start</code>).
+                  </li>
+                  <li>
+                    Quay lại đây và nhấn nút <strong>"Tự động tìm ID"</strong>, hoặc nhấn <strong>"Test Bot"</strong> để nhận tin nhắn kiểm tra ngay tức thì!
+                  </li>
+                </ol>
+              </div>
+
+              <div className="flex justify-between items-center pt-2">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('sheets')}
+                  className="px-4 py-2.5 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 text-xs font-bold transition cursor-pointer"
+                >
+                  Xem cài đặt Google Sheet →
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('form')}
+                  className="px-5 py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white text-xs font-bold transition cursor-pointer"
+                >
                   Quay lại biểu mẫu Đặt Bàn
                 </button>
               </div>
             </div>
           ) : !confirmedReservation ? (
-            /* TAB 3: BOOKING FORM */
+            /* TAB: BOOKING FORM */
             <form onSubmit={handleSubmit} className="space-y-4">
               
+              {/* Integration Status Quick Bar */}
+              <div className="flex items-center justify-between flex-wrap gap-2 p-2.5 rounded-xl bg-stone-100 border border-stone-200 text-[11px]">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-stone-600">Đồng bộ dữ liệu:</span>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('sheets')}
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold transition ${
+                      isSheetConfigured
+                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                        : 'bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200'
+                    }`}
+                  >
+                    <FileSpreadsheet className="w-3 h-3 text-emerald-700" />
+                    <span>{isSheetConfigured ? 'Google Sheet: Đã kết nối' : 'Google Sheet: Chưa cài URL'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('telegram')}
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold bg-sky-100 text-sky-800 border border-sky-300 hover:bg-sky-200 transition"
+                  >
+                    <Bot className="w-3 h-3 text-sky-700" />
+                    <span>Telegram: @{botUsername}</span>
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('sheets')}
+                  className="text-amber-800 hover:text-amber-950 font-semibold underline"
+                >
+                  Xem hướng dẫn
+                </button>
+              </div>
+
               {/* Alert message if error */}
               {errorMsg && (
                 <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs rounded-xl flex items-center gap-2">
@@ -948,155 +1154,133 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                 {/* Quick Guest Count Selector Buttons */}
                 <div className="flex items-center gap-1.5 flex-wrap pt-1">
                   <span className="text-[10px] text-stone-500 font-medium">Chọn nhanh:</span>
-                  {[1, 2, 4, 6, 8, 12].map((num) => (
+                  {[1, 2, 4, 6, 8, 10].map((num) => (
                     <button
                       key={num}
                       type="button"
                       onClick={() => setGuestCount(num)}
-                      className={`text-[11px] px-2.5 py-1 rounded-lg border font-bold transition cursor-pointer ${
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
                         guestCount === num
-                          ? 'bg-amber-800 text-white border-amber-800 shadow-2xs'
-                          : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-100'
+                          ? 'bg-amber-800 text-white shadow-xs'
+                          : 'bg-white text-stone-700 hover:bg-amber-100/70 border border-stone-200'
                       }`}
                     >
-                      {num === 12 ? '10+ người' : `${num} người`}
+                      {num} người
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Group 2: Branch, Date & Time Selection */}
-              <div className="space-y-3">
+              {/* Group 2: Time, Location & Seating */}
+              <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200 space-y-3">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-stone-800 flex items-center gap-1.5">
-                  <Calendar className="w-4 h-4 text-amber-800" />
-                  <span>2. Chọn chi nhánh & Thời gian</span>
+                  <Clock className="w-4 h-4 text-amber-800" />
+                  <span>2. Chi nhánh, Thời gian & Khu vực ngồi</span>
                 </h4>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {/* Branch selector */}
-                  <div>
-                    <label className="block text-[11px] font-semibold text-stone-600 mb-1">
+                  {/* Store select */}
+                  <div className="sm:col-span-2">
+                    <label className="block text-[11px] font-semibold text-stone-700 mb-1">
                       Chi nhánh quán Go & Grab
                     </label>
-                    <select
-                      value={store.id}
-                      onChange={(e) => {
-                        const found = STORES.find((s) => s.id === e.target.value);
-                        if (found) setStore(found);
-                      }}
-                      className="w-full text-xs px-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-1 focus:ring-amber-700 font-semibold text-stone-800 cursor-pointer"
-                    >
-                      {STORES.map((s) => (
-                        <option key={s.id} value={s.id}>
-                          {s.name} ({s.district})
-                        </option>
-                      ))}
-                    </select>
-                    <p className="text-[10px] text-stone-400 mt-1 pl-1">
-                      📍 {store.address}
-                    </p>
+                    <div className="relative">
+                      <MapPin className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <select
+                        value={store.id}
+                        onChange={(e) => {
+                          const found = STORES.find((s) => s.id === e.target.value);
+                          if (found) setStore(found);
+                        }}
+                        className="w-full text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-bold text-stone-800 cursor-pointer"
+                      >
+                        {STORES.map((s) => (
+                          <option key={s.id} value={s.id}>
+                            {s.name} • {s.address} ({s.district})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
 
-                  {/* Date Picker */}
+                  {/* Date picker */}
                   <div>
-                    <label className="block text-[11px] font-semibold text-stone-600 mb-1">
-                      Ngày đến quán
+                    <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                      Ngày nhận bàn
                     </label>
-                    <input
-                      type="date"
-                      value={bookingDate}
-                      onChange={(e) => setBookingDate(e.target.value)}
-                      className="w-full text-xs px-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-1 focus:ring-amber-700 font-semibold text-stone-800 cursor-pointer"
-                    />
+                    <div className="relative">
+                      <Calendar className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="date"
+                        min={new Date().toISOString().split('T')[0]}
+                        value={bookingDate}
+                        onChange={(e) => setBookingDate(e.target.value)}
+                        className="w-full text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Time slot */}
+                  <div>
+                    <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                      Khung giờ đến
+                    </label>
+                    <div className="relative">
+                      <Clock className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <select
+                        value={timeSlot}
+                        onChange={(e) => setTimeSlot(e.target.value)}
+                        className="w-full text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-bold text-stone-800 cursor-pointer"
+                      >
+                        {timeSlots.map((slot) => (
+                          <option key={slot} value={slot}>
+                            {slot}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 </div>
 
-                {/* Time Slot Chips */}
-                <div>
-                  <label className="block text-[11px] font-semibold text-stone-600 mb-1.5">
-                    Khung giờ nhận bàn:
+                {/* Seating Area Preference */}
+                <div className="space-y-1.5 pt-1">
+                  <label className="block text-[11px] font-semibold text-stone-700">
+                    Chọn không gian & loại bàn mong muốn:
                   </label>
-                  <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-                    {timeSlots.map((slot) => (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {seatingOptions.map((opt) => (
                       <button
-                        key={slot}
+                        key={opt.id}
                         type="button"
-                        onClick={() => setTimeSlot(slot)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer ${
-                          timeSlot === slot
-                            ? 'bg-amber-800 text-white shadow-sm'
-                            : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
+                        onClick={() => setSeatingArea(opt.id)}
+                        className={`p-2.5 rounded-xl text-left border transition cursor-pointer flex flex-col justify-between ${
+                          seatingArea === opt.id
+                            ? 'bg-amber-900 text-white border-amber-950 shadow-sm'
+                            : 'bg-white text-stone-700 hover:bg-stone-50 border-stone-200'
                         }`}
                       >
-                        {slot}
+                        <span className="font-bold text-xs">{opt.name}</span>
+                        <span className={`text-[10px] mt-0.5 line-clamp-1 ${seatingArea === opt.id ? 'text-amber-200' : 'text-stone-400'}`}>
+                          {opt.desc}
+                        </span>
                       </button>
                     ))}
                   </div>
                 </div>
-              </div>
 
-              {/* Group 3: Seating Preference */}
-              <div className="space-y-2">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-stone-800 flex items-center gap-1.5">
-                  <Armchair className="w-4 h-4 text-amber-800" />
-                  <span>3. Khu vực bàn ưa thích</span>
-                </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {seatingOptions.map((opt) => (
-                    <div
-                      key={opt.id}
-                      onClick={() => setSeatingArea(opt.id)}
-                      className={`p-2.5 rounded-xl border cursor-pointer transition flex items-start gap-2.5 ${
-                        seatingArea === opt.id
-                          ? 'border-amber-800 bg-amber-50/70 ring-1 ring-amber-800 text-amber-950 font-medium'
-                          : 'border-stone-200 bg-white hover:bg-stone-50 text-stone-700'
-                      }`}
-                    >
-                      <div
-                        className={`w-4 h-4 rounded-full border mt-0.5 flex items-center justify-center shrink-0 ${
-                          seatingArea === opt.id
-                            ? 'border-amber-800 bg-amber-800 text-white'
-                            : 'border-stone-300'
-                        }`}
-                      >
-                        {seatingArea === opt.id && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
-                      </div>
-                      <div className="min-w-0">
-                        <div className="text-xs font-bold">{opt.name}</div>
-                        <div className="text-[10px] text-stone-500 mt-0.5">{opt.desc}</div>
-                      </div>
-                    </div>
-                  ))}
+                {/* Note */}
+                <div className="pt-1">
+                  <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                    Ghi chú đặc biệt (tùy chọn)
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="VD: Cần 2 ổ cắm laptop, mang theo thú cưng, sinh nhật bạn bè..."
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    className="w-full text-xs p-3 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium resize-none"
+                  />
                 </div>
-              </div>
-
-              {/* Special Note */}
-              <div>
-                <label className="block text-[11px] font-semibold text-stone-600 mb-1">
-                  Yêu cầu đặc biệt (Tùy chọn)
-                </label>
-                <input
-                  type="text"
-                  placeholder="VD: Cần ổ cắm điện cho laptop, chuẩn bị nước lọc trước, hẹn hò..."
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  className="w-full text-xs px-3.5 py-2.5 bg-stone-50 rounded-xl border border-stone-200 focus:outline-none focus:ring-1 focus:ring-amber-700"
-                />
-              </div>
-
-              {/* Real-time destination indicator */}
-              <div className="p-3 bg-stone-100 rounded-xl border border-stone-200/80 text-[11px] text-stone-600 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>Tự động đẩy về: <strong>Google Sheet</strong> & <strong>Telegram (@{botUsername})</strong></span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('telegram')}
-                  className="text-sky-700 underline font-semibold hover:text-sky-900 cursor-pointer text-[10px]"
-                >
-                  Cài đặt kênh nhận
-                </button>
               </div>
 
               {/* Submit Button */}
@@ -1109,7 +1293,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                   {isSubmitting ? (
                     <>
                       <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      <span>Đang gửi về Google Sheet & Telegram...</span>
+                      <span>Đang ghi vào Google Sheet & Telegram...</span>
                     </>
                   ) : (
                     <>
@@ -1138,15 +1322,41 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                 
                 {/* Sync status pills */}
                 <div className="pt-2 flex flex-wrap items-center justify-center gap-2 text-[11px] font-semibold">
-                  <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full border border-emerald-300">
-                    <Check className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Đã ghi vào Google Sheet</span>
-                  </span>
-                  <span className="inline-flex items-center gap-1 bg-sky-100 text-sky-800 px-2.5 py-1 rounded-full border border-sky-300">
-                    <Bot className="w-3.5 h-3.5 text-sky-600" />
-                    <span>Đã bắn tin báo tới Telegram (@{botUsername})</span>
-                  </span>
+                  {sheetsSyncStatus === 'synced' ? (
+                    <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full border border-emerald-300">
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Đã ghi vào Google Sheet</span>
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('sheets')}
+                      className="inline-flex items-center gap-1 bg-amber-100 hover:bg-amber-200 text-amber-900 px-2.5 py-1 rounded-full border border-amber-300 cursor-pointer"
+                    >
+                      <AlertTriangle className="w-3.5 h-3.5 text-amber-700" />
+                      <span>Google Sheet chưa nhận: Bấm để cấu hình</span>
+                    </button>
+                  )}
+
+                  {telegramSyncStatus === 'synced' ? (
+                    <span className="inline-flex items-center gap-1 bg-sky-100 text-sky-800 px-2.5 py-1 rounded-full border border-sky-300">
+                      <Bot className="w-3.5 h-3.5 text-sky-600" />
+                      <span>Đã báo Telegram (@{botUsername})</span>
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 bg-stone-100 text-stone-700 px-2.5 py-1 rounded-full border border-stone-200">
+                      <Bot className="w-3.5 h-3.5 text-stone-500" />
+                      <span>Telegram Bot sẵn sàng</span>
+                    </span>
+                  )}
                 </div>
+
+                {/* Warning note if Sheet failed */}
+                {sheetsSyncStatus !== 'synced' && sheetsSyncError && (
+                  <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-900 text-left">
+                    <span className="font-bold">Lưu ý về Google Sheet:</span> {sheetsSyncError}
+                  </div>
+                )}
               </div>
 
               {/* Digital Table Pass Card */}
@@ -1218,7 +1428,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                 <div className="p-3 bg-white/90 rounded-xl border border-amber-200/80 text-[11px] text-stone-600 flex items-start gap-2">
                   <Mail className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
                   <span>
-                    Vé đặt bàn đã được gửi đến email <strong>{confirmedReservation.customerEmail}</strong> và đồng bộ trực tiếp vào Google Sheet & Telegram Bot.
+                    Vé đặt bàn đã được ghi nhận vào hệ thống và gửi email thông báo cho quý khách.
                   </span>
                 </div>
               </div>

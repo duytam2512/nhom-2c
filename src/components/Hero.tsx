@@ -53,49 +53,55 @@ export const Hero: React.FC<HeroProps> = ({
               Thưởng thức từng ngụm Cà phê Muối Cố Đô, Cold Brew ủ lạnh 24h và Bạc xỉu ba tầng từ nông trại Cầu Đất 1600m. Đặt online trước, tới quầy lấy liền không xếp hàng hoặc giao nóng hổi.
             </p>
 
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-2">
-              <a
-                href="/thuc-don"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (typeof window !== 'undefined') {
-                    window.history.pushState(null, '', '/thuc-don');
-                  }
-                  onOrderNow();
-                }}
-                className="w-full sm:w-auto px-7 py-4 rounded-2xl bg-gradient-to-r from-amber-800 via-amber-900 to-stone-900 hover:from-amber-700 hover:to-stone-800 text-white font-bold text-sm sm:text-base shadow-xl shadow-amber-950/20 flex items-center justify-center gap-2.5 transition active:scale-95 group cursor-pointer"
-              >
-                <Zap className="w-4 h-4 text-amber-300" />
-                <span>Đặt Món Mang Đi Ngay</span>
-                <ArrowRight className="w-4 h-4 text-amber-200 group-hover:translate-x-1 transition-transform" />
-              </a>
-
-              {onOpenTableBooking && (
+            {/* Clean Grouped Action Menu */}
+            <div className="pt-2 space-y-3">
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
                 <a
-                  href="/dat-ban"
+                  href="/thuc-don"
                   onClick={(e) => {
                     e.preventDefault();
                     if (typeof window !== 'undefined') {
-                      window.history.pushState(null, '', '/dat-ban');
+                      window.history.pushState(null, '', '/thuc-don');
                     }
-                    onOpenTableBooking();
+                    onOrderNow();
                   }}
-                  className="w-full sm:w-auto px-6 py-4 rounded-2xl bg-amber-100/90 hover:bg-amber-200/90 border border-amber-300 text-amber-950 font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-sm transition active:scale-95 cursor-pointer"
+                  className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-800 via-amber-900 to-stone-900 hover:from-amber-700 hover:to-stone-800 text-white font-bold text-sm shadow-lg shadow-amber-950/20 flex items-center justify-center gap-2 transition active:scale-95 group cursor-pointer"
                 >
-                  <Armchair className="w-4 h-4 text-amber-800" />
-                  <span>Đặt Bàn Trước</span>
+                  <Zap className="w-4 h-4 text-amber-300" />
+                  <span>Đặt Món Mang Đi Ngay</span>
+                  <ArrowRight className="w-4 h-4 text-amber-200 group-hover:translate-x-1 transition-transform" />
                 </a>
-              )}
 
-              <button
-                type="button"
-                onClick={onOpenSeoShare}
-                className="w-full sm:w-auto px-5 py-4 rounded-2xl bg-white hover:bg-stone-50 border border-stone-300 text-stone-800 font-semibold text-sm flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
-              >
-                <QrCode className="w-4 h-4 text-amber-800" />
-                <span>Chia Sẻ Link & SEO Tags</span>
-              </button>
+                {onOpenTableBooking && (
+                  <a
+                    href="/dat-ban"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (typeof window !== 'undefined') {
+                        window.history.pushState(null, '', '/dat-ban');
+                      }
+                      onOpenTableBooking();
+                    }}
+                    className="w-full sm:w-auto px-5 py-3.5 rounded-2xl bg-amber-100/90 hover:bg-amber-200/90 border border-amber-300/80 text-amber-950 font-bold text-sm flex items-center justify-center gap-2 shadow-2xs transition active:scale-95 cursor-pointer"
+                  >
+                    <Armchair className="w-4 h-4 text-amber-800" />
+                    <span>Đặt Bàn Giữ Chỗ (Miễn phí)</span>
+                  </a>
+                )}
+              </div>
+
+              {/* Subtle utility helper link */}
+              <div className="flex items-center justify-center lg:justify-start gap-2 text-xs text-stone-500">
+                <span>✨ Tiện ích nhanh:</span>
+                <button
+                  type="button"
+                  onClick={onOpenSeoShare}
+                  className="text-amber-800 hover:text-amber-950 font-semibold underline underline-offset-2 flex items-center gap-1 cursor-pointer"
+                >
+                  <QrCode className="w-3.5 h-3.5" />
+                  <span>Chia sẻ link & mã QR quán</span>
+                </button>
+              </div>
             </div>
 
             {/* Micro Trust Stats */}

@@ -9,27 +9,66 @@ import {
   Croissant, 
   Leaf, 
   Check,
-  SlidersHorizontal
+  Filter,
+  RotateCcw,
+  SlidersHorizontal,
+  ChevronDown
 } from 'lucide-react';
 import { CoffeeCategory, MenuItem } from '../types/coffee';
 import { MENU_ITEMS } from '../data/coffeeData';
 
 interface MenuSectionProps {
   onSelectItem: (item: MenuItem) => void;
+  selectedCategory?: CoffeeCategory;
+  onSelectCategory?: (category: CoffeeCategory) => void;
 }
 
-export const MenuSection: React.FC<MenuSectionProps> = ({ onSelectItem }) => {
-  const [selectedCategory, setSelectedCategory] = useState<CoffeeCategory>('all');
+export const MenuSection: React.FC<MenuSectionProps> = ({ 
+  onSelectItem,
+  selectedCategory: externalCategory,
+  onSelectCategory: externalSetCategory
+}) => {
+  const [internalCategory, setInternalCategory] = useState<CoffeeCategory>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [filterTag, setFilterTag] = useState<string>('all');
+  const [isMobileCategoryOpen, setIsMobileCategoryOpen] = useState(false);
+
+  // Sync external & internal category state
+  const selectedCategory = externalCategory ?? internalCategory;
+  const setSelectedCategory = (cat: CoffeeCategory) => {
+    if (externalSetCategory) {
+      externalSetCategory(cat);
+    } else {
+      setInternalCategory(cat);
+    }
+  };
 
   const categories = [
-    { id: 'all', name: 'Tất Cả Món', icon: Coffee },
-    { id: 'traditional', name: 'Cà Phê Việt', icon: Coffee },
-    { id: 'espresso', name: 'Espresso & Sữa Hạt', icon: Sparkles },
-    { id: 'coldbrew', name: 'Cold Brew 24H', icon: CupSoda },
-    { id: 'tea', name: 'Trà Tươi & Macchiato', icon: Leaf },
-    { id: 'pastry', name: 'Bánh Ngọt & Pastry', icon: Croissant },
+    { id: 'all' as CoffeeCategory, name: 'Tất Cả Món', icon: Coffee },
+    { id: 'traditional' as CoffeeCategory, name: 'Cà Phê Việt & Muối', icon: Flame },
+    { id: 'espresso' as CoffeeCategory, name: 'Espresso & Sữa Hạt', icon: Sparkles },
+    { id: 'coldbrew' as CoffeeCategory, name: 'Cold Brew 24H', icon: CupSoda },
+    { id: 'tea' as CoffeeCategory, name: 'Trà Tươi & Macchiato', icon: Leaf },
+    { id: 'pastry' as CoffeeCategory, name: 'Bánh Ngọt & Pastry', icon: Croissant },
+  ];
+
+  // Calculate counts for each category
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: MENU_ITEMS.length };
+    categories.forEach((cat) => {
+      if (cat.id !== 'all') {
+        counts[cat.id] = MENU_ITEMS.filter((i) => i.category === cat.id).length;
+      }
+    });
+    return counts;
+  }, []);
+
+  const filterTags = [
+    { id: 'all', label: 'Tất cả khẩu vị' },
+    { id: 'best-seller', label: '🔥 Bán chạy' },
+    { id: 'signature', label: '⭐ Signature' },
+    { id: 'cold', label: '🧊 Đồ uống đá' },
+    { id: 'hot', label: '♨️ Đồ uống nóng' },
   ];
 
   const filteredItems = useMemo(() => {
@@ -66,61 +105,148 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onSelectItem }) => {
     });
   }, [selectedCategory, filterTag, searchQuery]);
 
+  const hasActiveFilters = selectedCategory !== 'all' || filterTag !== 'all' || searchQuery.trim() !== '';
+
+  const handleResetFilters = () => {
+    setSelectedCategory('all');
+    setFilterTag('all');
+    setSearchQuery('');
+  };
+
+  const currentCategoryObj = categories.find((c) => c.id === selectedCategory) || categories[0];
+
   return (
     <section id="menu" className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto scroll-mt-24">
       {/* Section Header */}
-      <div className="text-center space-y-3 mb-10">
+      <div className="text-center space-y-3 mb-8">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold uppercase tracking-wider">
           <Sparkles className="w-3.5 h-3.5 text-amber-700" />
-          <span>Menu Đặc Sản Go & Grab</span>
+          <span>Thực Đơn Go & Grab Coffee</span>
         </div>
         <h2 className="text-2xl sm:text-4xl font-extrabold font-display text-stone-900 tracking-tight">
           Chọn Ly Cà Phê Của Bạn
         </h2>
         <p className="text-xs sm:text-base text-stone-600 max-w-xl mx-auto">
-          Tất cả đồ uống đều được pha chế tươi mới sau khi bạn đặt hàng, đảm bảo hương vị trọn vẹn nhất.
+          Tất cả đồ uống đều được pha chế tươi mới theo yêu cầu, hạt Cầu Đất 100% mộc nguyên chất.
         </p>
       </div>
 
-      {/* Search & Quick Filters Bar */}
-      <div className="mb-8 space-y-4">
-        <div className="flex flex-col sm:flex-row items-center gap-3">
+      {/* Unified Menu Control Bar: Category Tabs + Search & Filters */}
+      <div className="bg-white rounded-3xl border border-stone-200/90 shadow-sm p-3.5 sm:p-5 mb-8 space-y-4">
+        
+        {/* Row 1: Grouped Category Navigation Bar */}
+        <div className="hidden lg:flex items-center gap-2 p-1.5 bg-[#faf7f2] rounded-2xl border border-amber-950/5">
+          {categories.map((cat) => {
+            const Icon = cat.icon;
+            const isSelected = selectedCategory === cat.id;
+            const count = categoryCounts[cat.id] || 0;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer ${
+                  isSelected
+                    ? 'bg-amber-800 text-white shadow-md shadow-amber-900/20'
+                    : 'text-stone-700 hover:text-amber-900 hover:bg-amber-100/40'
+                }`}
+              >
+                <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-amber-200' : 'text-stone-500'}`} />
+                <span className="truncate">{cat.name}</span>
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-black ${
+                  isSelected ? 'bg-amber-700 text-amber-100' : 'bg-stone-200 text-stone-600'
+                }`}>
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Mobile / Tablet Category Dropdown & Scrollable Pills */}
+        <div className="lg:hidden space-y-2">
+          <div className="relative">
+            <button
+              onClick={() => setIsMobileCategoryOpen(!isMobileCategoryOpen)}
+              className="w-full flex items-center justify-between p-3 rounded-2xl bg-[#faf7f2] border border-stone-200 font-bold text-xs text-stone-900 cursor-pointer"
+            >
+              <span className="flex items-center gap-2">
+                <currentCategoryObj.icon className="w-4 h-4 text-amber-800" />
+                <span>Danh mục: {currentCategoryObj.name}</span>
+                <span className="text-[10px] bg-amber-200 text-amber-950 px-2 py-0.5 rounded-full">
+                  {categoryCounts[currentCategoryObj.id]} món
+                </span>
+              </span>
+              <ChevronDown className={`w-4 h-4 text-stone-500 transition-transform ${isMobileCategoryOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {isMobileCategoryOpen && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-stone-200 p-2 z-30 space-y-1">
+                {categories.map((cat) => {
+                  const Icon = cat.icon;
+                  const isSelected = selectedCategory === cat.id;
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => {
+                        setSelectedCategory(cat.id);
+                        setIsMobileCategoryOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between p-2.5 rounded-xl text-xs font-semibold text-left transition ${
+                        isSelected
+                          ? 'bg-amber-800 text-white font-bold'
+                          : 'text-stone-800 hover:bg-stone-100'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <Icon className={`w-4 h-4 ${isSelected ? 'text-amber-200' : 'text-stone-500'}`} />
+                        <span>{cat.name}</span>
+                      </span>
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full ${
+                        isSelected ? 'bg-amber-700 text-white' : 'bg-stone-100 text-stone-600'
+                      }`}>
+                        {categoryCounts[cat.id]} món
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Row 2: Search input + Compact Taste & Temperature Filter Menu */}
+        <div className="flex flex-col md:flex-row items-center gap-3 pt-1">
           {/* Search Input */}
           <div className="relative flex-1 w-full">
             <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Tìm kiếm cà phê muối, bạc xỉu, oatly latte, cold brew, bánh sừng bò..."
+              placeholder="Tìm kiếm món theo tên (cà phê muối, bạc xỉu, oatly latte, cold brew, bánh...)"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 rounded-2xl bg-white border border-stone-200 text-xs sm:text-sm shadow-2xs focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 transition"
+              className="w-full pl-10 pr-9 py-2.5 rounded-xl bg-stone-50/80 border border-stone-200 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 transition"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-stone-400 hover:text-stone-700 font-bold"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-400 hover:text-stone-700 font-bold p-1 cursor-pointer"
+                title="Xóa tìm kiếm"
               >
                 ✕
               </button>
             )}
           </div>
 
-          {/* Tag Filter Pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0 scrollbar-none">
-            {[
-              { id: 'all', label: 'Tất cả' },
-              { id: 'best-seller', label: '🔥 Bán chạy' },
-              { id: 'signature', label: '⭐ Signature' },
-              { id: 'cold', label: '🧊 Đồ uống đá' },
-              { id: 'hot', label: '♨️ Đồ uống nóng' },
-            ].map((t) => (
+          {/* Grouped Taste/Tag Filters */}
+          <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0 scrollbar-none">
+            {filterTags.map((t) => (
               <button
                 key={t.id}
                 onClick={() => setFilterTag(t.id)}
                 className={`px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer ${
                   filterTag === t.id
-                    ? 'bg-amber-900 text-white shadow-sm'
-                    : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-50'
+                    ? 'bg-amber-900 text-white shadow-2xs font-bold'
+                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200 hover:text-stone-900'
                 }`}
               >
                 {t.label}
@@ -129,27 +255,22 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onSelectItem }) => {
           </div>
         </div>
 
-        {/* Category Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-b border-stone-200/80">
-          {categories.map((cat) => {
-            const Icon = cat.icon;
-            const isSelected = selectedCategory === cat.id;
-            return (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id as CoffeeCategory)}
-                className={`px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-2 cursor-pointer ${
-                  isSelected
-                    ? 'bg-amber-800 text-white shadow-md shadow-amber-900/20'
-                    : 'bg-stone-100/80 text-stone-700 hover:bg-stone-200/70'
-                }`}
-              >
-                <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-amber-200' : 'text-stone-500'}`} />
-                <span>{cat.name}</span>
-              </button>
-            );
-          })}
-        </div>
+        {/* Status bar if filter or search active */}
+        {hasActiveFilters && (
+          <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-600">
+            <span>
+              Tìm thấy <strong>{filteredItems.length}</strong> món phù hợp
+            </span>
+            <button
+              onClick={handleResetFilters}
+              className="text-amber-800 hover:text-amber-950 font-bold flex items-center gap-1 cursor-pointer hover:underline"
+            >
+              <RotateCcw className="w-3 h-3" />
+              <span>Xóa bộ lọc (Xem tất cả)</span>
+            </button>
+          </div>
+        )}
+
       </div>
 
       {/* Grid of Menu Items */}
@@ -161,11 +282,7 @@ export const MenuSection: React.FC<MenuSectionProps> = ({ onSelectItem }) => {
             Thử tìm từ khóa khác như "cà phê", "muối", "trà" hoặc chọn danh mục khác nhé!
           </p>
           <button
-            onClick={() => {
-              setSearchQuery('');
-              setSelectedCategory('all');
-              setFilterTag('all');
-            }}
+            onClick={handleResetFilters}
             className="text-xs font-bold text-amber-800 underline cursor-pointer"
           >
             Xem toàn bộ menu

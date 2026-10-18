@@ -265,6 +265,119 @@ app.post('/api/booking/webhook', (req, res) => {
   });
 });
 
+// Helper function to send booking to Google Sheets Web App with query fallback
+async function forwardToGoogleSheets(url: string, data: any, telegramChatIdVal?: string) {
+  const cleanUrl = (url || '').trim();
+  if (!cleanUrl) {
+    return {
+      ok: false,
+      error: 'Chưa cấu hình URL Google Apps Script. Vui lòng dán link Web App (https://script.google.com/macros/s/.../exec) vào tab Google Sheet!',
+    };
+  }
+
+  // Detect common mistake: pasting Spreadsheet URL instead of Web App URL
+  if (cleanUrl.includes('docs.google.com/spreadsheets')) {
+    return {
+      ok: false,
+      error: '⚠️ Bạn đang dán link bảng tính Google Sheet (docs.google.com/spreadsheets). Cần dán link Web App của Google Apps Script (bắt đầu bằng https://script.google.com/macros/s/.../exec). Hãy làm theo hướng dẫn 4 bước bên dưới!',
+    };
+  }
+
+  if (cleanUrl.endsWith('/dev')) {
+    console.warn('Apps Script URL is using /dev mode. Recommend /exec for production.');
+  }
+
+  try {
+    const target = new URL(cleanUrl);
+    // Append parameters as query string so that even if a 302 redirect downgrades POST to GET, doGet() still records the row!
+    target.searchParams.set('code', data.code || 'TB-TEST');
+    target.searchParams.set('customerName', data.customerName || data.name || '');
+    target.searchParams.set('customerPhone', data.customerPhone || data.phone || '');
+    target.searchParams.set('customerEmail', data.customerEmail || data.email || '');
+    target.searchParams.set('guestCount', String(data.guestCount || 2));
+    target.searchParams.set('date', data.date || '');
+    target.searchParams.set('timeSlot', data.timeSlot || '');
+    target.searchParams.set('storeName', data.storeName || (data.store?.name || 'Go & Grab Coffee'));
+    target.searchParams.set('seatingArea', data.seatingArea || 'Khu vực chuẩn');
+    target.searchParams.set('note', data.note || '');
+    if (telegramChatIdVal) {
+      target.searchParams.set('telegramChatId', telegramChatIdVal);
+    }
+
+    const payload = JSON.stringify({
+      ...data,
+      telegramChatId: telegramChatIdVal,
+    });
+
+    const resp = await fetch(target.toString(), {
+      method: 'POST',
+      redirect: 'follow',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8',
+      },
+      body: payload,
+    });
+
+    const responseText = await resp.text();
+
+    // Check if Google redirected to a login page (permission issue)
+    if (responseText.includes('accounts.google.com') || responseText.includes('ServiceLogin') || (responseText.includes('<!DOCTYPE') && responseText.includes('Google Drive'))) {
+      return {
+        ok: false,
+        error: '⚠️ LỖI QUYỀN TRUY CẬP GOOGLE: Khi Triển khai (Deploy) Web App trong Apps Script, bạn chưa chọn "Ai có quyền truy cập: Bất kỳ ai" (Anyone). Hiện tại Google đang bắt đăng nhập nên website không ghi dữ liệu vào Sheet được! Hãy vào lại Apps Script -> Triển khai -> Quản lý triển khai -> Chỉnh sửa -> Chọn "Bất kỳ ai" (Anyone).',
+      };
+    }
+
+    let parsedJson: any = null;
+    try {
+      parsedJson = JSON.parse(responseText);
+    } catch {
+      // not JSON
+    }
+
+    if (parsedJson && parsedJson.status === 'error') {
+      return {
+        ok: false,
+        error: 'Google Apps Script trả về lỗi: ' + (parsedJson.message || 'Lỗi không xác định'),
+      };
+    }
+
+    return {
+      ok: true,
+      status: 'success',
+      data: parsedJson || { text: responseText.slice(0, 150) },
+    };
+  } catch (err: any) {
+    return {
+      ok: false,
+      error: 'Không thể kết nối đến Web App: ' + err.message,
+    };
+  }
+}
+
+// Test endpoint for Google Sheets Webhook
+app.post('/api/booking/test-sheets', async (req, res) => {
+  const urlToTest = req.body.webhookUrl || googleSheetsWebhookUrl;
+  const result = await forwardToGoogleSheets(
+    urlToTest,
+    {
+      code: 'TEST-DIAGNOSTIC',
+      customerName: 'Kiểm Tra Hệ Thống (Test)',
+      customerPhone: '0909123456',
+      customerEmail: 'duykhaikhan@gmail.com',
+      guestCount: 2,
+      date: new Date().toISOString().split('T')[0],
+      timeSlot: '09:00',
+      storeName: 'Go & Grab - 120 Hai Bà Trưng, Q.1',
+      seatingArea: 'Khu làm việc thử nghiệm',
+      note: 'Dòng test tự động kiểm tra kết nối từ website Go & Grab Coffee',
+    },
+    req.body.telegramChatId || telegramChatId
+  );
+
+  return res.json(result);
+});
+
 // Table booking endpoint: sends to Google Sheets AND Telegram Bot
 app.post('/api/booking', async (req, res) => {
   const reservationData = req.body;
@@ -297,43 +410,42 @@ app.post('/api/booking', async (req, res) => {
     telegramResult = { ok: false, error: e.message };
   }
 
-  // Forward to Google Sheets Webhook
-  if (!targetUrl) {
-    return res.json({
-      status: telegramResult.ok ? 'synced_to_telegram' : 'saved_locally',
-      message: telegramResult.ok
-        ? 'Đặt bàn thành công! Đã gửi thông báo Telegram Bot (@Duyaasaa_bot).'
-        : 'Đặt bàn thành công! Đã ghi nhận trong hệ thống.',
-      telegram: telegramResult,
-      data: reservationData,
-    });
+  // Forward to Google Sheets
+  let sheetResult: any = { ok: false };
+  if (targetUrl) {
+    sheetResult = await forwardToGoogleSheets(targetUrl, reservationData, targetTelegramChatId);
+  } else {
+    sheetResult = {
+      ok: false,
+      notConfigured: true,
+      error: 'Chưa dán URL Web App Google Apps Script vào tab Google Sheet.',
+    };
   }
 
-  try {
-    const sheetResponse = await fetch(targetUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ...reservationData,
-        telegramChatId: targetTelegramChatId,
-      }),
-    });
+  let finalStatus = 'saved_locally';
+  let message = 'Đặt bàn thành công!';
 
-    const result = await sheetResponse.json().catch(() => ({ status: 'success' }));
-    return res.json({
-      status: 'synced_to_sheets_and_telegram',
-      message: 'Đã đẩy thông tin đặt bàn về Google Sheet và Telegram Bot thành công!',
-      sheetResult: result,
-      telegram: telegramResult,
-    });
-  } catch (err: any) {
-    console.error('Google Sheets forwarding error:', err);
-    return res.json({
-      status: 'warning',
-      message: 'Đặt bàn thành công' + (telegramResult.ok ? ' và đã gửi Telegram Bot' : '') + ', nhưng Google Sheet lỗi: ' + err.message,
-      telegram: telegramResult,
-    });
+  if (sheetResult.ok && telegramResult.ok) {
+    finalStatus = 'synced_to_sheets_and_telegram';
+    message = 'Đã đẩy thông tin đặt bàn về Google Sheet và Telegram Bot thành công!';
+  } else if (sheetResult.ok && !telegramResult.ok) {
+    finalStatus = 'synced_to_sheets';
+    message = 'Đã ghi nhận vào Google Sheet thành công! (Telegram Bot chưa nhận do chưa cấu hình Chat ID).';
+  } else if (!sheetResult.ok && telegramResult.ok) {
+    finalStatus = 'synced_to_telegram';
+    message = 'Đã gửi thông báo về Telegram Bot thành công! Tuy nhiên Google Sheet chưa nhận được: ' + (sheetResult.error || 'Chưa có URL Web App');
+  } else {
+    finalStatus = 'saved_locally';
+    message = 'Đặt bàn đã được ghi nhận trong hệ thống! (Chưa liên kết Google Sheet hoặc Telegram).';
   }
+
+  return res.json({
+    status: finalStatus,
+    message,
+    sheetResult,
+    telegram: telegramResult,
+    data: reservationData,
+  });
 });
 
 // Online coffee order endpoint: sends notification to Telegram Bot

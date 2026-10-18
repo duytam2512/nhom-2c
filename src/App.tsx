@@ -18,7 +18,7 @@ import { SeoShareModal } from './components/SeoShareModal';
 import { ChatbotWidget } from './components/ChatbotWidget';
 import { TableBookingModal } from './components/TableBookingModal';
 import { STORES } from './data/coffeeData';
-import { CartItem, MenuItem, Order, StoreLocation, Voucher, TableReservation } from './types/coffee';
+import { CartItem, MenuItem, Order, StoreLocation, Voucher, TableReservation, CoffeeCategory } from './types/coffee';
 import { ShoppingBag, CheckCircle, Sparkles, ArrowUp } from 'lucide-react';
 
 export default function App() {
@@ -28,6 +28,7 @@ export default function App() {
   const [selectedStore, setSelectedStore] = useState<StoreLocation>(STORES[0]);
   const [deliveryAddress, setDeliveryAddress] = useState('128 Nguyễn Đình Chiểu, P. Võ Thị Sáu, Q.3');
   const [appliedVoucher, setAppliedVoucher] = useState<Voucher | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<CoffeeCategory>('all');
 
   // Modals
   const [customizingItem, setCustomizingItem] = useState<MenuItem | null>(null);
@@ -164,6 +165,9 @@ export default function App() {
         onOpenSeoShare={() => setIsSeoShareOpen(true)}
         onOpenTableBooking={() => setIsTableBookingOpen(true)}
         selectedStore={selectedStore}
+        onSelectCategory={(category) => {
+          setSelectedCategory(category);
+        }}
       />
 
       {/* Hero Section */}
@@ -177,6 +181,8 @@ export default function App() {
         {/* Menu Section */}
         <MenuSection
           onSelectItem={(item) => setCustomizingItem(item)}
+          selectedCategory={selectedCategory}
+          onSelectCategory={setSelectedCategory}
         />
 
         {/* Story Section */}
