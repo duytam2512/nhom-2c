@@ -108,6 +108,143 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
+// Telegram Bot configuration & utilities
+const DEFAULT_TELEGRAM_BOT_TOKEN = '8910810986:AAGiT37Uh5zlmRIzGghPsdQXuxA2WITobHw';
+let telegramBotToken = process.env.TELEGRAM_BOT_TOKEN || DEFAULT_TELEGRAM_BOT_TOKEN;
+let telegramChatId = process.env.TELEGRAM_CHAT_ID || '';
+
+async function autoDetectChatId(): Promise<string | null> {
+  if (!telegramBotToken) return null;
+  try {
+    const updatesRes = await fetch(`https://api.telegram.org/bot${telegramBotToken}/getUpdates`);
+    const updatesData = await updatesRes.json();
+    if (updatesData.ok && Array.isArray(updatesData.result) && updatesData.result.length > 0) {
+      // Find latest message or channel/group post
+      const senders = updatesData.result
+        .map((u: any) => u.message?.chat || u.my_chat_member?.chat || u.channel_post?.chat)
+        .filter(Boolean);
+      if (senders.length > 0) {
+        const latest = senders[senders.length - 1];
+        telegramChatId = String(latest.id);
+        return telegramChatId;
+      }
+    }
+  } catch (err) {
+    console.error('Lỗi tự động dò Chat ID Telegram:', err);
+  }
+  return null;
+}
+
+async function sendTelegramNotification(text: string, overrideChatId?: string) {
+  let chatId = overrideChatId || telegramChatId;
+
+  // If chatId is not set, try auto-detecting from recent /start or group messages
+  if (!chatId) {
+    chatId = (await autoDetectChatId()) || '';
+  }
+
+  if (!telegramBotToken || !chatId) {
+    return { 
+      ok: false, 
+      error: 'Chưa có Chat ID Telegram. Vui lòng mở @Duyaasaa_bot trên Telegram và bấm /start.' 
+    };
+  }
+
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: text,
+        parse_mode: 'HTML',
+      }),
+    });
+    const result = await res.json();
+    return result;
+  } catch (err: any) {
+    console.error('Lỗi gửi Telegram:', err);
+    return { ok: false, error: err.message };
+  }
+}
+
+// Telegram API endpoints
+app.get('/api/telegram/status', async (_req, res) => {
+  try {
+    const meRes = await fetch(`https://api.telegram.org/bot${telegramBotToken}/getMe`);
+    const meData = await meRes.json();
+
+    // Check updates to auto-detect chat_id if empty
+    let detectedChatId = telegramChatId;
+    let recentSenders: any[] = [];
+
+    const updatesRes = await fetch(`https://api.telegram.org/bot${telegramBotToken}/getUpdates`);
+    const updatesData = await updatesRes.json();
+
+    if (updatesData.ok && Array.isArray(updatesData.result) && updatesData.result.length > 0) {
+      recentSenders = updatesData.result
+        .map((u: any) => u.message?.chat || u.my_chat_member?.chat || u.channel_post?.chat)
+        .filter(Boolean);
+
+      if (!detectedChatId && recentSenders.length > 0) {
+        detectedChatId = String(recentSenders[recentSenders.length - 1].id);
+        telegramChatId = detectedChatId;
+      }
+    }
+
+    return res.json({
+      ok: true,
+      bot: meData.result,
+      chatId: telegramChatId,
+      detectedChatId,
+      recentSenders,
+    });
+  } catch (err: any) {
+    return res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.post('/api/telegram/config', (req, res) => {
+  const { chatId, botToken } = req.body;
+  if (chatId !== undefined) {
+    telegramChatId = String(chatId).trim();
+  }
+  if (botToken) {
+    telegramBotToken = String(botToken).trim();
+  }
+  return res.json({
+    ok: true,
+    chatId: telegramChatId,
+    botToken: telegramBotToken,
+  });
+});
+
+app.post('/api/telegram/test', async (req, res) => {
+  let targetChatId = req.body.chatId || telegramChatId;
+  if (!targetChatId) {
+    targetChatId = (await autoDetectChatId()) || '';
+  }
+
+  if (!targetChatId) {
+    return res.status(400).json({
+      ok: false,
+      error: 'Chưa phát hiện Chat ID. Hãy mở Telegram, tìm bot @Duyaasaa_bot hoặc click https://t.me/Duyaasaa_bot, bấm nút "START", rồi thử lại!',
+    });
+  }
+
+  const testMessage = `☕ <b>GO & GRAB COFFEE - TEST KẾT NỐI</b>
+━━━━━━━━━━━━━━━━━━━━
+✅ <b>Kết nối Telegram Bot thành công!</b>
+🤖 Bot: <b>@Duyaasaa_bot</b>
+🆔 Chat ID: <code>${targetChatId}</code>
+⏰ Thời gian: ${new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}
+━━━━━━━━━━━━━━━━━━━━
+Hệ thống sẵn sàng nhận thông tin đặt bàn & đơn hàng mới tự động đẩy về Telegram và Google Sheet!`;
+
+  const result = await sendTelegramNotification(testMessage, targetChatId);
+  return res.json(result);
+});
+
 // Google Sheets Webhook configuration & proxy
 let googleSheetsWebhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL || '';
 
@@ -128,14 +265,46 @@ app.post('/api/booking/webhook', (req, res) => {
   });
 });
 
+// Table booking endpoint: sends to Google Sheets AND Telegram Bot
 app.post('/api/booking', async (req, res) => {
   const reservationData = req.body;
   const targetUrl = req.body.webhookUrl || googleSheetsWebhookUrl;
+  const targetTelegramChatId = req.body.telegramChatId || telegramChatId;
 
+  // Format message for Telegram
+  const telegramMessage = `🔔 <b>CÓ KHÁCH ĐẶT BÀN MỚI TẠI GO & GRAB COFFEE!</b>
+━━━━━━━━━━━━━━━━━━━━
+📋 <b>Mã đặt bàn:</b> <code>${reservationData.code || 'TB-NEW'}</code>
+👤 <b>Họ và tên:</b> <b>${reservationData.customerName || 'Khách hàng'}</b>
+📞 <b>Điện thoại:</b> <code>${reservationData.customerPhone || 'Chưa có'}</code>
+📧 <b>Email:</b> ${reservationData.customerEmail || 'Chưa có'}
+👥 <b>Số lượng:</b> <b>${reservationData.guestCount || 1} người</b>
+📅 <b>Ngày đến:</b> ${reservationData.date || 'Hôm nay'}
+⏰ <b>Khung giờ:</b> ${reservationData.timeSlot || '09:00'}
+📍 <b>Chi nhánh:</b> ${reservationData.storeName || (reservationData.store?.name || 'Go & Grab')}
+🪑 <b>Khu vực bàn:</b> ${reservationData.seatingArea || 'Khu vực chuẩn'}
+📝 <b>Yêu cầu đặc biệt:</b> <i>${reservationData.note || 'Không có'}</i>
+⏰ <b>Thời gian gửi:</b> ${new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}
+━━━━━━━━━━━━━━━━━━━━
+📊 <i>Thông tin cũng được đồng bộ tự động vào Google Sheet quán!</i>`;
+
+  // Send to Telegram Bot (@Duyaasaa_bot)
+  let telegramResult: any = { ok: false };
+  try {
+    telegramResult = await sendTelegramNotification(telegramMessage, targetTelegramChatId);
+  } catch (e: any) {
+    console.error('Telegram notification error:', e);
+    telegramResult = { ok: false, error: e.message };
+  }
+
+  // Forward to Google Sheets Webhook
   if (!targetUrl) {
     return res.json({
-      status: 'saved_locally',
-      message: 'Đặt bàn thành công! Chưa cài link Google Sheets Webhook.',
+      status: telegramResult.ok ? 'synced_to_telegram' : 'saved_locally',
+      message: telegramResult.ok
+        ? 'Đặt bàn thành công! Đã gửi thông báo Telegram Bot (@Duyaasaa_bot).'
+        : 'Đặt bàn thành công! Đã ghi nhận trong hệ thống.',
+      telegram: telegramResult,
       data: reservationData,
     });
   }
@@ -144,22 +313,56 @@ app.post('/api/booking', async (req, res) => {
     const sheetResponse = await fetch(targetUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(reservationData),
+      body: JSON.stringify({
+        ...reservationData,
+        telegramChatId: targetTelegramChatId,
+      }),
     });
 
     const result = await sheetResponse.json().catch(() => ({ status: 'success' }));
     return res.json({
-      status: 'synced_to_sheets',
-      message: 'Đã đẩy dữ liệu đặt bàn về Google Sheet thành công!',
-      result,
+      status: 'synced_to_sheets_and_telegram',
+      message: 'Đã đẩy thông tin đặt bàn về Google Sheet và Telegram Bot thành công!',
+      sheetResult: result,
+      telegram: telegramResult,
     });
   } catch (err: any) {
     console.error('Google Sheets forwarding error:', err);
     return res.json({
       status: 'warning',
-      message: 'Đặt bàn thành công, lỗi gửi webhook: ' + err.message,
+      message: 'Đặt bàn thành công' + (telegramResult.ok ? ' và đã gửi Telegram Bot' : '') + ', nhưng Google Sheet lỗi: ' + err.message,
+      telegram: telegramResult,
     });
   }
+});
+
+// Online coffee order endpoint: sends notification to Telegram Bot
+app.post('/api/order', async (req, res) => {
+  const order = req.body;
+
+  const itemsList = Array.isArray(order.items)
+    ? order.items
+        .map(
+          (it: any) =>
+            `• ${it.quantity}x <b>${it.name}</b> (Size ${it.size}, ${it.temperature === 'cold' ? 'Đá' : 'Nóng'}, Ngọt ${it.sugarLevel})`
+        )
+        .join('\n')
+    : 'Chưa có danh sách món';
+
+  const orderMessage = `☕ <b>CÓ ĐƠN ĐẶT CÀ PHÊ MỚI!</b>
+━━━━━━━━━━━━━━━━━━━━
+📦 <b>Mã đơn hàng:</b> <code>${order.code || 'GNC-NEW'}</code>
+👤 <b>Khách hàng:</b> ${order.customerName || 'Khách'}
+📞 <b>Số ĐT:</b> <code>${order.customerPhone || 'Chưa có'}</code>
+🥤 <b>Danh sách món:</b>
+${itemsList}
+💰 <b>Tổng tiền:</b> <b>${Number(order.total || 0).toLocaleString('vi-VN')} đ</b>
+💳 <b>Thanh toán:</b> ${order.paymentMethod ? order.paymentMethod.toUpperCase() : 'VIETQR'} (${order.paymentStatus === 'paid' ? '✅ Đã thanh toán' : '⏳ Chưa thanh toán'})
+🛵 <b>Hình thức:</b> ${order.orderType === 'pickup' ? `Ghé lấy tại quầy (${order.store?.name || 'Chi nhánh'})` : `Giao tận nơi: ${order.deliveryAddress || 'Địa chỉ khách'}`}
+📝 <b>Ghi chú:</b> <i>${order.customerNote || 'Không có'}</i>`;
+
+  const tgResult = await sendTelegramNotification(orderMessage);
+  return res.json({ ok: true, telegram: tgResult });
 });
 
 async function startServer() {

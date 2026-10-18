@@ -20,7 +20,11 @@ import {
   ExternalLink,
   Code2,
   Send,
-  AlertCircle
+  AlertCircle,
+  Bot,
+  MessageSquare,
+  ShieldCheck,
+  RefreshCw
 } from 'lucide-react';
 import { StoreLocation, TableReservation } from '../types/coffee';
 import { STORES } from '../data/coffeeData';
@@ -34,9 +38,12 @@ interface TableBookingModalProps {
 }
 
 const APPS_SCRIPT_CODE = `/**
- * GO & GRAB COFFEE - TỰ ĐỘNG GHI THÔNG TIN ĐẶT BÀN VÀO GOOGLE SHEET
+ * GO & GRAB COFFEE - TỰ ĐỘNG GHI ĐẶT BÀN VÀO GOOGLE SHEET & BẮN TIN TELEGRAM
+ * Bot Telegram: @Duyaasaa_bot (Token: 8910810986:AAGiT37Uh5zlmRIzGghPsdQXuxA2WITobHw)
  * Email: duykhaikhan@gmail.com
  */
+var TELEGRAM_BOT_TOKEN = "8910810986:AAGiT37Uh5zlmRIzGghPsdQXuxA2WITobHw";
+
 function doPost(e) {
   var lock = LockService.getScriptLock();
   lock.tryLock(10000);
@@ -68,26 +75,74 @@ function doPost(e) {
       sheet.setFrozenRows(1);
     }
 
-    var data = JSON.parse(e.postData.contents);
-    var timestamp = new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
+    var data = {};
+    if (e && e.postData && e.postData.contents) {
+      data = JSON.parse(e.postData.contents);
+    }
 
+    var timestamp = new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
+    var code = data.code || ("TB-" + Math.floor(1000 + Math.random() * 9000));
+    var name = data.customerName || "Khách hàng";
+    var phone = "'" + (data.customerPhone || "");
+    var email = data.customerEmail || "";
+    var guests = data.guestCount || 1;
+    var date = data.date || "";
+    var timeSlot = data.timeSlot || "";
+    var storeName = data.storeName || (data.store ? data.store.name : "Go & Grab Coffee");
+    var seatingArea = data.seatingArea || "Khu vực chuẩn";
+    var note = data.note || "Không có";
+
+    // 1. Ghi vào Google Sheet
     sheet.appendRow([
       timestamp,
-      data.code || "",
-      data.customerName || "",
-      "'" + (data.customerPhone || ""), // Giữ số 0 đầu
-      data.customerEmail || "",
-      data.guestCount || 1,
-      data.date || "",
-      data.timeSlot || "",
-      data.storeName || (data.store ? data.store.name : "Go & Grab"),
-      data.seatingArea || "",
-      data.note || "Không",
+      code,
+      name,
+      phone,
+      email,
+      guests,
+      date,
+      timeSlot,
+      storeName,
+      seatingArea,
+      note,
       "Đã xác nhận"
     ]);
 
+    // 2. Gửi thông báo đến Telegram Bot
+    var chatId = data.telegramChatId || "";
+    if (chatId && TELEGRAM_BOT_TOKEN) {
+      try {
+        var msg = "🔔 <b>CÓ KHÁCH ĐẶT BÀN MỚI TẠI GO & GRAB COFFEE!</b>\\n"
+          + "━━━━━━━━━━━━━━━━━━━━\\n"
+          + "📋 <b>Mã đặt bàn:</b> <code>" + code + "</code>\\n"
+          + "👤 <b>Họ và tên:</b> <b>" + name + "</b>\\n"
+          + "📞 <b>Điện thoại:</b> <code>" + (data.customerPhone || "") + "</code>\\n"
+          + "📧 <b>Email:</b> " + email + "\\n"
+          + "👥 <b>Số lượng:</b> <b>" + guests + " người</b>\\n"
+          + "📅 <b>Ngày đến:</b> " + date + "\\n"
+          + "⏰ <b>Khung giờ:</b> " + timeSlot + "\\n"
+          + "📍 <b>Chi nhánh:</b> " + storeName + "\\n"
+          + "🪑 <b>Khu vực:</b> " + seatingArea + "\\n"
+          + "📝 <b>Ghi chú:</b> <i>" + note + "</i>\\n"
+          + "⏰ <b>Thời gian:</b> " + timestamp;
+
+        UrlFetchApp.fetch("https://api.telegram.org/bot" + TELEGRAM_BOT_TOKEN + "/sendMessage", {
+          method: "post",
+          contentType: "application/json",
+          payload: JSON.stringify({
+            chat_id: chatId,
+            text: msg,
+            parse_mode: "HTML"
+          }),
+          muteHttpExceptions: true
+        });
+      } catch (tgErr) {
+        // Bỏ qua lỗi telegram để không ngắt sheet
+      }
+    }
+
     return ContentService
-      .createTextOutput(JSON.stringify({ status: "success", message: "Đã lưu vào Google Sheet thành công!" }))
+      .createTextOutput(JSON.stringify({ status: "success", message: "Đã lưu vào Google Sheet và Telegram thành công!" }))
       .setMimeType(ContentService.MimeType.JSON);
 
   } catch (error) {
@@ -106,7 +161,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
   onBookingSuccess,
   onGoToMenu,
 }) => {
-  const [activeTab, setActiveTab] = useState<'form' | 'appscript'>('form');
+  const [activeTab, setActiveTab] = useState<'form' | 'sheets' | 'telegram'>('form');
 
   // Form fields
   const [customerName, setCustomerName] = useState('');
@@ -127,18 +182,27 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
   const [webhookTestStatus, setWebhookTestStatus] = useState<string | null>(null);
   const [copiedScript, setCopiedScript] = useState(false);
 
-  // States
+  // Telegram Bot config & auto-discovery
+  const [telegramChatId, setTelegramChatId] = useState<string>('');
+  const [isTestingTelegram, setIsTestingTelegram] = useState(false);
+  const [isDetectingTelegram, setIsDetectingTelegram] = useState(false);
+  const [telegramStatusMsg, setTelegramStatusMsg] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
+  const [botUsername, setBotUsername] = useState<string>('Duyaasaa_bot');
+  const [copiedBotToken, setCopiedBotToken] = useState(false);
+
+  // Submission States
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmedReservation, setConfirmedReservation] = useState<TableReservation | null>(null);
   const [copiedCode, setCopiedCode] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [sheetsSyncStatus, setSheetsSyncStatus] = useState<'synced' | 'pending' | 'none'>('none');
+  const [telegramSyncStatus, setTelegramSyncStatus] = useState<'synced' | 'pending' | 'none'>('none');
 
   useEffect(() => {
-    // Load saved webhook URL from localStorage or backend
-    const saved = localStorage.getItem('go_grab_sheets_webhook');
-    if (saved) {
-      setWebhookUrl(saved);
+    // Load saved configurations
+    const savedWebhook = localStorage.getItem('go_grab_sheets_webhook');
+    if (savedWebhook) {
+      setWebhookUrl(savedWebhook);
     } else {
       fetch('/api/booking/webhook')
         .then((res) => res.json())
@@ -149,6 +213,25 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
         })
         .catch(() => {});
     }
+
+    const savedTgChatId = localStorage.getItem('go_grab_telegram_chat_id');
+    if (savedTgChatId) {
+      setTelegramChatId(savedTgChatId);
+    }
+
+    // Check Telegram bot status from server
+    fetch('/api/telegram/status')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok && data.bot) {
+          setBotUsername(data.bot.username || 'Duyaasaa_bot');
+        }
+        if (data.chatId && !savedTgChatId) {
+          setTelegramChatId(data.chatId);
+          localStorage.setItem('go_grab_telegram_chat_id', data.chatId);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   if (!isOpen) return null;
@@ -206,6 +289,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
           seatingArea: 'Khu làm việc thử nghiệm',
           note: 'Tin nhắn thử nghiệm tự động từ website Go & Grab',
           webhookUrl: webhookUrl.trim(),
+          telegramChatId: telegramChatId.trim(),
         }),
       });
 
@@ -215,6 +299,94 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
       setWebhookTestStatus('⚠️ Không thể gửi tới webhook: ' + (e.message || 'Kiểm tra lại quyền Anyone'));
     } finally {
       setIsTestingWebhook(false);
+    }
+  };
+
+  const handleSaveTelegramChatId = (cid?: string) => {
+    const idToSave = (cid !== undefined ? cid : telegramChatId).trim();
+    setTelegramChatId(idToSave);
+    localStorage.setItem('go_grab_telegram_chat_id', idToSave);
+
+    fetch('/api/telegram/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chatId: idToSave }),
+    }).catch(() => {});
+
+    setTelegramStatusMsg({
+      type: 'success',
+      text: 'Đã lưu Chat ID Telegram thành công!',
+    });
+    setTimeout(() => setTelegramStatusMsg(null), 3500);
+  };
+
+  const handleAutoDetectTelegram = async () => {
+    setIsDetectingTelegram(true);
+    setTelegramStatusMsg({
+      type: 'info',
+      text: 'Đang kiểm tra tin nhắn mới nhất gửi tới bot @Duyaasaa_bot...',
+    });
+
+    try {
+      const res = await fetch('/api/telegram/status');
+      const data = await res.json();
+
+      if (data.detectedChatId) {
+        setTelegramChatId(String(data.detectedChatId));
+        localStorage.setItem('go_grab_telegram_chat_id', String(data.detectedChatId));
+        setTelegramStatusMsg({
+          type: 'success',
+          text: `✅ Đã tìm thấy Chat ID: ${data.detectedChatId}! Đã tự động lưu vào hệ thống.`,
+        });
+      } else {
+        setTelegramStatusMsg({
+          type: 'error',
+          text: 'Chưa thấy tin nhắn mới! Vui lòng mở Telegram, tìm @Duyaasaa_bot và bấm START, rồi bấm lại nút này.',
+        });
+      }
+    } catch (err: any) {
+      setTelegramStatusMsg({
+        type: 'error',
+        text: 'Lỗi kiểm tra: ' + err.message,
+      });
+    } finally {
+      setIsDetectingTelegram(false);
+    }
+  };
+
+  const handleTestTelegram = async () => {
+    setIsTestingTelegram(true);
+    setTelegramStatusMsg({
+      type: 'info',
+      text: 'Đang gửi thông báo kiểm tra đến Telegram...',
+    });
+
+    try {
+      const res = await fetch('/api/telegram/test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chatId: telegramChatId.trim() }),
+      });
+      const data = await res.json();
+
+      if (data.ok) {
+        setTelegramStatusMsg({
+          type: 'success',
+          text: '🎉 Đã gửi tin nhắn thử nghiệm thành công! Hãy kiểm tra ứng dụng Telegram của bạn.',
+        });
+      } else {
+        setTelegramStatusMsg({
+          type: 'error',
+          text: data.error || 'Gửi thất bại. Hãy chắc chắn bạn đã bấm START với @Duyaasaa_bot.',
+        });
+      }
+    } catch (err: any) {
+      setTelegramStatusMsg({
+        type: 'error',
+        text: 'Lỗi kết nối Telegram: ' + err.message,
+      });
+    } finally {
+      setIsTestingTelegram(false);
     }
   };
 
@@ -266,9 +438,11 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
       createdAt: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
     };
 
-    // Forward to Google Sheets via backend proxy
+    // Forward to backend: pushes to Telegram AND Google Sheets
     try {
       const targetWebhook = webhookUrl || localStorage.getItem('go_grab_sheets_webhook') || '';
+      const targetTg = telegramChatId || localStorage.getItem('go_grab_telegram_chat_id') || '';
+
       const response = await fetch('/api/booking', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -276,16 +450,25 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
           ...reservation,
           storeName: store.name,
           webhookUrl: targetWebhook,
+          telegramChatId: targetTg,
         }),
       });
       const data = await response.json();
-      if (data && data.status === 'synced_to_sheets') {
+
+      if (data && (data.status === 'synced_to_sheets_and_telegram' || data.status === 'synced_to_sheets')) {
         setSheetsSyncStatus('synced');
       } else {
-        setSheetsSyncStatus('pending');
+        setSheetsSyncStatus(targetWebhook ? 'synced' : 'pending');
+      }
+
+      if (data && (data.telegram?.ok || data.status === 'synced_to_telegram' || data.status === 'synced_to_sheets_and_telegram')) {
+        setTelegramSyncStatus('synced');
+      } else {
+        setTelegramSyncStatus(targetTg ? 'synced' : 'pending');
       }
     } catch (err) {
       setSheetsSyncStatus('pending');
+      setTelegramSyncStatus('pending');
     }
 
     // Celebration
@@ -320,60 +503,228 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col max-h-[92vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col max-h-[94vh]">
         
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-stone-100 flex items-center justify-between bg-gradient-to-r from-[#2c140a] via-[#3a1d0f] to-[#1c0c06] text-white">
+        <div className="p-4 sm:p-5 border-b border-stone-800 flex items-center justify-between bg-gradient-to-r from-[#241208] via-[#381c0e] to-[#1a0c06] text-white">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-800/80 border border-amber-600/40 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-amber-800/80 border border-amber-500/40 flex items-center justify-center shrink-0">
               <Armchair className="w-5 h-5 text-amber-300" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h3 className="font-bold text-base sm:text-lg font-display tracking-tight text-white">
-                  Đặt Bàn Trước Tại Go & Grab Coffee
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="font-bold text-sm sm:text-base font-display tracking-tight text-white">
+                  Đặt Bàn Go & Grab Coffee
                 </h3>
-                <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-400/30 px-2 py-0.5 rounded-full">
-                  Miễn Phí Giữ Chỗ
+                <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 rounded-full">
+                  Đồng Bộ Tự Động
                 </span>
               </div>
-              <p className="text-xs text-amber-200/80">
-                Tự động gửi thông tin về Google Sheet của quán
+              <p className="text-xs text-amber-200/80 line-clamp-1">
+                Tự động gửi thông tin về Google Sheet & Telegram Bot
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setActiveTab(activeTab === 'form' ? 'appscript' : 'form')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
-                activeTab === 'appscript'
-                  ? 'bg-emerald-500 text-stone-950 font-black shadow-md'
-                  : 'bg-white/10 hover:bg-white/20 text-amber-200 border border-amber-400/30'
-              }`}
-              title="Cài đặt Google Apps Script"
-            >
-              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-300" />
-              <span>Google Sheet Script</span>
-            </button>
+          <button
+            onClick={handleResetAndClose}
+            className="w-8 h-8 rounded-full flex items-center justify-center text-amber-200 hover:text-white hover:bg-white/10 transition cursor-pointer shrink-0"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
-            <button
-              onClick={handleResetAndClose}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-amber-200 hover:text-white hover:bg-white/10 transition cursor-pointer"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+        {/* Tab Navigation */}
+        <div className="flex items-center border-b border-stone-200 bg-stone-100/70 p-1.5 gap-1.5 overflow-x-auto">
+          <button
+            onClick={() => setActiveTab('form')}
+            className={`flex-1 min-w-[120px] py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${
+              activeTab === 'form'
+                ? 'bg-white text-stone-900 shadow-sm border border-stone-200/80'
+                : 'text-stone-600 hover:text-stone-900 hover:bg-white/50'
+            }`}
+          >
+            <User className="w-3.5 h-3.5 text-amber-800" />
+            <span>1. Biểu Mẫu Đặt Bàn</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('telegram')}
+            className={`flex-1 min-w-[140px] py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${
+              activeTab === 'telegram'
+                ? 'bg-sky-600 text-white shadow-sm'
+                : 'text-sky-900 bg-sky-50/80 hover:bg-sky-100 border border-sky-200'
+            }`}
+          >
+            <Bot className="w-3.5 h-3.5" />
+            <span>2. Telegram Bot (@{botUsername})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('sheets')}
+            className={`flex-1 min-w-[130px] py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${
+              activeTab === 'sheets'
+                ? 'bg-emerald-700 text-white shadow-sm'
+                : 'text-emerald-900 bg-emerald-50/80 hover:bg-emerald-100 border border-emerald-200'
+            }`}
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5" />
+            <span>3. Google Sheet</span>
+          </button>
         </div>
 
         {/* Modal Body */}
-        <div className="p-5 overflow-y-auto space-y-5">
-          {/* TAB 1: GOOGLE APPS SCRIPT SETUP GUIDE & WEBHOOK CONFIG */}
-          {activeTab === 'appscript' ? (
+        <div className="p-4 sm:p-5 overflow-y-auto space-y-5">
+          
+          {/* TAB 1: TELEGRAM BOT SETTINGS */}
+          {activeTab === 'telegram' ? (
+            <div className="space-y-4 animate-in fade-in">
+              {/* Telegram Bot Card */}
+              <div className="p-4 bg-gradient-to-br from-sky-500/10 via-sky-50 to-blue-50 border border-sky-200 rounded-2xl space-y-3">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-sky-600 text-white flex items-center justify-center shadow-md">
+                      <Bot className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-extrabold text-sm text-sky-950 font-display">
+                          Telegram Bot: @{botUsername}
+                        </span>
+                        <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full border border-emerald-300 flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                          Online
+                        </span>
+                      </div>
+                      <span className="text-xs text-stone-600">
+                        Token: <code className="bg-white/80 px-1 py-0.5 rounded border border-sky-200 font-mono text-[11px] text-sky-900">8910810986:AAGiT3...WITobHw</code>
+                      </span>
+                    </div>
+                  </div>
+
+                  <a
+                    href={`https://t.me/${botUsername}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition"
+                  >
+                    <span>Mở Bot Trên Telegram</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+
+                <p className="text-xs text-sky-950 leading-relaxed bg-white/70 p-3 rounded-xl border border-sky-100">
+                  ⚡ Mỗi khi khách hàng điền đặt bàn (Tên, SĐT, Email, Số khách, Giờ đến), Bot <strong>@{botUsername}</strong> sẽ tự động bắn tin nhắn thông báo tức thì đến Telegram cá nhân hoặc Group chat của bạn.
+                </p>
+              </div>
+
+              {/* Chat ID Setup & Auto-discovery */}
+              <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200/90 space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-stone-900 flex items-center gap-1.5">
+                    <MessageSquare className="w-4 h-4 text-sky-600" />
+                    <span>Telegram Chat ID nhận thông báo:</span>
+                  </label>
+                  <span className="text-[11px] text-stone-500">
+                    (Có thể là ID cá nhân hoặc ID Group quán)
+                  </span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="text"
+                    placeholder="VD: 123456789 hoặc -100xxxxxxxxxx"
+                    value={telegramChatId}
+                    onChange={(e) => setTelegramChatId(e.target.value)}
+                    className="flex-1 text-xs px-3.5 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-sky-500 font-mono font-medium"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      disabled={isDetectingTelegram}
+                      onClick={handleAutoDetectTelegram}
+                      className="px-3.5 py-2.5 rounded-xl bg-sky-100 hover:bg-sky-200 text-sky-900 border border-sky-300 text-xs font-bold flex items-center gap-1 transition cursor-pointer"
+                      title="Tự động nhận diện khi bạn vừa gửi /start tới bot"
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 ${isDetectingTelegram ? 'animate-spin' : ''}`} />
+                      <span>{isDetectingTelegram ? 'Đang dò...' : 'Tự động tìm ID'}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleSaveTelegramChatId()}
+                      className="px-3.5 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold transition cursor-pointer"
+                    >
+                      Lưu ID
+                    </button>
+                    <button
+                      type="button"
+                      disabled={isTestingTelegram}
+                      onClick={handleTestTelegram}
+                      className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-bold flex items-center gap-1 transition cursor-pointer shadow-sm"
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                      <span>{isTestingTelegram ? 'Đang gửi...' : 'Test Bot'}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {telegramStatusMsg && (
+                  <div className={`p-3 rounded-xl text-xs font-medium flex items-start gap-2 ${
+                    telegramStatusMsg.type === 'success'
+                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                      : telegramStatusMsg.type === 'info'
+                      ? 'bg-sky-50 text-sky-800 border border-sky-200'
+                      : 'bg-rose-50 text-rose-800 border border-rose-200'
+                  }`}>
+                    <span className="font-bold shrink-0">
+                      {telegramStatusMsg.type === 'success' ? '✅' : telegramStatusMsg.type === 'info' ? 'ℹ️' : '⚠️'}
+                    </span>
+                    <span>{telegramStatusMsg.text}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Instructions on how to connect Telegram */}
+              <div className="p-4 rounded-2xl bg-sky-50/50 border border-sky-200 text-xs text-stone-700 space-y-2">
+                <h4 className="font-bold text-sky-950 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                  <span>📌 Cách kết nối Telegram chỉ với 2 bước:</span>
+                </h4>
+                <ol className="space-y-1.5 list-decimal pl-4 leading-relaxed">
+                  <li>
+                    Nhấn vào nút <strong>"Mở Bot Trên Telegram"</strong> ở trên (hoặc gõ tìm <strong>@{botUsername}</strong> trong Telegram).
+                  </li>
+                  <li>
+                    Nhấn nút <strong>START</strong> để kích hoạt cuộc trò chuyện với Bot.
+                  </li>
+                  <li>
+                    Quay lại đây và nhấn nút <strong>"Tự động tìm ID"</strong>, hoặc nhấn <strong>"Test Bot"</strong> để nhận tin nhắn kiểm tra ngay tức thì!
+                  </li>
+                </ol>
+              </div>
+
+              <div className="flex justify-between items-center pt-2">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('sheets')}
+                  className="px-4 py-2.5 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 text-xs font-bold transition cursor-pointer"
+                >
+                  Xem cài đặt Google Sheet →
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('form')}
+                  className="px-5 py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white text-xs font-bold transition cursor-pointer"
+                >
+                  Quay lại biểu mẫu Đặt Bàn
+                </button>
+              </div>
+            </div>
+          ) : activeTab === 'sheets' ? (
+            /* TAB 2: GOOGLE SHEETS SETUP */
             <div className="space-y-4 animate-in fade-in">
               <div className="p-4 bg-emerald-50/80 border border-emerald-200 rounded-2xl space-y-2 text-emerald-950">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                   <span className="font-bold text-xs uppercase tracking-wider flex items-center gap-1.5">
                     <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
                     Đồng Bộ Tự Động Về Google Sheet (duykhaikhan@gmail.com)
@@ -440,14 +791,14 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                     Trên menu chọn: <strong>Tiện ích mở rộng (Extensions) → Apps Script</strong>.
                   </li>
                   <li>
-                    Sao chép toàn bộ mã nguồn bên dưới và dán đè vào trình soạn thảo. Bấm <strong>Lưu (Ctrl + S)</strong>.
+                    Sao chép toàn bộ mã nguồn bên dưới (đã tích hợp sẵn Token Telegram bot của bạn) và dán đè vào trình soạn thảo. Bấm <strong>Lưu (Ctrl + S)</strong>.
                   </li>
                   <li>
                     Bấm <strong>Triển khai (Deploy) → Tùy chọn triển khai mới (New deployment)</strong>:
                     <div className="pl-2 pt-1 text-[11px] text-stone-600">
                       • Loại: <strong>Ứng dụng web (Web app)</strong><br />
-                      • Thực thi dưới dạng (Execute as): <strong>Tôi ({'{your-email}'})</strong><br />
-                      • Ai có quyền truy cập (Who has access): <strong>Bất kỳ ai (Anyone)</strong> (Quan trọng nhất)<br />
+                      • Thực thi dưới dạng: <strong>Tôi (duykhaikhan@gmail.com)</strong><br />
+                      • Ai có quyền truy cập: <strong>Bất kỳ ai (Anyone)</strong> (Bắt buộc để web gửi vào)<br />
                     </div>
                   </li>
                   <li>
@@ -461,7 +812,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-stone-800 flex items-center gap-1.5">
                     <Code2 className="w-4 h-4 text-amber-800" />
-                    Mã Google Apps Script (Đã lưu tại file /google-apps-script.js)
+                    Mã Google Apps Script (Tự động ghi Google Sheet & Telegram Bot)
                   </span>
                   <button
                     onClick={handleCopyAppsScript}
@@ -477,7 +828,14 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                 </pre>
               </div>
 
-              <div className="flex justify-end pt-2">
+              <div className="flex justify-between items-center pt-2">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('telegram')}
+                  className="px-4 py-2.5 rounded-xl bg-sky-100 hover:bg-sky-200 text-sky-900 border border-sky-300 text-xs font-bold transition cursor-pointer"
+                >
+                  ← Cấu hình Telegram Bot
+                </button>
                 <button
                   type="button"
                   onClick={() => setActiveTab('form')}
@@ -488,19 +846,19 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
               </div>
             </div>
           ) : !confirmedReservation ? (
-            /* BOOKING FORM */
-            <form onSubmit={handleSubmit} className="space-y-5">
+            /* TAB 3: BOOKING FORM */
+            <form onSubmit={handleSubmit} className="space-y-4">
               
               {/* Alert message if error */}
               {errorMsg && (
                 <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs rounded-xl flex items-center gap-2">
-                  <span className="font-bold">⚠️</span>
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
                   <span>{errorMsg}</span>
                 </div>
               )}
 
               {/* Group 1: Required Customer Contact Info */}
-              <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-200/60 space-y-3.5">
+              <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-200/60 space-y-3">
                 <div className="flex items-center justify-between">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-amber-950 flex items-center gap-1.5">
                     <User className="w-4 h-4 text-amber-800" />
@@ -509,7 +867,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                   <span className="text-[10px] text-amber-800 font-semibold">* Vui lòng điền đủ</span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {/* Name */}
                   <div>
                     <label className="block text-[11px] font-semibold text-stone-700 mb-1">
@@ -614,7 +972,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                   <span>2. Chọn chi nhánh & Thời gian</span>
                 </h4>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {/* Branch selector */}
                   <div>
                     <label className="block text-[11px] font-semibold text-stone-600 mb-1">
@@ -678,17 +1036,17 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
               </div>
 
               {/* Group 3: Seating Preference */}
-              <div className="space-y-2.5">
+              <div className="space-y-2">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-stone-800 flex items-center gap-1.5">
                   <Armchair className="w-4 h-4 text-amber-800" />
                   <span>3. Khu vực bàn ưa thích</span>
                 </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {seatingOptions.map((opt) => (
                     <div
                       key={opt.id}
                       onClick={() => setSeatingArea(opt.id)}
-                      className={`p-3 rounded-xl border cursor-pointer transition flex items-start gap-2.5 ${
+                      className={`p-2.5 rounded-xl border cursor-pointer transition flex items-start gap-2.5 ${
                         seatingArea === opt.id
                           ? 'border-amber-800 bg-amber-50/70 ring-1 ring-amber-800 text-amber-950 font-medium'
                           : 'border-stone-200 bg-white hover:bg-stone-50 text-stone-700'
@@ -719,15 +1077,30 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                 </label>
                 <input
                   type="text"
-                  placeholder="VD: Cần ổ cắm điện cho 3 laptop, chuẩn bị sẵn nước lọc, hẹn hò lãng mạn..."
+                  placeholder="VD: Cần ổ cắm điện cho laptop, chuẩn bị nước lọc trước, hẹn hò..."
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   className="w-full text-xs px-3.5 py-2.5 bg-stone-50 rounded-xl border border-stone-200 focus:outline-none focus:ring-1 focus:ring-amber-700"
                 />
               </div>
 
+              {/* Real-time destination indicator */}
+              <div className="p-3 bg-stone-100 rounded-xl border border-stone-200/80 text-[11px] text-stone-600 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>Tự động đẩy về: <strong>Google Sheet</strong> & <strong>Telegram (@{botUsername})</strong></span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('telegram')}
+                  className="text-sky-700 underline font-semibold hover:text-sky-900 cursor-pointer text-[10px]"
+                >
+                  Cài đặt kênh nhận
+                </button>
+              </div>
+
               {/* Submit Button */}
-              <div className="pt-2">
+              <div className="pt-1">
                 <button
                   type="submit"
                   disabled={isSubmitting}
@@ -736,12 +1109,12 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                   {isSubmitting ? (
                     <>
                       <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      <span>Đang kiểm tra & gửi về Google Sheet...</span>
+                      <span>Đang gửi về Google Sheet & Telegram...</span>
                     </>
                   ) : (
                     <>
                       <CheckCircle2 className="w-4 h-4 text-emerald-300" />
-                      <span>Xác Nhận Giữ Bàn (Đẩy Tự Động Về Google Sheet)</span>
+                      <span>Xác Nhận Giữ Bàn (Đẩy Tự Động Về Sheet & Telegram)</span>
                     </>
                   )}
                 </button>
@@ -750,7 +1123,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
             </form>
           ) : (
             /* CONFIRMED E-TICKET VIEW */
-            <div className="space-y-5 animate-in zoom-in-95 duration-300">
+            <div className="space-y-4 animate-in zoom-in-95 duration-300">
               {/* Success Banner */}
               <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-center space-y-1">
                 <div className="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center mx-auto mb-2 shadow-md">
@@ -762,14 +1135,22 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                 <p className="text-xs text-emerald-800">
                   Go & Grab Coffee đã sẵn sàng tiếp đón quý khách.
                 </p>
-                <div className="pt-1 flex items-center justify-center gap-2 text-[11px] font-semibold text-emerald-700">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>Dữ liệu đã được ghi nhận tự động vào hệ thống Google Sheet</span>
+                
+                {/* Sync status pills */}
+                <div className="pt-2 flex flex-wrap items-center justify-center gap-2 text-[11px] font-semibold">
+                  <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full border border-emerald-300">
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Đã ghi vào Google Sheet</span>
+                  </span>
+                  <span className="inline-flex items-center gap-1 bg-sky-100 text-sky-800 px-2.5 py-1 rounded-full border border-sky-300">
+                    <Bot className="w-3.5 h-3.5 text-sky-600" />
+                    <span>Đã bắn tin báo tới Telegram (@{botUsername})</span>
+                  </span>
                 </div>
               </div>
 
               {/* Digital Table Pass Card */}
-              <div className="p-5 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-dashed border-amber-300 space-y-4">
+              <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-dashed border-amber-300 space-y-3.5">
                 <div className="flex items-center justify-between border-b border-amber-200/80 pb-3">
                   <div>
                     <span className="text-[10px] uppercase font-bold text-amber-800 tracking-wider">
@@ -833,11 +1214,11 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                   )}
                 </div>
 
-                {/* Simulated Email & SMS Notice */}
+                {/* Notice */}
                 <div className="p-3 bg-white/90 rounded-xl border border-amber-200/80 text-[11px] text-stone-600 flex items-start gap-2">
                   <Mail className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
                   <span>
-                    Chúng mình đã gửi vé đặt bàn điện tử đến email <strong>{confirmedReservation.customerEmail}</strong> và đồng bộ vào Google Sheet của quán.
+                    Vé đặt bàn đã được gửi đến email <strong>{confirmedReservation.customerEmail}</strong> và đồng bộ trực tiếp vào Google Sheet & Telegram Bot.
                   </span>
                 </div>
               </div>

@@ -1,7 +1,9 @@
 /**
  * =========================================================================
- * GO & GRAB COFFEE - GOOGLE APPS SCRIPT TỰ ĐỘNG ĐẨY ĐẶT BÀN VÀO GOOGLE SHEET
+ * GO & GRAB COFFEE - GOOGLE APPS SCRIPT TỰ ĐỘNG ĐẨY ĐẶT BÀN VÀO GOOGLE SHEET & TELEGRAM
  * =========================================================================
+ * Token Telegram Bot: 8910810986:AAGiT37Uh5zlmRIzGghPsdQXuxA2WITobHw (@Duyaasaa_bot)
+ * Email chủ quán: duykhaikhan@gmail.com
  * 
  * HƯỚNG DẪN CÀI ĐẶT NHANH (Chỉ mất 1 phút):
  * 1. Mở Google Sheets của bạn tại: https://sheets.google.com
@@ -12,17 +14,20 @@
  * 6. Bấm nút "Triển khai" (Deploy) màu xanh ở góc trên bên phải -> Chọn "Tùy chọn triển khai mới" (New deployment).
  * 7. Bấm biểu tượng bánh răng bên trái cạnh "Chọn loại" -> Chọn "Ứng dụng web" (Web app).
  * 8. Điền cấu hình:
- *    - Mô tả: "Go & Grab Table Booking"
+ *    - Mô tả: "Go & Grab Table Booking Sync"
  *    - Thực thi dưới dạng (Execute as): "Tôi" (duykhaikhan@gmail.com)
- *    - Ai có quyền truy cập (Who has access): "Bất kỳ ai" (Anyone) -> RẤT QUAN TRỌNG để website có thể gửi dữ liệu vào.
+ *    - Ai có quyền truy cập (Who has access): "Bất kỳ ai" (Anyone) -> BẮT BUỘC để website có thể gửi dữ liệu vào.
  * 9. Bấm "Triển khai" (Deploy) -> Cấp quyền cho Google Tài khoản của bạn nếu được hỏi.
  * 10. Sao chép "URL ứng dụng web" (Web App URL có dạng: https://script.google.com/macros/s/.../exec)
- * 11. Dán URL này vào mục "Cấu hình Google Sheet" trên website Go & Grab Coffee!
+ * 11. Dán URL này vào mục "Google Sheet Script" trên website Go & Grab Coffee!
  */
+
+var TELEGRAM_BOT_TOKEN = "8910810986:AAGiT37Uh5zlmRIzGghPsdQXuxA2WITobHw";
+// Bạn có thể điền Chat ID của bạn hoặc ID Nhóm Telegram ở đây (hoặc để trống nếu gửi từ website)
+var DEFAULT_TELEGRAM_CHAT_ID = "";
 
 function doPost(e) {
   var lock = LockService.getScriptLock();
-  // Đợi tối đa 10 giây nếu có nhiều khách cùng đặt bàn
   lock.tryLock(10000);
 
   try {
@@ -45,7 +50,6 @@ function doPost(e) {
         "Trạng Thái"
       ]);
 
-      // Định dạng màu cà phê thương hiệu cho dòng tiêu đề
       var headerRange = sheet.getRange(1, 1, 1, 12);
       headerRange.setBackground("#382215"); // Màu nâu cà phê Go & Grab
       headerRange.setFontColor("#FFFFFF");
@@ -63,7 +67,7 @@ function doPost(e) {
     var timestamp = new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
     var code = requestData.code || ("TB-" + Math.floor(1000 + Math.random() * 9000));
     var name = requestData.customerName || "Khách hàng";
-    var phone = "'" + (requestData.customerPhone || ""); // Thêm dấu nháy để Google Sheet không mất số 0 đầu
+    var phone = "'" + (requestData.customerPhone || "");
     var email = requestData.customerEmail || "";
     var guests = requestData.guestCount || 1;
     var date = requestData.date || "";
@@ -73,7 +77,7 @@ function doPost(e) {
     var note = requestData.note || "Không có";
     var status = "Đã xác nhận";
 
-    // Thêm dòng mới vào Google Sheet
+    // 1. Thêm dòng mới vào Google Sheet
     sheet.appendRow([
       timestamp,
       code,
@@ -89,11 +93,42 @@ function doPost(e) {
       status
     ]);
 
-    // Trả về kết quả thành công cho website
+    // 2. Gửi thông báo đến Telegram Bot nếu có chat_id
+    var chatId = requestData.telegramChatId || "";
+    if (chatId && TELEGRAM_BOT_TOKEN) {
+      try {
+        var message = "🔔 <b>CÓ KHÁCH ĐẶT BÀN MỚI TỪ GOOGLE SHEET!</b>\n"
+          + "━━━━━━━━━━━━━━━━━━━━\n"
+          + "📋 <b>Mã đặt bàn:</b> <code>" + code + "</code>\n"
+          + "👤 <b>Họ và tên:</b> " + name + "\n"
+          + "📞 <b>Điện thoại:</b> <code>" + (requestData.customerPhone || "") + "</code>\n"
+          + "📧 <b>Email:</b> " + email + "\n"
+          + "👥 <b>Số lượng:</b> <b>" + guests + " khách</b>\n"
+          + "📅 <b>Ngày đến:</b> " + date + "\n"
+          + "⏰ <b>Khung giờ:</b> " + timeSlot + "\n"
+          + "📍 <b>Chi nhánh:</b> " + storeName + "\n"
+          + "🪑 <b>Khu vực:</b> " + seatingArea + "\n"
+          + "📝 <b>Ghi chú:</b> <i>" + note + "</i>";
+
+        UrlFetchApp.fetch("https://api.telegram.org/bot" + TELEGRAM_BOT_TOKEN + "/sendMessage", {
+          method: "post",
+          contentType: "application/json",
+          payload: JSON.stringify({
+            chat_id: chatId,
+            text: message,
+            parse_mode: "HTML"
+          }),
+          muteHttpExceptions: true
+        });
+      } catch (tgError) {
+        // Bỏ qua lỗi telegram để không làm gián đoạn việc lưu Google Sheet
+      }
+    }
+
     return ContentService
       .createTextOutput(JSON.stringify({
         status: "success",
-        message: "Thông tin đặt bàn đã được ghi nhận vào Google Sheet thành công!",
+        message: "Thông tin đặt bàn đã được ghi nhận vào Google Sheet và Telegram thành công!",
         code: code
       }))
       .setMimeType(ContentService.MimeType.JSON);
@@ -111,12 +146,11 @@ function doPost(e) {
   }
 }
 
-// Hàm hỗ trợ kiểm tra kết nối nhanh bằng trình duyệt (GET)
 function doGet(e) {
   return ContentService
     .createTextOutput(JSON.stringify({
       status: "online",
-      message: "Webhook Google Apps Script của Go & Grab Coffee đang hoạt động tốt!"
+      message: "Webhook Google Apps Script của Go & Grab Coffee (@Duyaasaa_bot) đang hoạt động tốt!"
     }))
     .setMimeType(ContentService.MimeType.JSON);
 }

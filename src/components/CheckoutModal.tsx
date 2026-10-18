@@ -125,6 +125,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         estimatedReadyTime: readyTime,
       };
 
+      // Notify Telegram Bot in background
+      fetch('/api/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newOrder),
+      }).catch((e) => console.error('Order notification error:', e));
+
       setIsProcessing(false);
       onOrderSuccess(newOrder);
       onClose();
