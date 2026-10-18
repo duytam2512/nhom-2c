@@ -1,0 +1,229 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React, { useState } from 'react';
+import { Header } from './components/Header';
+import { Hero } from './components/Hero';
+import { MenuSection } from './components/MenuSection';
+import { StorySection } from './components/StorySection';
+import { StoreLocator } from './components/StoreLocator';
+import { Footer } from './components/Footer';
+import { ProductModal } from './components/ProductModal';
+import { CartDrawer } from './components/CartDrawer';
+import { CheckoutModal } from './components/CheckoutModal';
+import { OrderTrackerModal } from './components/OrderTrackerModal';
+import { SeoShareModal } from './components/SeoShareModal';
+import { ChatbotWidget } from './components/ChatbotWidget';
+import { STORES } from './data/coffeeData';
+import { CartItem, MenuItem, Order, StoreLocation, Voucher } from './types/coffee';
+import { ShoppingBag, CheckCircle, Sparkles, ArrowUp } from 'lucide-react';
+
+export default function App() {
+  // State
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [orderType, setOrderType] = useState<'pickup' | 'delivery'>('pickup');
+  const [selectedStore, setSelectedStore] = useState<StoreLocation>(STORES[0]);
+  const [deliveryAddress, setDeliveryAddress] = useState('128 Nguyễn Đình Chiểu, P. Võ Thị Sáu, Q.3');
+  const [appliedVoucher, setAppliedVoucher] = useState<Voucher | null>(null);
+
+  // Modals
+  const [customizingItem, setCustomizingItem] = useState<MenuItem | null>(null);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isOrderTrackerOpen, setIsOrderTrackerOpen] = useState(false);
+  const [isSeoShareOpen, setIsSeoShareOpen] = useState(false);
+  const [currentOrder, setCurrentOrder] = useState<Order | null>(null);
+
+  // Toast feedback
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  // Cart operations
+  const handleAddToCart = (newItem: CartItem) => {
+    setCartItems((prev) => {
+      // Check if identical item (same id, size, temp, sugar, ice, milk, toppings) exists
+      const existingIdx = prev.findIndex(
+        (it) =>
+          it.menuItemId === newItem.menuItemId &&
+          it.size === newItem.size &&
+          it.temperature === newItem.temperature &&
+          it.sugarLevel === newItem.sugarLevel &&
+          it.iceLevel === newItem.iceLevel &&
+          it.milkType === newItem.milkType &&
+          JSON.stringify(it.toppings) === JSON.stringify(newItem.toppings)
+      );
+
+      if (existingIdx > -1) {
+        const updated = [...prev];
+        updated[existingIdx].quantity += newItem.quantity;
+        return updated;
+      }
+      return [...prev, newItem];
+    });
+
+    showToast(`Đã thêm "${newItem.name}" (${newItem.quantity} ly) vào giỏ!`);
+  };
+
+  const handleUpdateQuantity = (id: string, delta: number) => {
+    setCartItems((prev) =>
+      prev
+        .map((item) => {
+          if (item.id === id) {
+            const newQ = item.quantity + delta;
+            return newQ > 0 ? { ...item, quantity: newQ } : null;
+          }
+          return item;
+        })
+        .filter(Boolean) as CartItem[]
+    );
+  };
+
+  const handleRemoveItem = (id: string) => {
+    setCartItems((prev) => prev.filter((item) => item.id !== id));
+    showToast('Đã xóa món khỏi giỏ hàng.');
+  };
+
+  const handleProceedToCheckout = () => {
+    setIsCartOpen(false);
+    setIsCheckoutOpen(true);
+  };
+
+  const handleOrderSuccess = (order: Order) => {
+    setCurrentOrder(order);
+    setCartItems([]); // clear cart
+    setIsCheckoutOpen(false);
+    setIsOrderTrackerOpen(true);
+    showToast(`Đặt hàng thành công! Mã đơn của bạn: ${order.code}`);
+  };
+
+  const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+
+  const scrollToMenu = () => {
+    const el = document.getElementById('menu');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  return (
+    <div className="min-h-screen bg-[#faf7f2] flex flex-col relative selection:bg-amber-800 selection:text-white">
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed top-20 right-4 z-50 bg-stone-900/95 text-white px-4 py-3 rounded-2xl shadow-xl border border-amber-600/40 text-xs sm:text-sm font-semibold flex items-center gap-2.5 animate-in slide-in-from-top-4 duration-300">
+          <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Main Header */}
+      <Header
+        cartCount={totalCartCount}
+        onOpenCart={() => setIsCartOpen(true)}
+        onOpenSeoShare={() => setIsSeoShareOpen(true)}
+        selectedStore={selectedStore}
+      />
+
+      {/* Hero Section */}
+      <main className="flex-1">
+        <Hero
+          onOrderNow={scrollToMenu}
+          onOpenSeoShare={() => setIsSeoShareOpen(true)}
+        />
+
+        {/* Menu Section */}
+        <MenuSection
+          onSelectItem={(item) => setCustomizingItem(item)}
+        />
+
+        {/* Story Section */}
+        <StorySection />
+
+        {/* Store Locator */}
+        <StoreLocator
+          selectedStore={selectedStore}
+          onSelectStore={(store) => {
+            setSelectedStore(store);
+            showToast(`Đã chuyển điểm nhận cà phê: ${store.name}`);
+          }}
+        />
+      </main>
+
+      {/* Footer */}
+      <Footer onOpenSeoShare={() => setIsSeoShareOpen(true)} />
+
+      {/* Floating Action Button for Mobile Cart */}
+      {totalCartCount > 0 && !isCartOpen && !isCheckoutOpen && (
+        <div className="fixed bottom-5 right-5 z-40 lg:hidden">
+          <button
+            onClick={() => setIsCartOpen(true)}
+            className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-gradient-to-r from-amber-800 to-amber-950 text-white font-bold text-xs shadow-2xl ring-2 ring-amber-400/50 active:scale-95 transition cursor-pointer"
+          >
+            <div className="relative">
+              <ShoppingBag className="w-4 h-4 text-amber-200" />
+              <span className="absolute -top-2 -right-2 bg-amber-400 text-stone-950 font-black text-[9px] w-4 h-4 rounded-full flex items-center justify-center">
+                {totalCartCount}
+              </span>
+            </div>
+            <span>Giỏ hàng</span>
+          </button>
+        </div>
+      )}
+
+      {/* Modals */}
+      <ProductModal
+        item={customizingItem}
+        isOpen={!!customizingItem}
+        onClose={() => setCustomizingItem(null)}
+        onAddToCart={handleAddToCart}
+      />
+
+      <CartDrawer
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        items={cartItems}
+        onUpdateQuantity={handleUpdateQuantity}
+        onRemoveItem={handleRemoveItem}
+        orderType={orderType}
+        setOrderType={setOrderType}
+        selectedStore={selectedStore}
+        setSelectedStore={setSelectedStore}
+        deliveryAddress={deliveryAddress}
+        setDeliveryAddress={setDeliveryAddress}
+        appliedVoucher={appliedVoucher}
+        setAppliedVoucher={setAppliedVoucher}
+        onProceedToCheckout={handleProceedToCheckout}
+      />
+
+      <CheckoutModal
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+        items={cartItems}
+        orderType={orderType}
+        selectedStore={selectedStore}
+        deliveryAddress={deliveryAddress}
+        appliedVoucher={appliedVoucher}
+        onOrderSuccess={handleOrderSuccess}
+      />
+
+      <OrderTrackerModal
+        order={currentOrder}
+        isOpen={isOrderTrackerOpen}
+        onClose={() => setIsOrderTrackerOpen(false)}
+      />
+
+      <SeoShareModal
+        isOpen={isSeoShareOpen}
+        onClose={() => setIsSeoShareOpen(false)}
+      />
+
+      {/* AI Barista Chatbot Widget */}
+      <ChatbotWidget
+        onSelectItem={(item) => setCustomizingItem(item)}
+      />
+    </div>
+  );
+}

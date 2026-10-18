@@ -1,0 +1,6 @@
+{
+  "name": "Go & Grab Coffee - Đặt Cà Phê Trực Tuyến & Thanh Toán Nhanh",
+  "description": "Nền tảng đặt cà phê mang đi cao cấp Go & Grab Coffee. Menu cà phê Robusta Cầu Đất, Cold Brew, trà trái cây tươi với thanh toán siêu tốc VietQR, MoMo và theo dõi đơn hàng thời gian thực.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
