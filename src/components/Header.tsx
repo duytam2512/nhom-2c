@@ -17,7 +17,9 @@ import {
   Zap,
   Flame,
   Star,
-  ExternalLink
+  Tag,
+  ExternalLink,
+  FileSpreadsheet
 } from 'lucide-react';
 import { Logo } from './Logo';
 import { CoffeeCategory, StoreLocation } from '../types/coffee';
@@ -26,10 +28,11 @@ interface HeaderProps {
   cartCount: number;
   onOpenCart: () => void;
   onOpenSeoShare: () => void;
-  onOpenTableBooking: () => void;
+  onOpenTableBooking: (initialTab?: 'form' | 'sheets' | 'telegram') => void;
   selectedStore: StoreLocation;
   onOpenStoreModal?: () => void;
   onSelectCategory?: (category: CoffeeCategory) => void;
+  onOpenChatbot?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -40,6 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
   selectedStore,
   onOpenStoreModal,
   onSelectCategory,
+  onOpenChatbot,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<'menu' | 'services' | 'explore' | null>(null);
@@ -84,19 +88,12 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="sticky top-0 z-40 bg-[#faf7f2]/95 backdrop-blur-md border-b border-amber-950/10 transition-all">
-      {/* Top micro banner */}
-      <div className="bg-amber-950 text-amber-200 text-[11px] py-1.5 px-4 text-center font-medium flex items-center justify-center gap-2 overflow-x-auto whitespace-nowrap">
-        <span className="flex items-center gap-1">
-          <Sparkles className="w-3 h-3 text-amber-400" />
-          <span>Đặt trước cà phê, ghé lấy sau 5 phút • Nhập mã <strong>GRAB20</strong> giảm 20%</span>
+      {/* Top micro banner in Highlands Signature Crimson Red */}
+      <div className="bg-gradient-to-r from-[#7f131a] via-[#9e1c24] to-[#7f131a] text-amber-200 text-[11px] py-1.5 px-4 text-center font-medium flex items-center justify-center gap-2 overflow-x-auto whitespace-nowrap border-b border-[#630f14] shadow-xs">
+        <span className="flex items-center gap-1.5">
+          <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+          <span>⚡ Nhận cà phê sau 5 phút • Giữ chỗ bàn miễn phí • Giảm 20% đơn đầu tiên: <strong className="text-white underline decoration-amber-400">GOCOFFEE20</strong></span>
         </span>
-        <span className="text-amber-500 hidden sm:inline">•</span>
-        <button
-          onClick={onOpenSeoShare}
-          className="underline text-amber-300 hover:text-white font-semibold cursor-pointer hidden sm:inline-flex items-center gap-1"
-        >
-          <Share2 className="w-3 h-3" /> Chia sẻ link quán & SEO
-        </button>
       </div>
 
       {/* Main navigation bar */}
@@ -110,7 +107,7 @@ export const Header: React.FC<HeaderProps> = ({
               handleLinkClick('/', 'top');
             }}
             className="flex items-center gap-2"
-            title="Go & Grab Coffee"
+            title="Go Coffee"
           >
             <Logo size="md" />
           </a>
@@ -165,68 +162,87 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
 
                 <div className="space-y-1">
+                  {/* 1. Cà Phê Phin Việt */}
                   <button
-                    onClick={() => handleCategoryClick('traditional')}
+                    onClick={() => handleCategoryClick('phin')}
+                    className="w-full flex items-start gap-3 p-2.5 rounded-xl hover:bg-red-50 text-left transition group cursor-pointer"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-red-100 text-[#8c141c] flex items-center justify-center shrink-0 group-hover:bg-red-200">
+                      <Flame className="w-4 h-4 text-[#8c141c]" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-stone-900 group-hover:text-amber-900">Cà Phê Phin Việt</div>
+                      <div className="text-[11px] text-stone-500">Phin Sữa Đá, Phin Đen Đá, Bạc Xỉu, Cà Phê Muối Cố Đô</div>
+                    </div>
+                  </button>
+
+                  {/* 2. PhinDi Thế Hệ Mới */}
+                  <button
+                    onClick={() => handleCategoryClick('phindi')}
                     className="w-full flex items-start gap-3 p-2.5 rounded-xl hover:bg-amber-50 text-left transition group cursor-pointer"
                   >
                     <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-900 flex items-center justify-center shrink-0 group-hover:bg-amber-200">
-                      <Flame className="w-4 h-4 text-amber-800" />
+                      <Sparkles className="w-4 h-4 text-[#b45309]" />
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-stone-900 group-hover:text-amber-900">Cà Phê Việt & Muối Biển</div>
-                      <div className="text-[11px] text-stone-500">Cà phê muối xứ Huế, Bạc xỉu ba tầng, Phin sữa đá</div>
+                      <div className="text-xs font-bold text-stone-900 group-hover:text-amber-900">PhinDi Thế Hệ Mới</div>
+                      <div className="text-[11px] text-stone-500">PhinDi Hạnh Nhân bùi béo, PhinDi Kem Sữa, PhinDi Choco</div>
                     </div>
                   </button>
 
+                  {/* 3. Freeze Đá Xay & Thạch Giòn */}
                   <button
-                    onClick={() => handleCategoryClick('espresso')}
-                    className="w-full flex items-start gap-3 p-2.5 rounded-xl hover:bg-amber-50 text-left transition group cursor-pointer"
+                    onClick={() => handleCategoryClick('freeze')}
+                    className="w-full flex items-start gap-3 p-2.5 rounded-xl hover:bg-emerald-50 text-left transition group cursor-pointer"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-orange-100 text-orange-900 flex items-center justify-center shrink-0 group-hover:bg-orange-200">
-                      <Sparkles className="w-4 h-4 text-orange-800" />
+                    <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-900 flex items-center justify-center shrink-0 group-hover:bg-emerald-200">
+                      <CupSoda className="w-4 h-4 text-[#047857]" />
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-stone-900 group-hover:text-amber-900">Espresso & Sữa Hạt</div>
-                      <div className="text-[11px] text-stone-500">Oatly vanilla latte, Americano Cầu Đất, Cappuccino</div>
+                      <div className="text-xs font-bold text-stone-900 group-hover:text-emerald-900">Freeze Đá Xay & Thạch Giòn</div>
+                      <div className="text-[11px] text-stone-500">Freeze Trà Xanh Thạch Giòn, Caramel Phin, Cookies & Cream</div>
                     </div>
                   </button>
 
-                  <button
-                    onClick={() => handleCategoryClick('coldbrew')}
-                    className="w-full flex items-start gap-3 p-2.5 rounded-xl hover:bg-amber-50 text-left transition group cursor-pointer"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-sky-100 text-sky-900 flex items-center justify-center shrink-0 group-hover:bg-sky-200">
-                      <CupSoda className="w-4 h-4 text-sky-800" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-stone-900 group-hover:text-amber-900">Cold Brew Ủ Lạnh 24H</div>
-                      <div className="text-[11px] text-stone-500">Cold brew cam sả thanh mát, ủ chậm 24 giờ</div>
-                    </div>
-                  </button>
-
+                  {/* 4. Trà Sen Vàng & Trà Đào */}
                   <button
                     onClick={() => handleCategoryClick('tea')}
                     className="w-full flex items-start gap-3 p-2.5 rounded-xl hover:bg-amber-50 text-left transition group cursor-pointer"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-900 flex items-center justify-center shrink-0 group-hover:bg-emerald-200">
-                      <Leaf className="w-4 h-4 text-emerald-800" />
+                    <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-900 flex items-center justify-center shrink-0 group-hover:bg-amber-200">
+                      <Leaf className="w-4 h-4 text-[#d97706]" />
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-stone-900 group-hover:text-amber-900">Trà Tươi & Macchiato</div>
-                      <div className="text-[11px] text-stone-500">Trà sen vàng Cố Đô, Macchiato béo mịn</div>
+                      <div className="text-xs font-bold text-stone-900 group-hover:text-amber-900">Trà Sen Vàng & Trà Đào</div>
+                      <div className="text-[11px] text-stone-500">Trà Sen Vàng Hạt Sen Huế, Trà Thạch Đào, Trà Thanh Đào</div>
                     </div>
                   </button>
 
+                  {/* 5. Bánh Mì Que & Bánh Ngọt */}
                   <button
                     onClick={() => handleCategoryClick('pastry')}
-                    className="w-full flex items-start gap-3 p-2.5 rounded-xl hover:bg-amber-50 text-left transition group cursor-pointer"
+                    className="w-full flex items-start gap-3 p-2.5 rounded-xl hover:bg-orange-50 text-left transition group cursor-pointer"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-900 flex items-center justify-center shrink-0 group-hover:bg-amber-200">
-                      <Croissant className="w-4 h-4 text-amber-800" />
+                    <div className="w-8 h-8 rounded-lg bg-orange-100 text-orange-900 flex items-center justify-center shrink-0 group-hover:bg-orange-200">
+                      <Croissant className="w-4 h-4 text-[#ea580c]" />
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-stone-900 group-hover:text-amber-900">Bánh Ngọt & Pastry</div>
-                      <div className="text-[11px] text-stone-500">Croissant bơ Pháp giòn tan, bánh chuối nướng</div>
+                      <div className="text-xs font-bold text-stone-900 group-hover:text-amber-900">Bánh Mì Que & Bánh Ngọt</div>
+                      <div className="text-[11px] text-stone-500">Bánh Mì Que Pate Cay Hải Phòng, Cheesecake Cà Phê, Mousse Cacao</div>
+                    </div>
+                  </button>
+
+                  {/* 6. Combo Ưu Đãi Tiết Kiệm */}
+                  <button
+                    onClick={() => handleCategoryClick('combo')}
+                    className="w-full flex items-start gap-3 p-2.5 rounded-xl hover:bg-red-50 text-left transition group cursor-pointer"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-red-100 text-[#b22830] flex items-center justify-center shrink-0 group-hover:bg-red-200">
+                      <Zap className="w-4 h-4 text-[#b22830]" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-stone-900 group-hover:text-red-900">Combo Tiết Kiệm</div>
+                      <div className="text-[11px] text-stone-500">Combo Sáng (Phin + Bánh Mì Que), Combo Trà Chiều Thư Thái</div>
                     </div>
                   </button>
                 </div>
@@ -234,155 +250,55 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </div>
 
-          {/* MENU GROUP 2: DỊCH VỤ & ĐẶT CHỖ */}
-          <div 
-            className="relative"
-            onMouseEnter={() => setActiveDropdown('services')}
+          {/* MENU 2: QUÁN CÀ PHÊ (HỆ THỐNG QUÁN) */}
+          <button
+            onClick={() => handleLinkClick('/cua-hang', 'stores')}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-amber-100/50 hover:text-amber-900"
           >
-            <button
-              onClick={() => setActiveDropdown(activeDropdown === 'services' ? null : 'services')}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl transition cursor-pointer uppercase tracking-wider text-xs font-bold ${
-                activeDropdown === 'services'
-                  ? 'bg-amber-100/80 text-amber-900 shadow-2xs'
-                  : 'hover:bg-amber-100/50 hover:text-amber-900'
-              }`}
-            >
-              <Zap className="w-4 h-4 text-amber-800" />
-              <span>Dịch Vụ & Đặt Chỗ</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${activeDropdown === 'services' ? 'rotate-180' : ''}`} />
-            </button>
+            <MapPin className="w-4 h-4 text-amber-800" />
+            <span>Quán Cà Phê</span>
+          </button>
 
-            {/* Dropdown Panel: Dịch Vụ */}
-            {activeDropdown === 'services' && (
-              <div 
-                onMouseLeave={() => setActiveDropdown(null)}
-                className="absolute top-full left-0 mt-2 w-84 bg-white rounded-2xl shadow-xl border border-stone-200/80 p-3 animate-in fade-in zoom-in-95 duration-150 z-50"
-              >
-                <div className="px-3 py-2 border-b border-stone-100 mb-1.5">
-                  <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider">Dịch Vụ Khách Hàng</span>
-                </div>
-
-                <div className="space-y-1">
-                  {/* Option 1: Đặt bàn */}
-                  <button
-                    onClick={() => {
-                      setActiveDropdown(null);
-                      onOpenTableBooking();
-                      handleLinkClick('/dat-ban');
-                    }}
-                    className="w-full flex items-start gap-3 p-3 rounded-xl bg-amber-50/70 hover:bg-amber-100/80 text-left transition border border-amber-200/70 group cursor-pointer"
-                  >
-                    <div className="w-9 h-9 rounded-xl bg-amber-800 text-white flex items-center justify-center shrink-0 shadow-sm">
-                      <Armchair className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-amber-950 flex items-center gap-1.5">
-                        <span>Đặt Bàn Giữ Chỗ Trước</span>
-                        <span className="text-[9px] bg-amber-200 text-amber-900 px-1.5 py-0.5 rounded font-black">Miễn phí</span>
-                      </div>
-                      <div className="text-[11px] text-stone-600 mt-0.5">
-                        Điền tên, số người, tự động đồng bộ Google Sheets & Bot Telegram
-                      </div>
-                    </div>
-                  </button>
-
-                  {/* Option 2: Đặt món mang đi */}
-                  <button
-                    onClick={() => handleLinkClick('/thuc-don', 'menu')}
-                    className="w-full flex items-start gap-3 p-2.5 rounded-xl hover:bg-stone-50 text-left transition group cursor-pointer"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-stone-100 text-stone-800 flex items-center justify-center shrink-0 group-hover:bg-amber-100 group-hover:text-amber-900">
-                      <Zap className="w-4 h-4 text-amber-700" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-stone-900 group-hover:text-amber-900">Đặt Món Mang Đi (5 Phút)</div>
-                      <div className="text-[11px] text-stone-500">Đặt trước, tới quầy lấy liền không cần xếp hàng</div>
-                    </div>
-                  </button>
-
-                  {/* Option 3: Điểm lấy hàng */}
-                  <button
-                    onClick={() => handleLinkClick('/cua-hang', 'stores')}
-                    className="w-full flex items-start gap-3 p-2.5 rounded-xl hover:bg-stone-50 text-left transition group cursor-pointer"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-stone-100 text-stone-800 flex items-center justify-center shrink-0 group-hover:bg-amber-100 group-hover:text-amber-900">
-                      <MapPin className="w-4 h-4 text-amber-700" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-stone-900 group-hover:text-amber-900">Điểm Lấy Hàng & Chi Nhánh</div>
-                      <div className="text-[11px] text-stone-500">4 điểm nhận tại TP.HCM & Hà Nội, giờ mở cửa</div>
-                    </div>
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* MENU GROUP 3: KHÁM PHÁ & TIỆN ÍCH */}
-          <div 
-            className="relative"
-            onMouseEnter={() => setActiveDropdown('explore')}
+          {/* MENU 3: CÂU CHUYỆN DI SẢN */}
+          <button
+            onClick={() => handleLinkClick('/cau-chuyen', 'story')}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-amber-100/50 hover:text-amber-900"
           >
-            <button
-              onClick={() => setActiveDropdown(activeDropdown === 'explore' ? null : 'explore')}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl transition cursor-pointer uppercase tracking-wider text-xs font-bold ${
-                activeDropdown === 'explore'
-                  ? 'bg-amber-100/80 text-amber-900 shadow-2xs'
-                  : 'hover:bg-amber-100/50 hover:text-amber-900'
-              }`}
-            >
-              <BookOpen className="w-4 h-4 text-amber-800" />
-              <span>Khám Phá</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${activeDropdown === 'explore' ? 'rotate-180' : ''}`} />
-            </button>
+            <BookOpen className="w-4 h-4 text-amber-800" />
+            <span>Câu Chuyện</span>
+          </button>
 
-            {/* Dropdown Panel: Khám Phá */}
-            {activeDropdown === 'explore' && (
-              <div 
-                onMouseLeave={() => setActiveDropdown(null)}
-                className="absolute top-full left-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-stone-200/80 p-3 animate-in fade-in zoom-in-95 duration-150 z-50"
-              >
-                <div className="px-3 py-2 border-b border-stone-100 mb-1.5">
-                  <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider">Thông Tin & Tiện Ích</span>
-                </div>
+          {/* MENU 4: ƯU ĐÃI & VOUCHER */}
+          <button
+            onClick={() => handleLinkClick('/thuc-don', 'menu')}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-amber-100/50 hover:text-amber-900 text-stone-700"
+          >
+            <Tag className="w-4 h-4 text-amber-800" />
+            <span>Ưu Đãi</span>
+          </button>
 
-                <div className="space-y-1">
-                  <button
-                    onClick={() => handleLinkClick('/cau-chuyen', 'story')}
-                    className="w-full flex items-start gap-3 p-2.5 rounded-xl hover:bg-stone-50 text-left transition group cursor-pointer"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-900 flex items-center justify-center shrink-0">
-                      <Coffee className="w-4 h-4 text-amber-800" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-stone-900 group-hover:text-amber-900">Câu Chuyện Hạt Cầu Đất</div>
-                      <div className="text-[11px] text-stone-500">Nông trại độ cao 1600m, rang mộc 100% không hương liệu</div>
-                    </div>
-                  </button>
+          {/* MENU 5: CHIA SẺ & SEO PREVIEW */}
+          <button
+            onClick={onOpenSeoShare}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-amber-100/50 hover:text-amber-900 text-stone-700"
+            title="Xem chuẩn SEO & Chia sẻ link"
+          >
+            <Share2 className="w-4 h-4 text-amber-800" />
+            <span>Chia Sẻ</span>
+          </button>
 
-                  <button
-                    onClick={() => {
-                      setActiveDropdown(null);
-                      onOpenSeoShare();
-                    }}
-                    className="w-full flex items-start gap-3 p-2.5 rounded-xl hover:bg-amber-50 text-left transition group cursor-pointer"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-stone-100 text-stone-800 flex items-center justify-center shrink-0 group-hover:bg-amber-100 group-hover:text-amber-900">
-                      <Share2 className="w-4 h-4 text-amber-700" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-stone-900 group-hover:text-amber-900">Chia Sẻ Link & SEO Preview</div>
-                      <div className="text-[11px] text-stone-500">Xem trước link trên Zalo/Facebook, mã QR chia sẻ</div>
-                    </div>
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
+          {/* MENU 6: KẾT NỐI GOOGLE SHEET & TELEGRAM */}
+          <button
+            onClick={() => onOpenTableBooking('sheets')}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-emerald-100/60 hover:text-emerald-900 text-stone-700"
+            title="Quản lý đồng bộ tệp khách hàng về Google Sheet & Telegram Bot"
+          >
+            <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
+            <span>Sheet & Bot</span>
+          </button>
         </nav>
 
-        {/* Right: Quick Action Buttons (Neat & Clean) */}
+        {/* Right: Action Buttons */}
         <div className="flex items-center gap-2.5">
           {/* Direct CTA: Đặt Bàn Nhanh */}
           <button
@@ -390,22 +306,22 @@ export const Header: React.FC<HeaderProps> = ({
               onOpenTableBooking();
               handleLinkClick('/dat-ban');
             }}
-            className="hidden sm:flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200 border border-amber-300 text-amber-950 font-bold text-xs transition cursor-pointer active:scale-95 shadow-2xs"
+            className="hidden sm:flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#b22830] via-[#c41e27] to-[#8f1920] hover:from-[#c41e27] hover:to-[#9b1c24] text-white font-black text-xs transition cursor-pointer active:scale-95 shadow-md shadow-red-950/20 ring-2 ring-amber-400/50"
             title="Đặt bàn trước, giữ chỗ miễn phí"
           >
-            <Armchair className="w-4 h-4 text-amber-800" />
+            <Armchair className="w-4 h-4 text-amber-300" />
             <span>Đặt Bàn</span>
           </button>
 
           {/* Cart Button */}
           <button
             onClick={onOpenCart}
-            className="relative px-3.5 py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-sm transition active:scale-95 cursor-pointer"
+            className="relative px-3.5 py-2.5 rounded-xl bg-[#2a170d] hover:bg-stone-900 border border-amber-900/40 text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-sm transition active:scale-95 cursor-pointer"
           >
-            <ShoppingBag className="w-4 h-4 text-amber-200" />
+            <ShoppingBag className="w-4 h-4 text-amber-300" />
             <span className="hidden sm:inline">Giỏ hàng</span>
             {cartCount > 0 && (
-              <span className="px-1.5 py-0.5 rounded-full bg-amber-400 text-stone-950 text-[10px] font-black min-w-5 text-center">
+              <span className="px-1.5 py-0.5 rounded-full bg-amber-400 text-[#701217] text-[10px] font-black min-w-5 text-center shadow-xs">
                 {cartCount}
               </span>
             )}
@@ -452,135 +368,144 @@ export const Header: React.FC<HeaderProps> = ({
                   onClick={() => handleCategoryClick('all')}
                   className="w-full text-left py-2 px-3 rounded-lg hover:bg-amber-50 font-bold text-amber-900 flex items-center justify-between"
                 >
-                  <span>Xem Toàn Bộ Menu</span>
+                  <span>Xem Toàn Bộ Menu (18 món)</span>
                   <ChevronRight className="w-3.5 h-3.5 text-amber-800" />
                 </button>
                 <button
-                  onClick={() => handleCategoryClick('traditional')}
-                  className="w-full text-left py-2 px-3 rounded-lg hover:bg-amber-50 text-stone-700 flex items-center gap-2"
+                  onClick={() => handleCategoryClick('phin')}
+                  className="w-full text-left py-2 px-3 rounded-lg hover:bg-red-50 text-stone-700 flex items-center gap-2"
                 >
-                  <Flame className="w-3.5 h-3.5 text-amber-700" />
-                  <span>Cà Phê Việt & Muối Biển</span>
+                  <Flame className="w-3.5 h-3.5 text-[#8c141c]" />
+                  <span>Cà Phê Phin Việt (Phin Sữa Đá, Bạc Xỉu, Muối...)</span>
                 </button>
                 <button
-                  onClick={() => handleCategoryClick('espresso')}
+                  onClick={() => handleCategoryClick('phindi')}
                   className="w-full text-left py-2 px-3 rounded-lg hover:bg-amber-50 text-stone-700 flex items-center gap-2"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-amber-700" />
-                  <span>Espresso & Sữa Hạt</span>
+                  <Sparkles className="w-3.5 h-3.5 text-[#b45309]" />
+                  <span>PhinDi Thế Hệ Mới (Hạnh Nhân, Kem Sữa, Choco)</span>
                 </button>
                 <button
-                  onClick={() => handleCategoryClick('coldbrew')}
-                  className="w-full text-left py-2 px-3 rounded-lg hover:bg-amber-50 text-stone-700 flex items-center gap-2"
+                  onClick={() => handleCategoryClick('freeze')}
+                  className="w-full text-left py-2 px-3 rounded-lg hover:bg-emerald-50 text-stone-700 flex items-center gap-2"
                 >
-                  <CupSoda className="w-3.5 h-3.5 text-amber-700" />
-                  <span>Cold Brew Ủ Lạnh 24H</span>
+                  <CupSoda className="w-3.5 h-3.5 text-[#047857]" />
+                  <span>Freeze Đá Xay & Thạch Giòn (Trà Xanh, Caramel...)</span>
                 </button>
                 <button
                   onClick={() => handleCategoryClick('tea')}
                   className="w-full text-left py-2 px-3 rounded-lg hover:bg-amber-50 text-stone-700 flex items-center gap-2"
                 >
-                  <Leaf className="w-3.5 h-3.5 text-amber-700" />
-                  <span>Trà Tươi & Macchiato</span>
+                  <Leaf className="w-3.5 h-3.5 text-[#d97706]" />
+                  <span>Trà Sen Vàng & Trà Đào</span>
                 </button>
                 <button
                   onClick={() => handleCategoryClick('pastry')}
-                  className="w-full text-left py-2 px-3 rounded-lg hover:bg-amber-50 text-stone-700 flex items-center gap-2"
+                  className="w-full text-left py-2 px-3 rounded-lg hover:bg-orange-50 text-stone-700 flex items-center gap-2"
                 >
-                  <Croissant className="w-3.5 h-3.5 text-amber-700" />
-                  <span>Bánh Ngọt & Pastry</span>
+                  <Croissant className="w-3.5 h-3.5 text-[#ea580c]" />
+                  <span>Bánh Mì Que Pate Cay Hải Phòng & Bánh Ngọt</span>
+                </button>
+                <button
+                  onClick={() => handleCategoryClick('combo')}
+                  className="w-full text-left py-2 px-3 rounded-lg hover:bg-red-50 text-stone-700 flex items-center gap-2"
+                >
+                  <Zap className="w-3.5 h-3.5 text-[#b22830]" />
+                  <span>Combo Tiết Kiệm (Phin + Bánh Mì, Trà + Bánh)</span>
                 </button>
               </div>
             )}
           </div>
 
-          {/* GROUP 2: DỊCH VỤ & ĐẶT CHỖ ACCORDION */}
-          <div className="border border-stone-200 rounded-2xl overflow-hidden">
+          {/* QUICK LINKS SECTION */}
+          <div className="space-y-1.5 pt-1">
+            {/* Direct CTA: Đặt bàn giữ chỗ */}
             <button
-              onClick={() => setMobileExpandedGroup(mobileExpandedGroup === 'services' ? null : 'services')}
-              className="w-full flex items-center justify-between p-3.5 bg-stone-50 font-bold text-xs text-stone-900 cursor-pointer"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onOpenTableBooking();
+                handleLinkClick('/dat-ban');
+              }}
+              className="w-full text-left p-3 rounded-2xl bg-gradient-to-r from-[#b22830] via-[#c41e27] to-[#8f1920] text-white font-black text-xs flex items-center justify-between shadow-md ring-2 ring-amber-400/50 active:scale-95 transition"
             >
               <span className="flex items-center gap-2">
-                <Zap className="w-4 h-4 text-amber-800" />
-                <span>Dịch Vụ & Đặt Chỗ</span>
+                <Armchair className="w-4 h-4 text-amber-300" />
+                <span>Đặt Bàn Giữ Chỗ Trước (Miễn phí)</span>
               </span>
-              <ChevronDown className={`w-4 h-4 text-stone-500 transition-transform ${mobileExpandedGroup === 'services' ? 'rotate-180' : ''}`} />
+              <span className="px-2 py-0.5 rounded text-[10px] bg-amber-400 text-stone-950 font-black">
+                Hot
+              </span>
             </button>
 
-            {mobileExpandedGroup === 'services' && (
-              <div className="p-2 space-y-1.5 bg-white border-t border-stone-100 text-xs">
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    onOpenTableBooking();
-                    handleLinkClick('/dat-ban');
-                  }}
-                  className="w-full text-left p-2.5 rounded-xl bg-amber-100/80 text-amber-950 font-bold border border-amber-300/80 flex items-center justify-between"
-                >
-                  <span className="flex items-center gap-2">
-                    <Armchair className="w-4 h-4 text-amber-800" />
-                    <span>Đặt Bàn Giữ Chỗ (Miễn phí)</span>
-                  </span>
-                  <ChevronRight className="w-4 h-4 text-amber-800" />
-                </button>
-
-                <button
-                  onClick={() => handleLinkClick('/thuc-don', 'menu')}
-                  className="w-full text-left py-2 px-3 rounded-lg hover:bg-stone-100 text-stone-700 flex items-center gap-2"
-                >
-                  <Zap className="w-3.5 h-3.5 text-amber-700" />
-                  <span>Đặt Món Mang Đi (Lấy sau 5 phút)</span>
-                </button>
-
-                <button
-                  onClick={() => handleLinkClick('/cua-hang', 'stores')}
-                  className="w-full text-left py-2 px-3 rounded-lg hover:bg-stone-100 text-stone-700 flex items-center gap-2"
-                >
-                  <MapPin className="w-3.5 h-3.5 text-amber-700" />
-                  <span>Danh Sách 4 Điểm Nhận Hàng</span>
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* GROUP 3: KHÁM PHÁ & TIỆN ÍCH ACCORDION */}
-          <div className="border border-stone-200 rounded-2xl overflow-hidden">
+            {/* Quán Cà Phê */}
             <button
-              onClick={() => setMobileExpandedGroup(mobileExpandedGroup === 'explore' ? null : 'explore')}
-              className="w-full flex items-center justify-between p-3.5 bg-stone-50 font-bold text-xs text-stone-900 cursor-pointer"
+              onClick={() => handleLinkClick('/cua-hang', 'stores')}
+              className="w-full text-left p-2.5 rounded-xl hover:bg-amber-50 text-stone-800 font-bold text-xs flex items-center justify-between border border-stone-100"
+            >
+              <span className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-amber-800" />
+                <span>Hệ Thống Quán Go Coffee</span>
+              </span>
+              <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
+            </button>
+
+            {/* Câu Chuyện Cầu Đất */}
+            <button
+              onClick={() => handleLinkClick('/cau-chuyen', 'story')}
+              className="w-full text-left p-2.5 rounded-xl hover:bg-amber-50 text-stone-800 font-bold text-xs flex items-center justify-between border border-stone-100"
             >
               <span className="flex items-center gap-2">
                 <BookOpen className="w-4 h-4 text-amber-800" />
-                <span>Khám Phá & Tiện Ích</span>
+                <span>Câu Chuyện Di Sản Cà Phê</span>
               </span>
-              <ChevronDown className={`w-4 h-4 text-stone-500 transition-transform ${mobileExpandedGroup === 'explore' ? 'rotate-180' : ''}`} />
+              <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
             </button>
 
-            {mobileExpandedGroup === 'explore' && (
-              <div className="p-2 space-y-1 bg-white border-t border-stone-100 text-xs">
-                <button
-                  onClick={() => handleLinkClick('/cau-chuyen', 'story')}
-                  className="w-full text-left py-2 px-3 rounded-lg hover:bg-stone-100 text-stone-700 flex items-center gap-2"
-                >
-                  <Coffee className="w-3.5 h-3.5 text-amber-700" />
-                  <span>Nông Trại Hạt Cầu Đất 1600m</span>
-                </button>
+            {/* Mã Giảm Giá & Ưu Đãi */}
+            <button
+              onClick={() => handleLinkClick('/thuc-don', 'menu')}
+              className="w-full text-left p-2.5 rounded-xl hover:bg-amber-50 text-stone-800 font-bold text-xs flex items-center justify-between border border-stone-100"
+            >
+              <span className="flex items-center gap-2">
+                <Tag className="w-4 h-4 text-amber-800" />
+                <span>Mã Giảm Giá & Ưu Đãi Hôm Nay</span>
+              </span>
+              <span className="text-[10px] bg-red-100 text-[#b22830] font-black px-1.5 py-0.5 rounded">
+                -20%
+              </span>
+            </button>
 
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    onOpenSeoShare();
-                  }}
-                  className="w-full text-left py-2 px-3 rounded-lg hover:bg-stone-100 text-stone-700 flex items-center justify-between"
-                >
-                  <span className="flex items-center gap-2">
-                    <Share2 className="w-3.5 h-3.5 text-amber-700" />
-                    <span>Chia Sẻ Link Quán & SEO</span>
-                  </span>
-                  <ExternalLink className="w-3.5 h-3.5 text-stone-400" />
-                </button>
-              </div>
-            )}
+            {/* Chia Sẻ Link & SEO */}
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onOpenSeoShare();
+              }}
+              className="w-full text-left p-2.5 rounded-xl hover:bg-stone-50 text-stone-700 text-xs flex items-center justify-between border border-stone-100"
+            >
+              <span className="flex items-center gap-2">
+                <Share2 className="w-4 h-4 text-amber-700" />
+                <span>Chia Sẻ Link Quán & Chuẩn SEO</span>
+              </span>
+              <ExternalLink className="w-3.5 h-3.5 text-stone-400" />
+            </button>
+
+            {/* Đồng Bộ Google Sheet & Telegram Bot */}
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onOpenTableBooking('sheets');
+              }}
+              className="w-full text-left p-2.5 rounded-xl bg-emerald-50/70 hover:bg-emerald-100 text-emerald-950 font-bold text-xs flex items-center justify-between border border-emerald-200/80"
+            >
+              <span className="flex items-center gap-2">
+                <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
+                <span>Kết Nối Google Sheet & Telegram</span>
+              </span>
+              <span className="text-[10px] bg-emerald-200 text-emerald-900 font-black px-1.5 py-0.5 rounded">
+                Tự động
+              </span>
+            </button>
           </div>
         </div>
       )}

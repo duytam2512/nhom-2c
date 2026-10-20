@@ -52,21 +52,21 @@ export const OrderTrackerModal: React.FC<OrderTrackerModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-white w-full max-w-xl rounded-2xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col max-h-[92vh]">
-        {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-stone-100 flex items-center justify-between bg-amber-900 text-white">
+        {/* Header - Highlands Crimson Red Styling */}
+        <div className="p-4 sm:p-5 border-b border-[#630f14] flex items-center justify-between bg-gradient-to-r from-[#7a1218] via-[#9e1c24] to-[#7a1218] text-white">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-800 border border-amber-700/60 flex items-center justify-center">
-              <Coffee className="w-5 h-5 text-amber-200 animate-bounce" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-stone-950 border border-amber-300/60 flex items-center justify-center shadow-md">
+              <Coffee className="w-5 h-5 text-stone-900 animate-bounce" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-bold text-base sm:text-lg">Theo Dõi Đơn Hàng Live</h3>
-                <span className="text-[10px] font-bold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-bold uppercase bg-amber-400 text-stone-950 px-2 py-0.5 rounded-full shadow-2xs">
                   Trực tiếp
                 </span>
               </div>
-              <p className="text-xs text-amber-200/80">
-                Go & Grab Barista đang chuẩn bị đồ uống cho bạn
+              <p className="text-xs text-amber-200/90">
+                Go Coffee Barista đang chuẩn bị đồ uống cho bạn
               </p>
             </div>
           </div>
@@ -132,7 +132,7 @@ export const OrderTrackerModal: React.FC<OrderTrackerModalProps> = ({
                 {
                   step: 3,
                   title: order.orderType === 'pickup' ? 'Đã hoàn thành! Mời bạn tới quầy nhận' : 'Tài xế đang giao cà phê nóng/lạnh đến bạn',
-                  desc: order.orderType === 'pickup' ? `Đọc mã ${order.code} tại quầy ưu tiên Go & Grab` : `Giao tới: ${order.deliveryAddress || 'Địa chỉ của bạn'}`,
+                  desc: order.orderType === 'pickup' ? `Đọc mã ${order.code} tại quầy ưu tiên Go Coffee` : `Giao tới: ${order.deliveryAddress || 'Địa chỉ của bạn'}`,
                   icon: order.orderType === 'pickup' ? Store : Bike,
                 },
               ].map((s) => {
@@ -230,7 +230,7 @@ export const OrderTrackerModal: React.FC<OrderTrackerModalProps> = ({
           <div className="flex items-center justify-between text-xs text-stone-600 p-3 rounded-xl bg-amber-50/50 border border-amber-200/50">
             <span className="flex items-center gap-1.5 font-medium">
               <Store className="w-3.5 h-3.5 text-amber-800" />
-              {order.orderType === 'pickup' && order.store ? order.store.name : 'Go & Grab Hỗ Trợ Đơn'}
+              {order.orderType === 'pickup' && order.store ? order.store.name : 'Go Coffee Hỗ Trợ Đơn'}
             </span>
             <a
               href="tel:0909123456"

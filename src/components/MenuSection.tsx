@@ -12,7 +12,8 @@ import {
   Filter,
   RotateCcw,
   SlidersHorizontal,
-  ChevronDown
+  ChevronDown,
+  Zap
 } from 'lucide-react';
 import { CoffeeCategory, MenuItem } from '../types/coffee';
 import { MENU_ITEMS } from '../data/coffeeData';
@@ -44,12 +45,62 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
   };
 
   const categories = [
-    { id: 'all' as CoffeeCategory, name: 'Tất Cả Món', icon: Coffee },
-    { id: 'traditional' as CoffeeCategory, name: 'Cà Phê Việt & Muối', icon: Flame },
-    { id: 'espresso' as CoffeeCategory, name: 'Espresso & Sữa Hạt', icon: Sparkles },
-    { id: 'coldbrew' as CoffeeCategory, name: 'Cold Brew 24H', icon: CupSoda },
-    { id: 'tea' as CoffeeCategory, name: 'Trà Tươi & Macchiato', icon: Leaf },
-    { id: 'pastry' as CoffeeCategory, name: 'Bánh Ngọt & Pastry', icon: Croissant },
+    { 
+      id: 'all' as CoffeeCategory, 
+      name: 'Tất Cả Món', 
+      icon: Coffee, 
+      accentColor: 'text-[#b22830]', 
+      badgeColor: 'bg-red-50 text-[#b22830] border border-red-200/50',
+      bgHover: 'hover:bg-red-50 hover:text-[#b22830] hover:border-red-300' 
+    },
+    { 
+      id: 'phin' as CoffeeCategory, 
+      name: 'Cà Phê Phin', 
+      icon: Flame, 
+      accentColor: 'text-[#8c141c]', 
+      badgeColor: 'bg-red-50 text-[#8c141c] border border-red-200/50',
+      bgHover: 'hover:bg-red-50 hover:text-[#8c141c] hover:border-red-300' 
+    },
+    { 
+      id: 'phindi' as CoffeeCategory, 
+      name: 'PhinDi Thế Hệ Mới', 
+      icon: Sparkles, 
+      accentColor: 'text-[#b45309]', 
+      badgeColor: 'bg-amber-50 text-amber-900 border border-amber-200/50',
+      bgHover: 'hover:bg-amber-50 hover:text-[#b45309] hover:border-amber-300' 
+    },
+    { 
+      id: 'freeze' as CoffeeCategory, 
+      name: 'Freeze Đá Xay', 
+      icon: CupSoda, 
+      accentColor: 'text-[#047857]', 
+      badgeColor: 'bg-emerald-50 text-emerald-900 border border-emerald-200/50',
+      bgHover: 'hover:bg-emerald-50 hover:text-[#047857] hover:border-emerald-300' 
+    },
+    { 
+      id: 'tea' as CoffeeCategory, 
+      name: 'Trà Sen Vàng & Đào', 
+      icon: Leaf, 
+      accentColor: 'text-[#d97706]', 
+      badgeColor: 'bg-amber-50 text-amber-900 border border-amber-200/50',
+      bgHover: 'hover:bg-amber-50 hover:text-[#d97706] hover:border-amber-300' 
+    },
+    { 
+      id: 'pastry' as CoffeeCategory, 
+      name: 'Bánh Mì Que & Ngọt', 
+      icon: Croissant, 
+      accentColor: 'text-[#ea580c]', 
+      badgeColor: 'bg-orange-50 text-orange-900 border border-orange-200/50',
+      bgHover: 'hover:bg-orange-50 hover:text-[#ea580c] hover:border-orange-300' 
+    },
+    { 
+      id: 'combo' as CoffeeCategory, 
+      name: 'Combo Tiết Kiệm', 
+      icon: Zap, 
+      accentColor: 'text-[#b22830]', 
+      badgeColor: 'bg-red-50 text-[#b22830] border border-red-300',
+      bgHover: 'hover:bg-red-50 hover:text-[#b22830] hover:border-red-300' 
+    },
   ];
 
   // Calculate counts for each category
@@ -119,9 +170,9 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
     <section id="menu" className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto scroll-mt-24">
       {/* Section Header */}
       <div className="text-center space-y-3 mb-8">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold uppercase tracking-wider">
-          <Sparkles className="w-3.5 h-3.5 text-amber-700" />
-          <span>Thực Đơn Go & Grab Coffee</span>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-100 text-[#b22830] text-xs font-bold uppercase tracking-wider border border-red-200">
+          <Sparkles className="w-3.5 h-3.5 text-[#b22830]" />
+          <span>Thực Đơn Đậm Đà Go Coffee</span>
         </div>
         <h2 className="text-2xl sm:text-4xl font-extrabold font-display text-stone-900 tracking-tight">
           Chọn Ly Cà Phê Của Bạn
@@ -131,11 +182,33 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
         </p>
       </div>
 
-      {/* Unified Menu Control Bar: Category Tabs + Search & Filters */}
-      <div className="bg-white rounded-3xl border border-stone-200/90 shadow-sm p-3.5 sm:p-5 mb-8 space-y-4">
+      {/* Unified Menu Control Bar: Signature Red & Gold Palette */}
+      <div className="bg-white rounded-3xl border-2 border-stone-200/90 shadow-lg p-3.5 sm:p-5 mb-8 space-y-4">
         
-        {/* Row 1: Grouped Category Navigation Bar */}
-        <div className="hidden lg:flex items-center gap-2 p-1.5 bg-[#faf7f2] rounded-2xl border border-amber-950/5">
+        {/* Header Announcement Strip */}
+        <div className="bg-gradient-to-r from-[#8f1920] via-[#b22830] to-[#701217] text-white p-3 sm:px-5 sm:py-3 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-2 shadow-md border-b-2 border-amber-400">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-amber-400 text-[#701217] flex items-center justify-center font-black shadow-xs shrink-0">
+              <Coffee className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="text-xs sm:text-sm font-black tracking-wide uppercase flex items-center gap-1.5 text-white">
+                <span>Thực Đơn Đặc Sắc Go Coffee • Hương Vị Di Sản</span>
+              </h3>
+              <p className="text-[11px] text-amber-200 hidden sm:block">
+                Pha chế thủ công 100% hạt rang mộc • Chuẩn bị nhanh trong 5 phút • Giữ chỗ bàn miễn phí
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 text-[11px] font-bold text-amber-300 shrink-0">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span>Phục vụ tươi mới mỗi ngày</span>
+          </div>
+        </div>
+
+        {/* Row 1: Grouped Category Navigation Bar with Highlands Red & Gold Highlights */}
+        <div className="hidden lg:flex items-center gap-2 p-2 bg-gradient-to-b from-[#faf5ee] to-[#f4ebe0] rounded-2xl border border-amber-900/10 shadow-inner">
           {categories.map((cat) => {
             const Icon = cat.icon;
             const isSelected = selectedCategory === cat.id;
@@ -144,16 +217,16 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer ${
+                className={`flex-1 py-3 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer ${
                   isSelected
-                    ? 'bg-amber-800 text-white shadow-md shadow-amber-900/20'
-                    : 'text-stone-700 hover:text-amber-900 hover:bg-amber-100/40'
+                    ? 'bg-gradient-to-r from-[#b22830] via-[#c41e27] to-[#8f1920] text-white shadow-lg shadow-red-950/25 ring-2 ring-amber-400 scale-[1.02]'
+                    : `bg-white/90 text-stone-800 border border-stone-200/80 ${cat.bgHover} shadow-2xs`
                 }`}
               >
-                <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-amber-200' : 'text-stone-500'}`} />
+                <Icon className={`w-4 h-4 ${isSelected ? 'text-amber-300' : cat.accentColor}`} />
                 <span className="truncate">{cat.name}</span>
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-black ${
-                  isSelected ? 'bg-amber-700 text-amber-100' : 'bg-stone-200 text-stone-600'
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-black ${
+                  isSelected ? 'bg-amber-400 text-[#701217] shadow-xs' : cat.badgeColor
                 }`}>
                   {count}
                 </span>
@@ -167,20 +240,20 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
           <div className="relative">
             <button
               onClick={() => setIsMobileCategoryOpen(!isMobileCategoryOpen)}
-              className="w-full flex items-center justify-between p-3 rounded-2xl bg-[#faf7f2] border border-stone-200 font-bold text-xs text-stone-900 cursor-pointer"
+              className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-[#b22830] to-[#8f1920] text-white font-black text-xs shadow-md border-2 border-amber-400/60 cursor-pointer"
             >
-              <span className="flex items-center gap-2">
-                <currentCategoryObj.icon className="w-4 h-4 text-amber-800" />
+              <span className="flex items-center gap-2.5">
+                <currentCategoryObj.icon className="w-4 h-4 text-amber-300" />
                 <span>Danh mục: {currentCategoryObj.name}</span>
-                <span className="text-[10px] bg-amber-200 text-amber-950 px-2 py-0.5 rounded-full">
+                <span className="text-[10px] bg-amber-400 text-[#701217] font-black px-2 py-0.5 rounded-full shadow-xs">
                   {categoryCounts[currentCategoryObj.id]} món
                 </span>
               </span>
-              <ChevronDown className={`w-4 h-4 text-stone-500 transition-transform ${isMobileCategoryOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-4 h-4 text-amber-200 transition-transform ${isMobileCategoryOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {isMobileCategoryOpen && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-stone-200 p-2 z-30 space-y-1">
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border-2 border-[#b22830]/30 p-2 z-30 space-y-1">
                 {categories.map((cat) => {
                   const Icon = cat.icon;
                   const isSelected = selectedCategory === cat.id;
@@ -191,18 +264,18 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                         setSelectedCategory(cat.id);
                         setIsMobileCategoryOpen(false);
                       }}
-                      className={`w-full flex items-center justify-between p-2.5 rounded-xl text-xs font-semibold text-left transition ${
+                      className={`w-full flex items-center justify-between p-3 rounded-xl text-xs font-bold text-left transition ${
                         isSelected
-                          ? 'bg-amber-800 text-white font-bold'
-                          : 'text-stone-800 hover:bg-stone-100'
+                          ? 'bg-gradient-to-r from-[#b22830] to-[#8f1920] text-white font-black'
+                          : 'text-stone-800 hover:bg-red-50'
                       }`}
                     >
                       <span className="flex items-center gap-2">
-                        <Icon className={`w-4 h-4 ${isSelected ? 'text-amber-200' : 'text-stone-500'}`} />
+                        <Icon className={`w-4 h-4 ${isSelected ? 'text-amber-300' : cat.accentColor}`} />
                         <span>{cat.name}</span>
                       </span>
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full ${
-                        isSelected ? 'bg-amber-700 text-white' : 'bg-stone-100 text-stone-600'
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                        isSelected ? 'bg-amber-400 text-[#701217]' : cat.badgeColor
                       }`}>
                         {categoryCounts[cat.id]} món
                       </span>
@@ -218,13 +291,13 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
         <div className="flex flex-col md:flex-row items-center gap-3 pt-1">
           {/* Search Input */}
           <div className="relative flex-1 w-full">
-            <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-[#b22830] absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Tìm kiếm món theo tên (cà phê muối, bạc xỉu, oatly latte, cold brew, bánh...)"
+              placeholder="Tìm món ngon: cà phê muối, bạc xỉu, oatly latte, freeze trà sen, croissant..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-9 py-2.5 rounded-xl bg-stone-50/80 border border-stone-200 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 transition"
+              className="w-full pl-10 pr-9 py-2.5 rounded-xl bg-stone-50/80 border border-stone-200 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#b22830]/30 focus:border-[#b22830] transition font-medium"
             />
             {searchQuery && (
               <button
@@ -237,21 +310,39 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
             )}
           </div>
 
-          {/* Grouped Taste/Tag Filters */}
+          {/* Grouped Taste/Tag Filters with Highlands Inspired Colors */}
           <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0 scrollbar-none">
-            {filterTags.map((t) => (
-              <button
-                key={t.id}
-                onClick={() => setFilterTag(t.id)}
-                className={`px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer ${
-                  filterTag === t.id
-                    ? 'bg-amber-900 text-white shadow-2xs font-bold'
-                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200 hover:text-stone-900'
-                }`}
-              >
-                {t.label}
-              </button>
-            ))}
+            {filterTags.map((t) => {
+              const isTagActive = filterTag === t.id;
+              let activeStyle = 'bg-[#8f1920] text-white shadow-md font-bold';
+              let badgeColor = 'bg-stone-100 text-stone-700 hover:bg-stone-200';
+              
+              if (t.id === 'best-seller') {
+                activeStyle = 'bg-gradient-to-r from-red-600 to-rose-700 text-white shadow-md ring-2 ring-amber-400/80 font-black';
+                badgeColor = 'bg-red-50 text-red-700 hover:bg-red-100 border border-red-200/60 font-semibold';
+              } else if (t.id === 'signature') {
+                activeStyle = 'bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 text-stone-950 shadow-md ring-2 ring-amber-300 font-black';
+                badgeColor = 'bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200/60 font-semibold';
+              } else if (t.id === 'cold') {
+                activeStyle = 'bg-gradient-to-r from-sky-600 to-blue-700 text-white shadow-md ring-2 ring-sky-300 font-bold';
+                badgeColor = 'bg-sky-50 text-sky-800 hover:bg-sky-100 border border-sky-200/60 font-semibold';
+              } else if (t.id === 'hot') {
+                activeStyle = 'bg-gradient-to-r from-orange-600 to-amber-700 text-white shadow-md ring-2 ring-orange-300 font-bold';
+                badgeColor = 'bg-orange-50 text-orange-800 hover:bg-orange-100 border border-orange-200/60 font-semibold';
+              }
+
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => setFilterTag(t.id)}
+                  className={`px-3 py-2 rounded-xl text-xs whitespace-nowrap transition cursor-pointer active:scale-95 ${
+                    isTagActive ? activeStyle : badgeColor
+                  }`}
+                >
+                  {t.label}
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -259,11 +350,11 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
         {hasActiveFilters && (
           <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-600">
             <span>
-              Tìm thấy <strong>{filteredItems.length}</strong> món phù hợp
+              Tìm thấy <strong className="text-[#b22830]">{filteredItems.length}</strong> món phù hợp
             </span>
             <button
               onClick={handleResetFilters}
-              className="text-amber-800 hover:text-amber-950 font-bold flex items-center gap-1 cursor-pointer hover:underline"
+              className="text-[#b22830] hover:text-[#8f1920] font-bold flex items-center gap-1 cursor-pointer hover:underline"
             >
               <RotateCcw className="w-3 h-3" />
               <span>Xóa bộ lọc (Xem tất cả)</span>

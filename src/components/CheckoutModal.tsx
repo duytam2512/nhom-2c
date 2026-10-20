@@ -66,8 +66,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const orderCode = `GNC-${Math.floor(1000 + Math.random() * 9000)}`;
   const bankAccount = '1288889999';
   const bankName = 'BIDV - CN TP.HCM';
-  const accountHolder = 'GO AND GRAB COFFEE';
-  const transferContent = `GOCAFE ${orderCode}`;
+  const accountHolder = 'GO COFFEE';
+  const transferContent = `GOCOFFEE ${orderCode}`;
 
   // VietQR Image URL
   const vietQrUrl = `https://img.vietqr.io/image/970418-${bankAccount}-compact2.png?amount=${total}&addInfo=${encodeURIComponent(transferContent)}&accountName=${encodeURIComponent(accountHolder)}`;
@@ -383,8 +383,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               </div>
               <p>
                 {orderType === 'pickup'
-                  ? 'Quý khách vui lòng thanh toán trực tiếp tại quầy thu ngân Go & Grab khi đọc mã đơn hàng.'
-                  : 'Tài xế Go & Grab sẽ thu đúng số tiền đơn hàng khi giao cà phê đến tận tay bạn.'}
+                  ? 'Quý khách vui lòng thanh toán trực tiếp tại quầy thu ngân Go Coffee khi đọc mã đơn hàng.'
+                  : 'Tài xế Go Coffee sẽ thu đúng số tiền đơn hàng khi giao cà phê đến tận tay bạn.'}
               </p>
             </div>
           )}

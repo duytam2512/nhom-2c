@@ -1,377 +1,411 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
-  MessageSquare, 
+  Bot, 
   X, 
   Send, 
   Sparkles, 
   Coffee, 
-  Bot, 
-  ChevronDown, 
-  RefreshCw, 
-  Plus, 
   Flame, 
   Tag, 
-  Zap,
-  CornerDownLeft
+  Calendar, 
+  RotateCcw, 
+  Minimize2, 
+  Maximize2,
+  CheckCircle2,
+  AlertCircle,
+  ExternalLink
 } from 'lucide-react';
-import { MenuItem } from '../types/coffee';
-import { MENU_ITEMS } from '../data/coffeeData';
 
-interface ChatMessage {
+export interface ChatMessage {
   id: string;
-  role: 'assistant' | 'user';
+  role: 'user' | 'assistant';
   content: string;
-  recommendedItemId?: string;
-  timestamp: string;
+  timestamp: Date;
+  suggestedAction?: {
+    type: 'menu' | 'booking' | 'cart';
+    label: string;
+  };
 }
 
 interface ChatbotWidgetProps {
-  onSelectItem: (item: MenuItem) => void;
+  isOpen: boolean;
+  onToggle: () => void;
+  onOpenTableBooking?: () => void;
+  onScrollToMenu?: () => void;
 }
 
-export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({ onSelectItem }) => {
-  const [isOpen, setIsOpen] = useState(false);
+const INITIAL_MESSAGES: ChatMessage[] = [
+  {
+    id: 'welcome-1',
+    role: 'assistant',
+    content: `Dạ chào bạn! Mình là **Barista AI** của **Go Coffee** ☕✨
+
+Rất vui được đồng hành cùng bạn hôm nay! Bạn muốn tìm ly **Phin Sữa Đá Cầu Đất** đậm đà tỉnh táo, ly **Cà Phê Muối Cố Đô** béo ngậy vị biển, ly **Cold Brew Cam Sả** thanh mát giải nhiệt, hay món đá xay **Freeze Trà Xanh** thạch giòn sần sật?
+
+💡 **Ưu đãi hôm nay:** Nhập mã **GOCOFFEE20** để được giảm ngay 20% khi đặt món mang đi hoặc giao tận nơi nhé!`,
+    timestamp: new Date(),
+  },
+];
+
+const QUICK_SUGGESTIONS = [
+  { label: '🔥 Best-seller Go Coffee?', query: 'Go Coffee có những món nào bán chạy và được yêu thích nhất?' },
+  { label: '☕ Phin sữa đá vs PhinDi?', query: 'Cà phê Phin Sữa Đá và dòng PhinDi Hạnh Nhân khác nhau như thế nào?' },
+  { label: '🍵 Freeze Trà Xanh có gì ngon?', query: 'Freeze Trà Xanh của quán có những thành phần và topping gì?' },
+  { label: '🌿 Trà Sen Vàng ít ngọt?', query: 'Trà Sen Vàng hạt sen có vị như thế nào, mình muốn uống ít ngọt có được không?' },
+  { label: '🎟️ Mã giảm giá Go Coffee', query: 'Hôm nay Go Coffee có những voucher mã giảm giá nào?' },
+  { label: '🪑 Đặt bàn & Google Sheet', query: 'Làm sao để đặt bàn giữ chỗ trước tại Go Coffee và đồng bộ Google Sheet?' },
+];
+
+export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
+  isOpen,
+  onToggle,
+  onOpenTableBooking,
+  onScrollToMenu,
+}) => {
+  const [messages, setMessages] = useState<ChatMessage[]>(INITIAL_MESSAGES);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: 'welcome-1',
-      role: 'assistant',
-      content: 'Chào bạn! Mình là Barista AI của Go & Grab Coffee ☕ Bạn đang tìm một ly cà phê đậm đà giúp tỉnh táo buổi sáng, hay một ly trà trái cây thanh mát cho buổi chiều?',
-      timestamp: 'Vừa xong',
-    },
-  ]);
+  const [isMinimized, setIsMinimized] = useState(false);
+  const [hasUnread, setHasUnread] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const quickPrompts = [
-    { label: '🪑 Đặt bàn trước', query: 'Tôi muốn đặt bàn trước cho nhóm bạn thì làm thế nào?' },
-    { label: '🔥 Món bán chạy nhất?', query: 'Quán có những món nào bán chạy nhất?' },
-    { label: '☕ Cà phê muối có vị gì?', query: 'Cà phê muối xứ Huế của quán có gì đặc biệt?' },
-    { label: '🏷️ Mã giảm giá hôm nay', query: 'Hôm nay có những mã voucher ưu đãi nào?' },
-    { label: '🌿 Đồ uống thanh mát ít ngọt', query: 'Gợi ý cho mình đồ uống thanh mát, ít ngọt hoặc ít calo' },
-    { label: '⚡ Cách nhận hàng 5 phút', query: 'Làm sao để ghé lấy cà phê trong 5 phút không phải chờ?' },
-  ];
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !isMinimized) {
       scrollToBottom();
-      setTimeout(() => inputRef.current?.focus(), 200);
+      setHasUnread(false);
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
     }
-  }, [isOpen, messages]);
+  }, [isOpen, isMinimized, messages]);
 
-  // Match drink name in message to attach quick order button
-  const detectRecommendedItem = (text: string): MenuItem | undefined => {
-    const lower = text.toLowerCase();
-    return MENU_ITEMS.find((item) => 
-      lower.includes(item.name.toLowerCase()) || 
-      (item.vietnameseName && lower.includes(item.vietnameseName.toLowerCase()))
-    );
-  };
-
-  const handleSend = async (textToSend?: string) => {
-    const query = (textToSend || inputMessage).trim();
-    if (!query || isLoading) return;
+  const handleSendMessage = async (textToSend?: string) => {
+    const text = (textToSend || inputMessage).trim();
+    if (!text || isLoading) return;
 
     const userMsg: ChatMessage = {
       id: `user-${Date.now()}`,
       role: 'user',
-      content: query,
-      timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+      content: text,
+      timestamp: new Date(),
     };
 
     setMessages((prev) => [...prev, userMsg]);
-    setInputMessage('');
+    if (!textToSend) setInputMessage('');
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/chat', {
+      // Build conversation payload for backend /api/chat
+      const historyPayload = [...messages, userMsg].map((m) => ({
+        role: m.role,
+        content: m.content,
+      }));
+
+      const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: [...messages, userMsg].map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
-          message: query,
+          messages: historyPayload,
+          message: text,
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('API response not ok');
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
       }
 
-      const data = await response.json();
-      const replyText = data.reply || 'Cảm ơn bạn đã nhắn tin! Barista Go & Grab chúc bạn một ngày tràn đầy năng lượng.';
-      const recommended = detectRecommendedItem(replyText);
+      const data = await res.json();
+      const botReply = data.reply || 'Dạ Barista AI đã ghi nhận yêu cầu của bạn!';
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `ai-${Date.now()}`,
-          role: 'assistant',
-          content: replyText,
-          recommendedItemId: recommended ? recommended.id : undefined,
-          timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
-        },
-      ]);
-    } catch (err) {
-      // Local fallback with barista logic
-      let fallbackReply = 'Dạ mình là Barista AI của Go & Grab. Bạn có thể thử ly Cà Phê Muối Xứ Huế (39k) hoặc Bạc Xỉu 3 Tầng (35k) rất được yêu thích! Đừng quên nhập mã GRAB20 để được giảm 20% nhé.';
-      const qLower = query.toLowerCase();
-
-      if (qLower.includes('muối')) {
-        fallbackReply = 'Cà Phê Muối Xứ Huế (39.000đ) là món Signature bán chạy số 1 của Go & Grab! Cốt Robusta Cầu Đất đậm đà kết hợp với lớp kem sữa muối biển mềm mịn, vị ngọt béo mằn mặn hòa quyện cực kỳ lôi cuốn.';
-      } else if (qLower.includes('mã') || qLower.includes('giảm giá') || qLower.includes('voucher') || qLower.includes('khuyến mãi')) {
-        fallbackReply = 'Hiện quán đang có 3 mã ưu đãi siêu hời:\n• GRAB20: Giảm 20% cho đơn từ 50k\n• FREESHIP: Miễn phí giao hàng tới 18k cho đơn từ 80k\n• BANMOI15: Giảm ngay 15k cho khách thân thiết!';
-      } else if (qLower.includes('ít ngọt') || qLower.includes('thanh mát') || qLower.includes('calo') || qLower.includes('healthy')) {
-        fallbackReply = 'Nếu bạn thích thanh mát nhẹ nhàng, mình khuyên bạn nên thử: Cold Brew Cam Vàng Sả (46k - ủ lạnh 24h chỉ 55 kcal) hoặc Oatly Vanilla Latte (52k - sữa yến mạch thuần chay không đường lactose).';
-      } else if (qLower.includes('5 phút') || qLower.includes('lấy') || qLower.includes('nhận hàng')) {
-        fallbackReply = 'Với dịch vụ Go & Grab, bạn chỉ cần đặt món và thanh toán qua VietQR trên website trước khi xuất phát 5 phút. Khi tới quầy, đồ uống đã sẵn sàng tại tủ giữ nhiệt/kệ ưu tiên, bạn chỉ cần đọc mã đơn là lấy ngay!';
-      } else if (qLower.includes('đặt bàn') || qLower.includes('dat ban') || qLower.includes('bàn') || qLower.includes('chỗ')) {
-        fallbackReply = 'Go & Grab Coffee hỗ trợ giữ chỗ và đặt bàn hoàn toàn miễn phí! Bạn hãy bấm nút "Đặt Bàn" trên menu, điền Họ tên, Số điện thoại, Email và Số lượng khách tham gia. Quán sẽ gửi vé xác nhận điện tử và chuẩn bị sẵn không gian đẹp nhất cho bạn!';
+      // Detect actions in bot response
+      let suggestedAction: ChatMessage['suggestedAction'] = undefined;
+      const lowerReply = botReply.toLowerCase();
+      if (lowerReply.includes('đặt bàn') || lowerReply.includes('giữ chỗ') || lowerReply.includes('khung giờ')) {
+        suggestedAction = { type: 'booking', label: '🪑 Đặt Bàn Ngay' };
+      } else if (lowerReply.includes('thực đơn') || lowerReply.includes('món') || lowerReply.includes('cà phê muối') || lowerReply.includes('cold brew')) {
+        suggestedAction = { type: 'menu', label: '☕ Xem Thực Đơn Đầy Đủ' };
       }
 
-      const recommended = detectRecommendedItem(fallbackReply);
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `ai-${Date.now()}`,
-          role: 'assistant',
-          content: fallbackReply,
-          recommendedItemId: recommended ? recommended.id : undefined,
-          timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
-        },
-      ]);
+      const botMsg: ChatMessage = {
+        id: `bot-${Date.now()}`,
+        role: 'assistant',
+        content: botReply,
+        timestamp: new Date(),
+        suggestedAction,
+      };
+
+      setMessages((prev) => [...prev, botMsg]);
+
+      if (!isOpen) {
+        setHasUnread(true);
+      }
+    } catch (err: any) {
+      console.error('Lỗi gọi Barista AI:', err);
+      const fallbackMsg: ChatMessage = {
+        id: `bot-fallback-${Date.now()}`,
+        role: 'assistant',
+        content: `Dạ hiện tại máy chủ AI đang tải nhiều lượt yêu cầu cùng lúc. Bạn có thể thử ngay 2 món bán chạy nhất quán là **Cà Phê Muối Xứ Huế** (39k) hoặc **Cold Brew Cam Sả** (46k), áp dụng mã **GRAB20** để được giảm 20% nhé!`,
+        timestamp: new Date(),
+        suggestedAction: { type: 'menu', label: '☕ Xem Menu & Đặt Món' },
+      };
+      setMessages((prev) => [...prev, fallbackMsg]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleOrderRecommended = (itemId: string) => {
-    const found = MENU_ITEMS.find((it) => it.id === itemId);
-    if (found) {
-      onSelectItem(found);
-      setIsOpen(false);
-    }
+  const handleResetChat = () => {
+    setMessages(INITIAL_MESSAGES);
+  };
+
+  const formatMessageText = (content: string) => {
+    // Basic Markdown bold parser for clean display
+    const parts = content.split(/(\*\*.*?\*\*)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return (
+          <strong key={index} className="font-bold text-stone-900">
+            {part.slice(2, -2)}
+          </strong>
+        );
+      }
+      return <span key={index}>{part}</span>;
+    });
   };
 
   return (
     <>
-      {/* Floating Widget Trigger Button */}
-      {!isOpen && (
-        <div className="fixed bottom-5 left-5 z-40">
-          <button
-            onClick={() => setIsOpen(true)}
-            className="group relative flex items-center gap-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-[#2c140a] via-[#3a1d0f] to-[#1c0c06] hover:from-amber-900 hover:to-stone-900 text-white font-bold text-xs sm:text-sm shadow-2xl ring-2 ring-amber-500/40 hover:ring-amber-400 active:scale-95 transition-all duration-300 cursor-pointer"
-            title="Chat với Barista AI"
-          >
-            {/* Pulsing indicator */}
-            <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-white" />
-            </span>
+      {/* Floating Launcher Button */}
+      <div className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-40">
+        <button
+          onClick={onToggle}
+          aria-label="Mở Chat với Barista . Go Coffee"
+          className="relative group flex items-center gap-2.5 px-4 py-3 sm:px-5 sm:py-3.5 rounded-full bg-gradient-to-r from-[#8c141c] via-[#b22830] to-[#8c141c] text-white shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 ring-2 ring-amber-300/60 cursor-pointer"
+        >
+          {/* Glowing Aura */}
+          <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-red-600 via-amber-400 to-red-600 opacity-30 blur-sm group-hover:opacity-75 transition duration-500 animate-pulse" />
 
-            {/* Icon */}
-            <div className="w-7 h-7 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center border border-amber-400/30 group-hover:rotate-12 transition-transform">
-              <Bot className="w-4 h-4 text-amber-300" />
+          {/* Icon */}
+          <div className="relative w-8 h-8 rounded-full bg-amber-400 text-stone-950 flex items-center justify-center font-bold shadow-inner">
+            <Sparkles className="w-4 h-4 text-stone-900 animate-spin-slow" />
+            {hasUnread && !isOpen && (
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full ring-2 ring-white animate-ping" />
+            )}
+          </div>
+
+          {/* Text on Desktop */}
+          <div className="relative text-left hidden sm:block">
+            <div className="text-[10px] uppercase font-black tracking-wider text-amber-200 flex items-center gap-1">
+              <span>Google Gemini AI</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             </div>
-
-            <div className="flex flex-col text-left">
-              <span className="font-bold text-xs tracking-tight text-white flex items-center gap-1">
-                Barista AI
-                <Sparkles className="w-3 h-3 text-amber-400" />
-              </span>
-              <span className="text-[10px] text-amber-200/80 font-normal hidden sm:inline">
-                Tư vấn chọn cà phê
-              </span>
+            <div className="text-xs font-bold leading-tight text-white">
+              Chat với Barista . Go Coffee
             </div>
-          </button>
-        </div>
-      )}
+          </div>
 
-      {/* Chat Window Panel */}
+          {/* Mobile Badge */}
+          <span className="relative sm:hidden text-xs font-bold text-amber-100">
+            Chat với Barista
+          </span>
+        </button>
+      </div>
+
+      {/* Main Chatbot Window */}
       {isOpen && (
-        <div className="fixed bottom-5 left-5 z-50 w-[92vw] sm:w-[400px] h-[560px] max-h-[85vh] bg-white rounded-3xl shadow-2xl border border-stone-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
-          
-          {/* Header */}
-          <div className="p-3.5 sm:p-4 bg-gradient-to-r from-[#2c140a] via-[#3a1d0f] to-[#1c0c06] text-white flex items-center justify-between shadow-sm">
+        <div 
+          className={`fixed z-50 transition-all duration-300 ease-in-out shadow-2xl rounded-2xl overflow-hidden border border-amber-900/20 bg-stone-50 flex flex-col ${
+            isMinimized 
+              ? 'bottom-20 right-5 sm:bottom-24 sm:right-6 w-72 h-14' 
+              : 'bottom-20 right-4 sm:bottom-24 sm:right-6 w-[calc(100vw-2rem)] sm:w-[410px] h-[580px] max-h-[82vh]'
+          }`}
+        >
+          {/* Header - Highlands Crimson Red Styling */}
+          <div className="bg-gradient-to-r from-[#7a1218] via-[#9e1c24] to-[#7a1218] text-white p-3.5 sm:p-4 flex items-center justify-between shadow-md shrink-0 border-b border-amber-500/20">
             <div className="flex items-center gap-2.5">
-              <div className="relative">
-                <div className="w-9 h-9 rounded-xl bg-amber-800 border border-amber-600/40 flex items-center justify-center text-amber-200">
-                  <Coffee className="w-5 h-5 text-amber-300" />
-                </div>
-                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#2c140a]" />
+              <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-amber-300 to-amber-500 text-stone-950 flex items-center justify-center font-black shadow-md">
+                <Coffee className="w-5 h-5 text-stone-900" />
+                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-1.5 ring-white" />
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <h4 className="font-bold text-xs sm:text-sm font-display tracking-tight text-white">
-                    Barista AI Go & Grab
-                  </h4>
-                  <span className="text-[9px] font-black uppercase bg-amber-500/20 text-amber-300 border border-amber-400/30 px-1.5 py-0.2 rounded">
-                    GPT-Gemini
+                  <h3 className="text-sm font-bold text-white tracking-wide">
+                    Chat với Barista . Go Coffee
+                  </h3>
+                  <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-amber-400 text-stone-950 shadow-2xs">
+                    Gemini 3.8
                   </span>
                 </div>
-                <p className="text-[10px] text-amber-200/80">Trực tuyến • Trợ lý tư vấn đồ uống 24/7</p>
+                <div className="text-[11px] text-amber-200/90 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+                  <span>Trực tuyến 24/7 • Tư vấn món hợp khẩu vị</span>
+                </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-1">
+            {/* Actions: Reset, Minimize, Close */}
+            <div className="flex items-center gap-1 text-white/80">
               <button
-                onClick={() => setMessages([
-                  {
-                    id: 'welcome-reset',
-                    role: 'assistant',
-                    content: 'Chào bạn! Mình có thể giúp gì cho bạn về menu đồ uống, mã ưu đãi hoặc thời gian lấy cà phê?',
-                    timestamp: 'Vừa xong',
-                  }
-                ])}
-                className="p-1.5 rounded-lg text-amber-200 hover:text-white hover:bg-white/10 transition"
-                title="Làm mới hội thoại"
+                onClick={handleResetChat}
+                title="Làm mới cuộc trò chuyện"
+                className="p-1.5 rounded-lg hover:bg-white/10 hover:text-white transition cursor-pointer"
               >
-                <RefreshCw className="w-3.5 h-3.5" />
+                <RotateCcw className="w-3.5 h-3.5" />
               </button>
               <button
-                onClick={() => setIsOpen(false)}
-                className="p-1.5 rounded-lg text-amber-200 hover:text-white hover:bg-white/10 transition"
+                onClick={() => setIsMinimized(!isMinimized)}
+                title={isMinimized ? 'Phóng to' : 'Thu nhỏ'}
+                className="p-1.5 rounded-lg hover:bg-white/10 hover:text-white transition cursor-pointer"
+              >
+                {isMinimized ? <Maximize2 className="w-3.5 h-3.5" /> : <Minimize2 className="w-3.5 h-3.5" />}
+              </button>
+              <button
+                onClick={onToggle}
                 title="Đóng chat"
+                className="p-1.5 rounded-lg hover:bg-white/20 hover:text-white transition cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
           </div>
 
-          {/* Messages Container */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-stone-50/60">
-            {messages.map((msg) => {
-              const isAssistant = msg.role === 'assistant';
-              const recommendedItem = msg.recommendedItemId 
-                ? MENU_ITEMS.find((it) => it.id === msg.recommendedItemId) 
-                : undefined;
-
-              return (
-                <div
-                  key={msg.id}
-                  className={`flex gap-2.5 ${isAssistant ? 'justify-start' : 'justify-end'}`}
-                >
-                  {isAssistant && (
-                    <div className="w-7 h-7 rounded-full bg-amber-800 text-white flex items-center justify-center text-xs shrink-0 mt-1 shadow-2xs">
-                      ☕
-                    </div>
-                  )}
-
-                  <div className={`max-w-[82%] space-y-2 ${isAssistant ? 'text-left' : 'text-right'}`}>
+          {/* If minimized, hide body */}
+          {!isMinimized && (
+            <>
+              {/* Message List */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-gradient-to-b from-stone-100/60 to-white text-xs">
+                {messages.map((msg) => (
+                  <div
+                    key={msg.id}
+                    className={`flex flex-col ${
+                      msg.role === 'user' ? 'items-end' : 'items-start'
+                    }`}
+                  >
                     <div
-                      className={`p-3 rounded-2xl text-xs sm:text-[13px] leading-relaxed shadow-2xs whitespace-pre-line ${
-                        isAssistant
-                          ? 'bg-white text-stone-800 border border-stone-200/80 rounded-tl-sm'
-                          : 'bg-amber-800 text-white rounded-tr-sm font-medium'
+                      className={`max-w-[85%] rounded-2xl p-3.5 leading-relaxed shadow-xs ${
+                        msg.role === 'user'
+                          ? 'bg-gradient-to-r from-[#9e1c24] to-[#b22830] text-white rounded-tr-xs'
+                          : 'bg-white text-stone-800 border border-stone-200/80 rounded-tl-xs'
                       }`}
                     >
-                      {msg.content}
+                      <div className="whitespace-pre-wrap">
+                        {formatMessageText(msg.content)}
+                      </div>
+
+                      {/* Interactive Button in AI response */}
+                      {msg.suggestedAction && (
+                        <div className="mt-2.5 pt-2 border-t border-stone-100 flex items-center gap-2">
+                          {msg.suggestedAction.type === 'booking' && (
+                            <button
+                              onClick={() => {
+                                onOpenTableBooking?.();
+                              }}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-[11px] shadow-xs transition cursor-pointer"
+                            >
+                              <Calendar className="w-3.5 h-3.5" />
+                              <span>{msg.suggestedAction.label}</span>
+                            </button>
+                          )}
+                          {msg.suggestedAction.type === 'menu' && (
+                            <button
+                              onClick={() => {
+                                onScrollToMenu?.();
+                              }}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#b22830] hover:bg-[#8c141c] text-white font-bold text-[11px] shadow-xs transition cursor-pointer"
+                            >
+                              <Coffee className="w-3.5 h-3.5" />
+                              <span>{msg.suggestedAction.label}</span>
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
 
-                    {/* Interactive Recommended Drink Card within Assistant reply */}
-                    {isAssistant && recommendedItem && (
-                      <div className="p-2.5 bg-amber-50/80 border border-amber-200 rounded-xl flex items-center justify-between gap-3 text-left animate-in fade-in">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <img
-                            src={recommendedItem.image}
-                            alt={recommendedItem.name}
-                            className="w-10 h-10 rounded-lg object-cover shrink-0"
-                          />
-                          <div className="truncate">
-                            <h5 className="font-bold text-xs text-stone-900 truncate">
-                              {recommendedItem.name}
-                            </h5>
-                            <span className="text-[11px] font-extrabold text-amber-900">
-                              {recommendedItem.price.toLocaleString('vi-VN')}đ
-                            </span>
-                          </div>
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={() => handleOrderRecommended(recommendedItem.id)}
-                          className="px-2.5 py-1.5 rounded-lg bg-amber-800 hover:bg-amber-900 text-white text-[11px] font-bold shrink-0 flex items-center gap-1 shadow-2xs transition"
-                        >
-                          <Plus className="w-3 h-3" />
-                          <span>Đặt món</span>
-                        </button>
-                      </div>
-                    )}
-
-                    <span className="text-[9px] text-stone-400 block px-1">
-                      {msg.timestamp}
+                    {/* Timestamp */}
+                    <span className="text-[10px] text-stone-400 mt-1 px-1">
+                      {new Intl.DateTimeFormat('vi-VN', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      }).format(msg.timestamp)}
                     </span>
                   </div>
-                </div>
-              );
-            })}
+                ))}
 
-            {isLoading && (
-              <div className="flex gap-2.5 items-center text-xs text-stone-500">
-                <div className="w-7 h-7 rounded-full bg-amber-800 text-white flex items-center justify-center text-xs shrink-0">
-                  ☕
-                </div>
-                <div className="bg-white border border-stone-200 p-2.5 rounded-2xl rounded-tl-sm flex items-center gap-1.5 text-[11px] shadow-2xs">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-700 animate-bounce" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-700 animate-bounce [animation-delay:0.2s]" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-700 animate-bounce [animation-delay:0.4s]" />
-                  <span className="text-stone-400 pl-1">Barista đang suy nghĩ...</span>
+                {/* Loading indicator */}
+                {isLoading && (
+                  <div className="flex items-start gap-2">
+                    <div className="w-6 h-6 rounded-full bg-amber-400 text-stone-950 flex items-center justify-center font-bold text-[10px] shrink-0">
+                      ☕
+                    </div>
+                    <div className="bg-white border border-stone-200/80 rounded-2xl rounded-tl-xs p-3 text-stone-600 shadow-xs flex items-center gap-2">
+                      <span className="text-xs font-medium text-amber-900">Barista AI đang suy nghĩ</span>
+                      <div className="flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-bounce" style={{ animationDelay: '0ms' }} />
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-bounce" style={{ animationDelay: '150ms' }} />
+                        <span className="w-1.5 h-1.5 rounded-full bg-stone-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div ref={messagesEndRef} />
+              </div>
+
+              {/* Quick Prompt Suggestions */}
+              <div className="px-3 py-2 bg-stone-100/90 border-t border-stone-200/60 overflow-x-auto whitespace-nowrap scrollbar-none flex items-center gap-1.5">
+                {QUICK_SUGGESTIONS.map((sug, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleSendMessage(sug.query)}
+                    disabled={isLoading}
+                    className="shrink-0 px-2.5 py-1 rounded-full text-[11px] font-medium bg-white hover:bg-amber-50 text-stone-700 hover:text-[#b22830] border border-stone-200 hover:border-amber-300 transition shadow-2xs disabled:opacity-50 cursor-pointer active:scale-95"
+                  >
+                    {sug.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Chat Input */}
+              <div className="p-3 bg-white border-t border-stone-200/80">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSendMessage();
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                    placeholder="Hỏi Barista AI về món, giá, mã giảm giá..."
+                    disabled={isLoading}
+                    className="flex-1 px-3.5 py-2.5 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b22830]/40 focus:border-[#b22830] placeholder:text-stone-400 transition"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!inputMessage.trim() || isLoading}
+                    className="p-2.5 rounded-xl bg-gradient-to-r from-[#9e1c24] to-[#b22830] text-white hover:opacity-95 active:scale-95 transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-md"
+                  >
+                    <Send className="w-4 h-4" />
+                  </button>
+                </form>
+
+                {/* Subtext info */}
+                <div className="mt-1.5 text-center flex items-center justify-center gap-1.5 text-[10px] text-stone-400">
+                  <Sparkles className="w-2.5 h-2.5 text-amber-500" />
+                  <span>Powered by Google Gemini API • Trả lời tức thì 24/7</span>
                 </div>
               </div>
-            )}
-
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Quick Prompts Chips */}
-          <div className="px-3 py-2 bg-stone-100/70 border-t border-stone-200 overflow-x-auto scrollbar-none flex items-center gap-1.5 shrink-0">
-            {quickPrompts.map((p, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => handleSend(p.query)}
-                className="text-[10px] sm:text-[11px] whitespace-nowrap px-2.5 py-1 rounded-full bg-white border border-stone-200 text-stone-700 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-900 transition font-medium shrink-0 cursor-pointer"
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Input Box */}
-          <div className="p-3 bg-white border-t border-stone-200 shrink-0">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSend();
-              }}
-              className="flex items-center gap-2"
-            >
-              <input
-                ref={inputRef}
-                type="text"
-                placeholder="Hỏi Barista: vị cà phê, lượng calo, mã giảm..."
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                className="flex-1 text-xs px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-200 focus:outline-none focus:ring-1 focus:ring-amber-800 focus:border-amber-800"
-              />
-              <button
-                type="submit"
-                disabled={!inputMessage.trim() || isLoading}
-                className="w-9 h-9 rounded-xl bg-amber-800 hover:bg-amber-900 disabled:opacity-40 text-white flex items-center justify-center transition shadow-2xs shrink-0 cursor-pointer"
-              >
-                <Send className="w-4 h-4" />
-              </button>
-            </form>
-          </div>
-
+            </>
+          )}
         </div>
       )}
     </>

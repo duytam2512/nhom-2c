@@ -37,10 +37,11 @@ interface TableBookingModalProps {
   selectedStore: StoreLocation;
   onBookingSuccess?: (reservation: TableReservation) => void;
   onGoToMenu?: () => void;
+  initialTab?: 'form' | 'sheets' | 'telegram';
 }
 
 const APPS_SCRIPT_CODE = `/**
- * GO & GRAB COFFEE - APPS SCRIPT ĐỒNG BỘ GOOGLE SHEET & TELEGRAM BOT
+ * GO COFFEE - APPS SCRIPT ĐỒNG BỘ GOOGLE SHEET & TELEGRAM BOT
  * Bot Telegram: @Duyaasaa_bot (Token: 8910810986:AAGiT37Uh5zlmRIzGghPsdQXuxA2WITobHw)
  * Email chủ quán: duykhaikhan@gmail.com
  *
@@ -50,32 +51,21 @@ const APPS_SCRIPT_CODE = `/**
  * 3. Loại: Ứng dụng web (Web app)
  * 4. Thực thi dưới dạng: Tôi (duykhaikhan@gmail.com)
  * 5. BẮT BUỘC: "Ai có quyền truy cập" (Who has access) -> Chọn "Bất kỳ ai" (Anyone)
- * 6. Copy Web App URL kết thúc bằng /exec và dán vào website Go & Grab!
+ * 6. Copy Web App URL kết thúc bằng /exec và dán vào website Go Coffee!
  */
 
 var TELEGRAM_BOT_TOKEN = "8910810986:AAGiT37Uh5zlmRIzGghPsdQXuxA2WITobHw";
-var DEFAULT_TELEGRAM_CHAT_ID = ""; // Có thể điền Chat ID của bạn ở đây
+var DEFAULT_TELEGRAM_CHAT_ID = ""; // Điền Chat ID Telegram của bạn nếu muốn
 
-function recordBooking(data) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-
+function getOrCreateSheet(name, headers) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(name);
+  if (!sheet) {
+    sheet = ss.insertSheet(name);
+  }
   if (sheet.getLastRow() === 0) {
-    sheet.appendRow([
-      "Thời Gian Đặt",
-      "Mã Đặt Bàn",
-      "Họ Và Tên",
-      "Số Điện Thoại",
-      "Email",
-      "Số Lượng Khách",
-      "Ngày Nhận Bàn",
-      "Khung Giờ",
-      "Chi Nhánh",
-      "Khu Vực Bàn",
-      "Yêu Cầu Đặc Biệt",
-      "Trạng Thái"
-    ]);
-
-    var headerRange = sheet.getRange(1, 1, 1, 12);
+    sheet.appendRow(headers);
+    var headerRange = sheet.getRange(1, 1, 1, headers.length);
     headerRange.setBackground("#382215");
     headerRange.setFontColor("#FFFFFF");
     headerRange.setFontWeight("bold");
@@ -83,6 +73,26 @@ function recordBooking(data) {
     sheet.setRowHeight(1, 35);
     sheet.setFrozenRows(1);
   }
+  return sheet;
+}
+
+// 1. Ghi nhận Đặt Bàn Giữ Chỗ
+function recordBooking(data) {
+  var headers = [
+    "Thời Gian Đặt",
+    "Mã Đặt Bàn",
+    "Họ Và Tên",
+    "Số Điện Thoại",
+    "Email",
+    "Số Lượng Khách",
+    "Ngày Nhận Bàn",
+    "Khung Giờ",
+    "Chi Nhánh",
+    "Khu Vực Bàn",
+    "Ghi Chú",
+    "Trạng Thái"
+  ];
+  var sheet = getOrCreateSheet("Đặt Bàn Go Coffee", headers);
 
   var timestamp = Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "dd/MM/yyyy HH:mm:ss");
   var code = data.code || ("TB-" + Math.floor(1000 + Math.random() * 9000));
@@ -92,7 +102,7 @@ function recordBooking(data) {
   var guests = data.guestCount || data.guests || 2;
   var date = data.date || Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "yyyy-MM-dd");
   var timeSlot = data.timeSlot || "09:00";
-  var storeName = data.storeName || (data.store ? data.store.name : "Go & Grab Coffee");
+  var storeName = data.storeName || (data.store ? data.store.name : "Go Coffee");
   var seatingArea = data.seatingArea || "Khu vực chuẩn";
   var note = data.note || "Không có";
 
@@ -118,11 +128,11 @@ function recordBooking(data) {
   sheet.getRange(lastRow, 8).setHorizontalAlignment("center");
   sheet.getRange(lastRow, 12).setHorizontalAlignment("center");
 
-  // Gửi thông báo đến Telegram Bot nếu có chat_id
+  // Gửi thông báo đến Telegram Bot
   var chatId = data.telegramChatId || DEFAULT_TELEGRAM_CHAT_ID;
   if (chatId && TELEGRAM_BOT_TOKEN) {
     try {
-      var msg = "🔔 <b>CÓ KHÁCH ĐẶT BÀN MỚI TẠI GO & GRAB COFFEE!</b>\\n"
+      var msg = "🔔 <b>CÓ KHÁCH ĐẶT BÀN MỚI TẠI GO COFFEE!</b>\\n"
         + "━━━━━━━━━━━━━━━━━━━━\\n"
         + "📋 <b>Mã đặt bàn:</b> <code>" + code + "</code>\\n"
         + "👤 <b>Họ và tên:</b> <b>" + name + "</b>\\n"
@@ -139,15 +149,65 @@ function recordBooking(data) {
       UrlFetchApp.fetch("https://api.telegram.org/bot" + TELEGRAM_BOT_TOKEN + "/sendMessage", {
         method: "post",
         contentType: "application/json",
-        payload: JSON.stringify({
-          chat_id: chatId,
-          text: msg,
-          parse_mode: "HTML"
-        }),
+        payload: JSON.stringify({ chat_id: chatId, text: msg, parse_mode: "HTML" }),
         muteHttpExceptions: true
       });
     } catch (tgErr) {}
   }
+
+  return { success: true, code: code, row: lastRow, timestamp: timestamp };
+}
+
+// 2. Ghi nhận Đơn Hàng Cà Phê Trực Tuyến
+function recordOrder(data) {
+  var headers = [
+    "Thời Gian Đặt",
+    "Mã Đơn Hàng",
+    "Tên Khách Hàng",
+    "Số Điện Thoại",
+    "Email",
+    "Hình Thức",
+    "Địa Chỉ / Quán Lấy",
+    "Danh Sách Món",
+    "Tổng Tiền",
+    "Thanh Toán",
+    "Trạng Thái",
+    "Ghi Chú"
+  ];
+  var sheet = getOrCreateSheet("Đơn Hàng Go Coffee", headers);
+
+  var timestamp = Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "dd/MM/yyyy HH:mm:ss");
+  var code = data.code || ("ORD-" + Math.floor(1000 + Math.random() * 9000));
+  var name = data.customerName || "Khách Hàng";
+  var phone = "'" + (data.customerPhone || "");
+  var email = data.customerEmail || "";
+  var orderType = data.orderType === "delivery" ? "Giao tận nơi" : "Ghé lấy tại quầy";
+  var address = data.deliveryAddress || (data.store ? data.store.name : "Quầy thu ngân");
+  var items = data.itemsSummary || (Array.isArray(data.items) ? data.items.map(function(it) { return it.quantity + "x " + it.name + " (" + it.size + ")"; }).join(", ") : "Món đặt");
+  var total = data.total ? Number(data.total).toLocaleString("vi-VN") + " đ" : "0 đ";
+  var payment = (data.paymentMethod || "VIETQR").toUpperCase() + " (" + (data.paymentStatus === "paid" ? "Đã trả" : "Chưa trả") + ")";
+  var note = data.note || data.customerNote || "Không có";
+
+  sheet.appendRow([
+    timestamp,
+    code,
+    name,
+    phone,
+    email,
+    orderType,
+    address,
+    items,
+    total,
+    payment,
+    "Mới nhận đơn",
+    note
+  ]);
+
+  var lastRow = sheet.getLastRow();
+  sheet.getRange(lastRow, 2).setHorizontalAlignment("center");
+  sheet.getRange(lastRow, 6).setHorizontalAlignment("center");
+  sheet.getRange(lastRow, 9).setHorizontalAlignment("right");
+  sheet.getRange(lastRow, 11).setHorizontalAlignment("center");
 
   return { success: true, code: code, row: lastRow, timestamp: timestamp };
 }
@@ -162,8 +222,15 @@ function doPost(e) {
     } else if (e && e.parameter) {
       data = e.parameter;
     }
+    
+    // Phân loại: Đơn đặt món cà phê hoặc Đặt bàn
+    if (data.type === "order" || data.items || data.orderCode) {
+      var res = recordOrder(data);
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Đã lưu đơn hàng vào Google Sheet!", code: res.code, row: res.row })).setMimeType(ContentService.MimeType.JSON);
+    }
+    
     var res = recordBooking(data);
-    return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Đã lưu vào Google Sheet thành công!", code: res.code, row: res.row })).setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Đã lưu đặt bàn vào Google Sheet thành công!", code: res.code, row: res.row })).setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
     return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() })).setMimeType(ContentService.MimeType.JSON);
   } finally {
@@ -172,14 +239,20 @@ function doPost(e) {
 }
 
 function doGet(e) {
-  if (e && e.parameter && (e.parameter.customerName || e.parameter.name || e.parameter.test === "1")) {
-    var res = recordBooking(e.parameter);
-    return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Đã ghi dòng mới vào Google Sheet!", row: res.row })).setMimeType(ContentService.MimeType.JSON);
+  if (e && e.parameter) {
+    if (e.parameter.type === "order") {
+      var res = recordOrder(e.parameter);
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Đã ghi đơn hàng vào Google Sheet!", row: res.row })).setMimeType(ContentService.MimeType.JSON);
+    }
+    if (e.parameter.customerName || e.parameter.name || e.parameter.test === "1") {
+      var res = recordBooking(e.parameter);
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Đã ghi đặt bàn vào Google Sheet!", row: res.row })).setMimeType(ContentService.MimeType.JSON);
+    }
   }
-  return ContentService.createTextOutput(JSON.stringify({ status: "online", message: "Go & Grab Coffee Webhook đang hoạt động tốt!" })).setMimeType(ContentService.MimeType.JSON);
+  return ContentService.createTextOutput(JSON.stringify({ status: "online", message: "Go Coffee Webhook (Đặt bàn & Đơn hàng) đang hoạt động tốt!" })).setMimeType(ContentService.MimeType.JSON);
 }
 
-// Bấm Run (Chạy) hàm này trong Apps Script Editor để thử ghi 1 dòng mẫu ngay lập tức!
+// Bấm Run hàm này để thử ghi 1 dòng mẫu Đặt Bàn ngay lập tức
 function testBookingScript() {
   var res = recordBooking({
     code: "TEST-KHAI-01",
@@ -189,11 +262,29 @@ function testBookingScript() {
     guestCount: 2,
     date: Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "yyyy-MM-dd"),
     timeSlot: "09:00",
-    storeName: "Go & Grab Coffee",
+    storeName: "Go Coffee",
     seatingArea: "Khu làm việc yên tĩnh",
-    note: "Dòng thử nghiệm kiểm tra kết nối từ Apps Script"
+    note: "Dòng thử nghiệm đặt bàn từ Apps Script"
   });
-  Logger.log("Đã thêm thành công vào dòng: " + res.row);
+  Logger.log("Đã thêm thành công đặt bàn dòng: " + res.row);
+}
+
+// Bấm Run hàm này để thử ghi 1 dòng mẫu Đơn Hàng ngay lập tức
+function testOrderScript() {
+  var res = recordOrder({
+    code: "TEST-ORD-01",
+    customerName: "Duy Khải (Chủ Quán Test)",
+    customerPhone: "0909123456",
+    customerEmail: "duykhaikhan@gmail.com",
+    orderType: "pickup",
+    deliveryAddress: "Go Coffee Cầu Đất",
+    itemsSummary: "1x Phin Sữa Đá Cầu Đất (L), 1x Bánh mì que pate",
+    total: 64000,
+    paymentMethod: "vietqr",
+    paymentStatus: "paid",
+    note: "Thử nghiệm đơn hàng từ Apps Script"
+  });
+  Logger.log("Đã thêm thành công đơn hàng dòng: " + res.row);
 }`;
 
 export const TableBookingModal: React.FC<TableBookingModalProps> = ({
@@ -202,8 +293,15 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
   selectedStore: initialStore,
   onBookingSuccess,
   onGoToMenu,
+  initialTab = 'form',
 }) => {
-  const [activeTab, setActiveTab] = useState<'form' | 'sheets' | 'telegram'>('form');
+  const [activeTab, setActiveTab] = useState<'form' | 'sheets' | 'telegram'>(initialTab);
+
+  React.useEffect(() => {
+    if (isOpen && initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [isOpen, initialTab]);
 
   // Form fields
   const [customerName, setCustomerName] = useState('');
@@ -591,18 +689,18 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col max-h-[94vh]">
         
-        {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-stone-800 flex items-center justify-between bg-gradient-to-r from-[#241208] via-[#381c0e] to-[#1a0c06] text-white">
+        {/* Header - Highlands Crimson Red Styling */}
+        <div className="p-4 sm:p-5 border-b border-[#630f14] flex items-center justify-between bg-gradient-to-r from-[#7a1218] via-[#9e1c24] to-[#7a1218] text-white">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-800/80 border border-amber-500/40 flex items-center justify-center shrink-0">
-              <Armchair className="w-5 h-5 text-amber-300" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-stone-950 flex items-center justify-center shrink-0 shadow-md">
+              <Armchair className="w-5 h-5 text-stone-900" />
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="font-bold text-sm sm:text-base font-display tracking-tight text-white">
-                  Đặt Bàn Go & Grab Coffee
+                  Đặt Bàn Go Coffee
                 </h3>
-                <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-400 text-stone-950 px-2 py-0.5 rounded-full shadow-2xs">
                   Google Sheet & Telegram
                 </span>
               </div>
@@ -1182,7 +1280,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                   {/* Store select */}
                   <div className="sm:col-span-2">
                     <label className="block text-[11px] font-semibold text-stone-700 mb-1">
-                      Chi nhánh quán Go & Grab
+                      Chi nhánh quán Go Coffee
                     </label>
                     <div className="relative">
                       <MapPin className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -1317,7 +1415,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                   Đặt Bàn Thành Công!
                 </h4>
                 <p className="text-xs text-emerald-800">
-                  Go & Grab Coffee đã sẵn sàng tiếp đón quý khách.
+                  Go Coffee đã sẵn sàng tiếp đón quý khách.
                 </p>
                 
                 {/* Sync status pills */}

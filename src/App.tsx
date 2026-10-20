@@ -15,8 +15,8 @@ import { CartDrawer } from './components/CartDrawer';
 import { CheckoutModal } from './components/CheckoutModal';
 import { OrderTrackerModal } from './components/OrderTrackerModal';
 import { SeoShareModal } from './components/SeoShareModal';
-import { ChatbotWidget } from './components/ChatbotWidget';
 import { TableBookingModal } from './components/TableBookingModal';
+import { ChatbotWidget } from './components/ChatbotWidget';
 import { STORES } from './data/coffeeData';
 import { CartItem, MenuItem, Order, StoreLocation, Voucher, TableReservation, CoffeeCategory } from './types/coffee';
 import { ShoppingBag, CheckCircle, Sparkles, ArrowUp } from 'lucide-react';
@@ -37,7 +37,14 @@ export default function App() {
   const [isOrderTrackerOpen, setIsOrderTrackerOpen] = useState(false);
   const [isSeoShareOpen, setIsSeoShareOpen] = useState(false);
   const [isTableBookingOpen, setIsTableBookingOpen] = useState(false);
+  const [bookingModalTab, setBookingModalTab] = useState<'form' | 'sheets' | 'telegram'>('form');
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [currentOrder, setCurrentOrder] = useState<Order | null>(null);
+
+  const openBookingModal = (tab: 'form' | 'sheets' | 'telegram' = 'form') => {
+    setBookingModalTab(tab);
+    setIsTableBookingOpen(true);
+  };
 
   // Toast feedback
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -163,7 +170,8 @@ export default function App() {
         cartCount={totalCartCount}
         onOpenCart={() => setIsCartOpen(true)}
         onOpenSeoShare={() => setIsSeoShareOpen(true)}
-        onOpenTableBooking={() => setIsTableBookingOpen(true)}
+        onOpenTableBooking={openBookingModal}
+        onOpenChatbot={() => setIsChatbotOpen(true)}
         selectedStore={selectedStore}
         onSelectCategory={(category) => {
           setSelectedCategory(category);
@@ -174,8 +182,10 @@ export default function App() {
       <main className="flex-1">
         <Hero
           onOrderNow={scrollToMenu}
+          onCustomizeItem={(item) => setCustomizingItem(item)}
           onOpenSeoShare={() => setIsSeoShareOpen(true)}
           onOpenTableBooking={() => setIsTableBookingOpen(true)}
+          onOpenChatbot={() => setIsChatbotOpen(true)}
         />
 
         {/* Menu Section */}
@@ -194,6 +204,10 @@ export default function App() {
           onSelectStore={(store) => {
             setSelectedStore(store);
             showToast(`Đã chuyển điểm nhận cà phê: ${store.name}`);
+          }}
+          onOpenTableBooking={(store) => {
+            if (store) setSelectedStore(store);
+            setIsTableBookingOpen(true);
           }}
         />
       </main>
@@ -266,11 +280,13 @@ export default function App() {
         onClose={() => setIsSeoShareOpen(false)}
       />
 
-      {/* Table Reservation Modal */}
+      {/* Table Reservation & Integration Modal */}
       <TableBookingModal
         isOpen={isTableBookingOpen}
+        initialTab={bookingModalTab}
         onClose={() => {
           setIsTableBookingOpen(false);
+          setBookingModalTab('form');
           if (typeof window !== 'undefined' && window.location.pathname === '/dat-ban') {
             window.history.pushState(null, '', '/');
           }
@@ -280,9 +296,12 @@ export default function App() {
         onGoToMenu={scrollToMenu}
       />
 
-      {/* AI Barista Chatbot Widget */}
+      {/* Barista AI Chatbot Widget (Gemini 3.8 Flash) */}
       <ChatbotWidget
-        onSelectItem={(item) => setCustomizingItem(item)}
+        isOpen={isChatbotOpen}
+        onToggle={() => setIsChatbotOpen((prev) => !prev)}
+        onOpenTableBooking={() => setIsTableBookingOpen(true)}
+        onScrollToMenu={scrollToMenu}
       />
     </div>
   );

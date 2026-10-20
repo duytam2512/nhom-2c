@@ -26,9 +26,9 @@ export const SeoShareModal: React.FC<SeoShareModalProps> = ({ isOpen, onClose })
   
   if (!isOpen) return null;
 
-  const currentUrl = typeof window !== 'undefined' ? window.location.href : 'https://goandgrabcoffee.ai.studio/';
-  const displayTitle = "Go & Grab Coffee | Đặt Cà Phê Trực Tuyến & Thanh Toán Nhanh";
-  const displayDesc = "Go & Grab Coffee - Đặt cà phê đặc sản Cầu Đất, Cà phê muối xứ Huế, Cold Brew cam sả và Bạc xỉu ba tầng. Chuẩn bị trong 5 phút, thanh toán siêu tốc qua VietQR & MoMo.";
+  const currentUrl = typeof window !== 'undefined' ? window.location.href : 'https://gocoffee.vn/';
+  const displayTitle = "Go Coffee | Đặt Cà Phê Trực Tuyến & Thanh Toán Nhanh";
+  const displayDesc = "Go Coffee - Đặt cà phê Phin Sữa Đá Cầu Đất, Cà Phê Muối Cố Đô, Freeze Trà Xanh mát lạnh, Trà Sen Vàng và đặt bàn trực tuyến tiện lợi. Chuẩn bị sau 5 phút, thanh toán VietQR & MoMo.";
   const previewImg = "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1200&h=630&q=85";
 
   const handleCopyLink = () => {
@@ -168,7 +168,7 @@ export const SeoShareModal: React.FC<SeoShareModalProps> = ({ isOpen, onClose })
                 <div className="relative h-48 sm:h-56 bg-stone-800 overflow-hidden">
                   <img 
                     src={previewImg} 
-                    alt="Go & Grab Coffee Preview" 
+                    alt="Go Coffee Preview" 
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute top-3 left-3 bg-stone-900/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/20 text-white text-[11px] font-semibold flex items-center gap-1.5">
@@ -180,7 +180,7 @@ export const SeoShareModal: React.FC<SeoShareModalProps> = ({ isOpen, onClose })
                 <div className="p-4 bg-stone-50/80 border-t border-stone-200">
                   <div className="text-[11px] uppercase tracking-wider text-stone-400 font-semibold mb-1 flex items-center gap-1">
                     <Globe className="w-3 h-3" />
-                    GOANDGRABCOFFEE.AI.STUDIO
+                    GOCOFFEE.VN
                   </div>
                   <h4 className="font-bold text-stone-900 text-sm leading-snug line-clamp-1">
                     {displayTitle}
@@ -195,7 +195,7 @@ export const SeoShareModal: React.FC<SeoShareModalProps> = ({ isOpen, onClose })
               <div className="bg-stone-50 p-3.5 rounded-xl border border-stone-200">
                 <p className="text-xs font-semibold text-stone-700 mb-2">Đoạn mã nhúng vào GitHub README.md:</p>
                 <code className="block bg-stone-900 text-stone-100 p-2.5 rounded-lg text-xs font-mono select-all overflow-x-auto">
-                  {`[![Go & Grab Coffee](https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1200&h=630&q=85)](${currentUrl})`}
+                  {`[![Go Coffee](https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1200&h=630&q=85)](${currentUrl})`}
                 </code>
               </div>
             </div>
@@ -214,11 +214,11 @@ export const SeoShareModal: React.FC<SeoShareModalProps> = ({ isOpen, onClose })
               {/* Google Search Card Simulation */}
               <div className="p-4 rounded-xl border border-stone-200 bg-white shadow-sm space-y-1.5">
                 <div className="flex items-center gap-2 text-xs text-stone-600">
-                  <div className="w-5 h-5 rounded-full bg-amber-800 text-white flex items-center justify-center text-[10px] font-bold">
+                  <div className="w-5 h-5 rounded-full bg-[#b22830] text-white flex items-center justify-center text-[10px] font-bold">
                     ☕
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-medium text-stone-900 text-[11px]">Go & Grab Coffee Specialty</span>
+                    <span className="font-medium text-stone-900 text-[11px]">Go Coffee Specialty</span>
                     <span className="text-[10px] text-stone-500">{currentUrl}</span>
                   </div>
                 </div>
@@ -244,13 +244,13 @@ export const SeoShareModal: React.FC<SeoShareModalProps> = ({ isOpen, onClose })
               <p className="text-xs text-stone-600">Các thẻ Meta Tags đã được nhúng trong mã nguồn HTML:</p>
               <pre className="bg-stone-900 text-amber-200 p-3.5 rounded-xl text-xs font-mono overflow-x-auto leading-relaxed">
 {`<!-- Primary SEO Tags -->
-<title>Go & Grab Coffee | Đặt Cà Phê Trực Tuyến & Thanh Toán Nhanh</title>
+<title>Go Coffee | Đặt Cà Phê Trực Tuyến & Thanh Toán Nhanh</title>
 <meta name="description" content="${displayDesc}" />
-<meta name="theme-color" content="#3a1d0f" />
+<meta name="theme-color" content="#b22830" />
 
 <!-- OpenGraph / Facebook / Zalo -->
 <meta property="og:type" content="website" />
-<meta property="og:site_name" content="Go & Grab Coffee" />
+<meta property="og:site_name" content="Go Coffee" />
 <meta property="og:title" content="${displayTitle}" />
 <meta property="og:description" content="${displayDesc}" />
 <meta property="og:image" content="${previewImg}" />
@@ -273,15 +273,15 @@ export const SeoShareModal: React.FC<SeoShareModalProps> = ({ isOpen, onClose })
 {`{
   "@context": "https://schema.org",
   "@type": "CafeOrCoffeeShop",
-  "name": "Go & Grab Coffee",
-  "servesCuisine": ["Vietnamese Coffee", "Espresso", "Cold Brew"],
+  "name": "Go Coffee",
+  "servesCuisine": ["Vietnamese Coffee", "Phin Sữa Đá", "Cà Phê Muối", "Freeze Trà Xanh"],
   "priceRange": "$$",
   "currenciesAccepted": "VND",
   "paymentAccepted": "Cash, VietQR, MoMo, ZaloPay, Apple Pay",
   "openingHours": "Mo-Su 06:30-22:30",
   "address": {
     "@type": "PostalAddress",
-    "streetAddress": "128 Nguyễn Đình Chiểu",
+    "streetAddress": "7 Công Trường Lam Sơn",
     "addressLocality": "Hồ Chí Minh",
     "addressCountry": "VN"
   }

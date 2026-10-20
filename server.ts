@@ -29,31 +29,44 @@ if (apiKey) {
   });
 }
 
-// System prompt for Go & Grab AI Barista
-const SYSTEM_INSTRUCTION = `Bạn là "Barista AI" thông minh, tận tâm và thân thiện của thương hiệu cà phê "Go & Grab Coffee" (website: goandgrabcoffee.ai.studio).
+// System prompt for Chat với Barista . Go Coffee
+const SYSTEM_INSTRUCTION = `Bạn là Barista thông minh, am hiểu và tận tâm trong tính năng "Chat với Barista . Go Coffee" của thương hiệu cà phê "Go Coffee" (chuyên cà phê hạt nguyên chất Tây Nguyên & Cầu Đất, menu phong phú, đặt món tiện lợi lấy sau 5 phút và dịch vụ đặt bàn chu đáo).
 Nhiệm vụ của bạn:
-1. Tư vấn đồ uống phù hợp với khẩu vị, tâm trạng, thời điểm (buổi sáng cần tỉnh táo, buổi chiều cần sảng khoái, không say caffein, ăn kiêng / thuần chay).
-2. Giới thiệu các món đặc sản của quán:
-   - Cà Phê Muối Xứ Huế (39k) - Best Seller số 1, kem muối biển mặn béo ngậy.
-   - Bạc Xỉu 3 Tầng Sài Gòn (35k) - Ngọt bùi, béo thơm, êm dịu.
-   - Cà Phê Sữa Đá Sài Gòn (32k) - Đậm đà, hạt Cầu Đất rang mộc.
-   - Cà Phê Trứng Hà Nội (45k) - Kem trứng đánh bông ấm mịn.
-   - Oatly Vanilla Latte (52k) - Thuần chay (Vegan) từ sữa yến mạch Thụy Điển Oatly.
-   - Caramel Macchiato Hạnh Nhân (49k).
-   - Cold Brew Cam Vàng Sả 24H (46k) - Thanh mát sảng khoái.
-   - Trà Sen Vàng Hạt Sen Huế (48k) - Trà Oolong cao cấp, hạt sen dẻo, macchiato béo.
-   - Trà Đào Cam Sả Tươi (45k).
-   - Croissant Bơ Pháp Nướng Giòn (32k), Tiramisu Hạt Dẻ (42k).
-3. Hướng dẫn các mã giảm giá hiện có:
-   - GRAB20: Giảm 20% cho đơn từ 50.000đ.
-   - FREESHIP: Miễn phí giao hàng tới 18.000đ cho đơn từ 80.000đ.
-   - BANMOI15: Giảm 15.000đ cho đơn từ 45.000đ.
-4. Hướng dẫn nhận hàng & thanh toán nhanh:
-   - "Go & Grab" nhận tại quầy: Chuẩn bị trong 5 phút, không xếp hàng chờ đợi.
-   - Giao hàng tận nơi: 15-20 phút qua GrabBike/tài xế quán.
-   - Thanh toán siêu tốc: Quét mã VietQR NAPAS 24/7 tự động đối soát trong 1s, ví MoMo, ZaloPay, Apple Pay hoặc tiền mặt.
-5. Giờ mở cửa: 06:30 - 22:30 hàng ngày.
-6. Phong cách trả lời: Thân thiện, lịch sự, ngắn gọn súc tích, xưng "mình" hoặc "Barista Go & Grab" và gọi khách là "bạn" hoặc "quý khách". Sử dụng tiếng Việt chuẩn.`;
+1. Tư vấn đồ uống và món ăn phù hợp với khẩu vị, tâm trạng, thời điểm (buổi sáng tỉnh táo làm việc, buổi chiều giải nhiệt thanh mát, không say caffein, ít ngọt, ăn chay):
+   - Cà Phê Phin Truyền Thống Go Coffee:
+     + Phin Sữa Đá (39k) - Đậm đà, thơm béo hạt rang mộc nguyên chất, món signature số 1.
+     + Phin Đen Đá (35k) - Đậm vị nguyên bản, đắng thanh tao, tỉnh táo tức thì.
+     + Bạc Xỉu Đá (39k) - Ngọt bùi, êm dịu nhiều sữa ít cà phê.
+     + Cà Phê Muối Cố Đô (45k) - Kem muối biển béo mặn hòa cùng cà phê phin sánh đậm.
+   - PhinDi Thế Hệ Mới:
+     + PhinDi Hạnh Nhân (49k) - Cà phê phin kết hợp sốt hạnh nhân bùi ngậy, best-seller giới trẻ.
+     + PhinDi Kem Sữa (49k) - Lớp kem sữa mịn màng êm ái.
+     + PhinDi Choco (49k) - Sốt chocolate ngọt đắng quyến rũ.
+   - Freeze Đá Xay & Thạch Giòn:
+     + Freeze Trà Xanh (55k) - Matcha Nhật Bản đá xay lót thạch trà xanh giòn sần sật phủ kem tươi béo ngậy.
+     + Caramel Phin Freeze (55k) - Cà phê phin đá xay sốt caramel bơ óng ánh và thạch cà phê giòn.
+     + Cookies & Cream Freeze (55k) - Bánh cookies socola xay sữa béo.
+   - Trà Tươi & Macchiato:
+     + Trà Sen Vàng Hạt Sen Huế (52k) - Trà Oolong thanh tao, hạt sen hầm dẻo bùi, củ năng giòn và kem macchiato béo ngậy.
+     + Trà Thạch Đào Giòn Mát (49k) - Trà đào mát lạnh kèm miếng đào tươi và thạch đào giòn.
+     + Trà Thanh Đào (49k) - Hương lài thanh mát, ngọt dịu.
+   - Bánh Mì & Pastry:
+     + Bánh Mì Que Hải Phòng Pate Cay (25k) - Nóng giòn rụm, pate gan béo đậm đà cay tê.
+     + Bánh Phô Mai Cà Phê Đặc Biệt (39k) - Cheesecake béo ngậy thơm nồng cà phê.
+     + Bánh Mousse Cacao (39k) - Mềm mịn tan chảy.
+   - Combo Tiết Kiệm:
+     + Combo Bữa Sáng (Phin Sữa Đá + Bánh Mì Que): 55k (tiết kiệm 9k).
+     + Combo Trà Chiều (Trà Sen Vàng + Bánh Phô Mai): 79k (tiết kiệm 12k).
+2. Mã giảm giá độc quyền hiện có tại Go Coffee:
+   - GOCOFFEE20: Giảm 20% cho đơn từ 50.000đ.
+   - FREESHIP: Miễn phí giao hàng tới 18.000đ cho đơn từ 70.000đ.
+   - GOCOFFEE30: Giảm 30.000đ cho đơn từ 99.000đ.
+   - BANMOI15: Giảm 15.000đ cho thành viên mới.
+3. Hướng dẫn các tiện ích của Go Coffee:
+   - Đặt món mang đi (Quick Pickup): Chuẩn bị sẵn sau 5 phút không cần xếp hàng.
+   - Đặt bàn trực tuyến: Giữ chỗ không gian phòng lạnh / sân vườn hoàn toàn miễn phí, tự động đồng bộ tức thì vào Google Sheet của quán và thông báo qua Telegram Bot (@Duyaasaa_bot).
+   - Thanh toán VietQR NAPAS 24/7 tự động xác nhận trong 1s, ví MoMo, thẻ ngân hàng, tiền mặt.
+4. Phong cách giao tiếp: Lịch sự, ấm áp, đậm bản sắc người Việt, xưng "mình" hoặc "Barista Go Coffee" và gọi khách là "bạn" hoặc "quý khách". Khuyến khích gợi ý món kèm nút hành động xem menu hoặc đặt bàn.`;
 
 // API endpoint for Barista Chatbot
 app.post('/api/chat', async (req, res) => {
@@ -68,7 +81,7 @@ app.post('/api/chat', async (req, res) => {
     if (!ai) {
       // Fallback response if GEMINI_API_KEY is not configured yet
       return res.json({
-        reply: `Chào bạn! Mình là Barista AI của Go & Grab Coffee. Rất vui được hỗ trợ bạn chọn ly cà phê hoàn hảo hôm nay! Bạn thích gu đậm đà như Cà phê Muối Cố Đô (39k) hay thanh mát giải nhiệt như Cold Brew Cam Sả (46k)? Nhập mã GRAB20 để được giảm 20% nhé!`,
+        reply: `Chào bạn! Mình là Barista AI của Go Coffee. Rất vui được hỗ trợ bạn chọn ly thức uống đậm đà hôm nay! Bạn muốn thưởng thức vị truyền thống như Phin Sữa Đá Cầu Đất (39k), Cà Phê Muối Cố Đô (45k), thanh mát như Freeze Trà Xanh (55k) hay Trà Sen Vàng (52k)? Đừng quên nhập mã GOCOFFEE20 để được giảm ngay 20% nhé!`,
       });
     }
 
@@ -97,13 +110,13 @@ app.post('/api/chat', async (req, res) => {
       },
     });
 
-    const reply = response.text || 'Chào bạn! Mình có thể giúp gì cho bạn về menu cà phê Go & Grab hôm nay?';
+    const reply = response.text || 'Chào bạn! Mình có thể giúp gì cho bạn về menu cà phê và đồ uống của Go Coffee hôm nay?';
     return res.json({ reply });
   } catch (err: any) {
     console.error('Gemini Chat API Error:', err);
     return res.status(500).json({
       error: 'Không thể kết nối tới Barista AI lúc này.',
-      reply: 'Dạ hiện tại hệ thống kết nối AI đang bận. Bạn có thể thử các món bán chạy nhất của quán như: Cà phê Muối Xứ Huế (39.000đ) hoặc Bạc Xỉu 3 Tầng (35.000đ), áp dụng mã GRAB20 để nhận ưu đãi 20% nhé!',
+      reply: 'Dạ hiện tại hệ thống kết nối AI đang bận. Bạn có thể thử các món bán chạy nhất của Go Coffee như: Phin Sữa Đá Đậm Vị (39.000đ) hoặc Cà Phê Muối Cố Đô (45.000đ), áp dụng mã GOCOFFEE20 để nhận ưu đãi 20% nhé!',
     });
   }
 });
@@ -232,7 +245,7 @@ app.post('/api/telegram/test', async (req, res) => {
     });
   }
 
-  const testMessage = `☕ <b>GO & GRAB COFFEE - TEST KẾT NỐI</b>
+  const testMessage = `☕ <b>GO COFFEE - TEST KẾT NỐI</b>
 ━━━━━━━━━━━━━━━━━━━━
 ✅ <b>Kết nối Telegram Bot thành công!</b>
 🤖 Bot: <b>@Duyaasaa_bot</b>
@@ -297,7 +310,7 @@ async function forwardToGoogleSheets(url: string, data: any, telegramChatIdVal?:
     target.searchParams.set('guestCount', String(data.guestCount || 2));
     target.searchParams.set('date', data.date || '');
     target.searchParams.set('timeSlot', data.timeSlot || '');
-    target.searchParams.set('storeName', data.storeName || (data.store?.name || 'Go & Grab Coffee'));
+    target.searchParams.set('storeName', data.storeName || (data.store?.name || 'Go Coffee'));
     target.searchParams.set('seatingArea', data.seatingArea || 'Khu vực chuẩn');
     target.searchParams.set('note', data.note || '');
     if (telegramChatIdVal) {
@@ -355,6 +368,54 @@ async function forwardToGoogleSheets(url: string, data: any, telegramChatIdVal?:
   }
 }
 
+// Helper function to send coffee order to Google Sheets Web App
+async function forwardOrderToGoogleSheets(url: string, order: any, telegramChatIdVal?: string) {
+  const cleanUrl = (url || '').trim();
+  if (!cleanUrl || cleanUrl.includes('docs.google.com/spreadsheets')) {
+    return { ok: false, error: 'Chưa cấu hình URL Web App Google Sheets' };
+  }
+
+  try {
+    const target = new URL(cleanUrl);
+    target.searchParams.set('type', 'order');
+    target.searchParams.set('code', order.code || 'ORD-NEW');
+    target.searchParams.set('customerName', order.customerName || 'Khách Hàng');
+    target.searchParams.set('customerPhone', order.customerPhone || '');
+    target.searchParams.set('customerEmail', order.customerEmail || '');
+    target.searchParams.set('total', String(order.total || 0));
+    target.searchParams.set('paymentMethod', order.paymentMethod || 'vietqr');
+    target.searchParams.set('paymentStatus', order.paymentStatus || 'unpaid');
+    target.searchParams.set('orderType', order.orderType || 'pickup');
+    target.searchParams.set('deliveryAddress', order.deliveryAddress || (order.store?.name || 'Chi nhánh'));
+    target.searchParams.set('note', order.customerNote || '');
+
+    const itemsSummary = Array.isArray(order.items)
+      ? order.items.map((it: any) => `${it.quantity}x ${it.name} (${it.size})`).join(', ')
+      : 'Đồ uống Go Coffee';
+    target.searchParams.set('itemsSummary', itemsSummary);
+
+    const payload = JSON.stringify({
+      type: 'order',
+      ...order,
+      itemsSummary,
+      telegramChatId: telegramChatIdVal,
+    });
+
+    const resp = await fetch(target.toString(), {
+      method: 'POST',
+      redirect: 'follow',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: payload,
+    });
+
+    const responseText = await resp.text();
+    return { ok: true, status: 'success', text: responseText.slice(0, 100) };
+  } catch (err: any) {
+    console.error('Lỗi đẩy đơn hàng tới Google Sheet:', err);
+    return { ok: false, error: err.message };
+  }
+}
+
 // Test endpoint for Google Sheets Webhook
 app.post('/api/booking/test-sheets', async (req, res) => {
   const urlToTest = req.body.webhookUrl || googleSheetsWebhookUrl;
@@ -368,9 +429,9 @@ app.post('/api/booking/test-sheets', async (req, res) => {
       guestCount: 2,
       date: new Date().toISOString().split('T')[0],
       timeSlot: '09:00',
-      storeName: 'Go & Grab - 120 Hai Bà Trưng, Q.1',
+      storeName: 'Go Coffee - Nhà Hát Thành Phố',
       seatingArea: 'Khu làm việc thử nghiệm',
-      note: 'Dòng test tự động kiểm tra kết nối từ website Go & Grab Coffee',
+      note: 'Dòng test tự động kiểm tra kết nối từ website Go Coffee',
     },
     req.body.telegramChatId || telegramChatId
   );
@@ -385,7 +446,7 @@ app.post('/api/booking', async (req, res) => {
   const targetTelegramChatId = req.body.telegramChatId || telegramChatId;
 
   // Format message for Telegram
-  const telegramMessage = `🔔 <b>CÓ KHÁCH ĐẶT BÀN MỚI TẠI GO & GRAB COFFEE!</b>
+  const telegramMessage = `🔔 <b>CÓ KHÁCH ĐẶT BÀN MỚI TẠI GO COFFEE!</b>
 ━━━━━━━━━━━━━━━━━━━━
 📋 <b>Mã đặt bàn:</b> <code>${reservationData.code || 'TB-NEW'}</code>
 👤 <b>Họ và tên:</b> <b>${reservationData.customerName || 'Khách hàng'}</b>
@@ -394,7 +455,7 @@ app.post('/api/booking', async (req, res) => {
 👥 <b>Số lượng:</b> <b>${reservationData.guestCount || 1} người</b>
 📅 <b>Ngày đến:</b> ${reservationData.date || 'Hôm nay'}
 ⏰ <b>Khung giờ:</b> ${reservationData.timeSlot || '09:00'}
-📍 <b>Chi nhánh:</b> ${reservationData.storeName || (reservationData.store?.name || 'Go & Grab')}
+📍 <b>Chi nhánh:</b> ${reservationData.storeName || (reservationData.store?.name || 'Go Coffee')}
 🪑 <b>Khu vực bàn:</b> ${reservationData.seatingArea || 'Khu vực chuẩn'}
 📝 <b>Yêu cầu đặc biệt:</b> <i>${reservationData.note || 'Không có'}</i>
 ⏰ <b>Thời gian gửi:</b> ${new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}
@@ -474,7 +535,17 @@ ${itemsList}
 📝 <b>Ghi chú:</b> <i>${order.customerNote || 'Không có'}</i>`;
 
   const tgResult = await sendTelegramNotification(orderMessage);
-  return res.json({ ok: true, telegram: tgResult });
+
+  let sheetResult: any = { ok: false };
+  if (googleSheetsWebhookUrl) {
+    sheetResult = await forwardOrderToGoogleSheets(googleSheetsWebhookUrl, order, telegramChatId);
+  }
+
+  return res.json({ 
+    ok: true, 
+    telegram: tgResult, 
+    sheet: sheetResult 
+  });
 });
 
 async function startServer() {

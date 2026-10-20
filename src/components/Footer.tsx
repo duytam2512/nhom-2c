@@ -15,7 +15,9 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare }) => {
           {/* Brand Col */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-2">
-              <Logo size="md" className="[&_span]:text-white" />
+              <a href="/" title="Go Coffee" className="inline-block">
+                <Logo size="md" className="[&_span]:text-white" />
+              </a>
             </div>
             <p className="text-xs sm:text-sm text-stone-400 max-w-sm leading-relaxed">
               Chuỗi cà phê mang đi cao cấp từ hạt Cầu Đất nguyên chất. Đặt món trước qua website, tới quầy nhận đồ sau 5 phút không xếp hàng, thanh toán tự động qua VietQR & Ví MoMo.
@@ -70,7 +72,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare }) => {
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5 text-amber-500" />
-                <span>contact@goandgrabcoffee.ai.studio</span>
+                <span>contact@gocoffee.vn</span>
               </li>
               <li className="pt-2">
                 <span className="text-[10px] text-stone-500 block uppercase">Phương thức thanh toán</span>
@@ -89,7 +91,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare }) => {
         {/* Bottom bar with SEO metadata badge */}
         <div className="pt-8 border-t border-stone-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
           <p>
-            © 2026 <strong>Go & Grab Coffee Specialty</strong>. Cà phê nguyên chất từ nông trại Cầu Đất.
+            © 2026 <strong>Go Coffee</strong>. Tự hào cà phê Việt - Đậm đà bản sắc.
           </p>
           <div className="flex items-center gap-4 text-[11px]">
             <span className="flex items-center gap-1 text-stone-400">

@@ -1,10 +1,14 @@
 export type CoffeeCategory = 
   | 'all'
+  | 'phin'
+  | 'phindi'
+  | 'freeze'
+  | 'tea'
+  | 'pastry'
+  | 'combo'
   | 'traditional'
   | 'espresso'
-  | 'coldbrew'
-  | 'tea'
-  | 'pastry';
+  | 'coldbrew';
 
 export interface Topping {
   id: string;

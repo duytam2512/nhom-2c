@@ -255,8 +255,8 @@ export const ProductModal: React.FC<ProductModalProps> = ({
             )}
           </div>
 
-          {/* Milk type upgrade if espresso/coffee */}
-          {['espresso', 'traditional'].includes(item.category) && (
+          {/* Milk type upgrade if coffee (phin/phindi) */}
+          {['phin', 'phindi', 'espresso', 'traditional'].includes(item.category) && (
             <div className="space-y-2">
               <label className="text-xs font-bold uppercase tracking-wider text-stone-800">
                 Tùy chọn loại sữa
