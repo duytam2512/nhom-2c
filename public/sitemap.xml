@@ -3,7 +3,7 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <!-- Trang chủ / Giới thiệu Go Coffee -->
   <url>
-    <loc>https://gocoffee.vn/</loc>
+    <loc>https://nhom-2c.vercel.app/</loc>
     <lastmod>2026-10-24</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -15,7 +15,7 @@
 
   <!-- Thực đơn Cà phê & Đồ uống -->
   <url>
-    <loc>https://gocoffee.vn/thuc-don</loc>
+    <loc>https://nhom-2c.vercel.app/thuc-don</loc>
     <lastmod>2026-10-24</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
@@ -27,7 +27,7 @@
 
   <!-- Đặt Bàn Giữ Chỗ Trực Tuyến -->
   <url>
-    <loc>https://gocoffee.vn/dat-ban</loc>
+    <loc>https://nhom-2c.vercel.app/dat-ban</loc>
     <lastmod>2026-10-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -35,7 +35,7 @@
 
   <!-- Hệ thống Cửa hàng Go Coffee -->
   <url>
-    <loc>https://gocoffee.vn/cua-hang</loc>
+    <loc>https://nhom-2c.vercel.app/cua-hang</loc>
     <lastmod>2026-10-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -43,7 +43,7 @@
 
   <!-- Câu Chuyện Cầu Đất & Di Sản Cà Phê -->
   <url>
-    <loc>https://gocoffee.vn/cau-chuyen</loc>
+    <loc>https://nhom-2c.vercel.app/cau-chuyen</loc>
     <lastmod>2026-10-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
