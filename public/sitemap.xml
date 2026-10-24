@@ -1,27 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <!-- Trang chủ / Giới thiệu Go Coffee -->
   <url>
-    <loc>https://goandgrabcoffee.ai.studio/</loc>
-    <lastmod>2026-10-18</lastmod>
+    <loc>https://gocoffee.vn/</loc>
+    <lastmod>2026-10-24</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&amp;fit=crop&amp;w=1200&amp;h=630&amp;q=85</image:loc>
+      <image:title>Go Coffee - Cà Phê Phin &amp; Đặt Món Trực Tuyến</image:title>
+    </image:image>
   </url>
+
+  <!-- Thực đơn Cà phê & Đồ uống -->
   <url>
-    <loc>https://goandgrabcoffee.ai.studio/#menu</loc>
-    <lastmod>2026-10-18</lastmod>
+    <loc>https://gocoffee.vn/thuc-don</loc>
+    <lastmod>2026-10-24</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&amp;fit=crop&amp;w=800&amp;q=80</image:loc>
+      <image:title>Phin Sữa Đá Cầu Đất &amp; Cà Phê Muối Cố Đô</image:title>
+    </image:image>
   </url>
+
+  <!-- Đặt Bàn Giữ Chỗ Trực Tuyến -->
   <url>
-    <loc>https://goandgrabcoffee.ai.studio/#story</loc>
-    <lastmod>2026-10-18</lastmod>
+    <loc>https://gocoffee.vn/dat-ban</loc>
+    <lastmod>2026-10-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Hệ thống Cửa hàng Go Coffee -->
+  <url>
+    <loc>https://gocoffee.vn/cua-hang</loc>
+    <lastmod>2026-10-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+
+  <!-- Câu Chuyện Cầu Đất & Di Sản Cà Phê -->
   <url>
-    <loc>https://goandgrabcoffee.ai.studio/#stores</loc>
-    <lastmod>2026-10-18</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://gocoffee.vn/cau-chuyen</loc>
+    <lastmod>2026-10-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>

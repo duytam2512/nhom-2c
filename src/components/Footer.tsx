@@ -1,5 +1,5 @@
 import React from 'react';
-import { Share2, Phone, Mail, MapPin, Sparkles, Heart, ShieldCheck, QrCode } from 'lucide-react';
+import { Phone, Mail, MapPin, Sparkles, Heart, ShieldCheck, QrCode } from 'lucide-react';
 import { Logo } from './Logo';
 
 interface FooterProps {
@@ -40,15 +40,6 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare, onResetHome }) =
               Chuỗi cà phê mang đi cao cấp từ hạt Cầu Đất nguyên chất. Đặt món trước qua website, tới quầy nhận đồ sau 5 phút không xếp hàng, thanh toán tự động qua VietQR & Ví MoMo.
             </p>
             
-            <div className="pt-2 flex items-center gap-3">
-              <button
-                onClick={onOpenSeoShare}
-                className="px-3.5 py-2 rounded-xl bg-amber-900/60 hover:bg-amber-900 border border-amber-700/60 text-amber-200 text-xs font-semibold flex items-center gap-2 transition"
-              >
-                <Share2 className="w-3.5 h-3.5" />
-                <span>Xem chuẩn SEO & Chia sẻ link</span>
-              </button>
-            </div>
           </div>
 
           {/* Quick Menu Col */}
@@ -110,16 +101,17 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare, onResetHome }) =
           <p>
             © 2026 <strong>Go Coffee</strong>. Tự hào cà phê Việt - Đậm đà bản sắc.
           </p>
-          <div className="flex items-center gap-4 text-[11px]">
+          <div className="flex items-center gap-3 text-[11px]">
             <span className="flex items-center gap-1 text-stone-400">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> Chuẩn Google SEO & OpenGraph Protocol
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> Thanh toán tự động VietQR & MoMo
             </span>
             <span>•</span>
             <button
               onClick={onOpenSeoShare}
-              className="text-amber-400 hover:underline cursor-pointer"
+              className="text-stone-600 hover:text-stone-400 transition cursor-pointer text-[10px]"
+              title="Dành cho quản lý: Kiểm tra SEO & Google Console"
             >
-              Kiểm tra Card Preview
+              Cấu hình SEO / Console
             </button>
           </div>
         </div>

@@ -548,6 +548,90 @@ ${itemsList}
   });
 });
 
+// Google Search Console & SEO endpoints
+app.get('/robots.txt', (req, res) => {
+  const host = req.get('host') || 'gocoffee.vn';
+  const protocol = req.protocol === 'https' || req.get('x-forwarded-proto') === 'https' ? 'https' : 'http';
+  const robotsTxt = `User-agent: *
+Allow: /
+
+# Google Search Console Sitemap
+Sitemap: ${protocol}://${host}/sitemap.xml
+Sitemap: https://gocoffee.vn/sitemap.xml
+`;
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+  res.send(robotsTxt);
+});
+
+app.get('/sitemap.xml', (req, res) => {
+  const host = req.get('host') || 'gocoffee.vn';
+  const protocol = req.protocol === 'https' || req.get('x-forwarded-proto') === 'https' ? 'https' : 'http';
+  const baseUrl = `${protocol}://${host}`;
+  const today = new Date().toISOString().split('T')[0];
+
+  const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <!-- Trang chủ / Giới thiệu Go Coffee -->
+  <url>
+    <loc>${baseUrl}/</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&amp;fit=crop&amp;w=1200&amp;h=630&amp;q=85</image:loc>
+      <image:title>Go Coffee - Cà Phê Phin &amp; Đặt Món Trực Tuyến</image:title>
+    </image:image>
+  </url>
+
+  <!-- Thực đơn Cà phê & Đồ uống -->
+  <url>
+    <loc>${baseUrl}/thuc-don</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&amp;fit=crop&amp;w=800&amp;q=80</image:loc>
+      <image:title>Phin Sữa Đá Cầu Đất &amp; Cà Phê Muối Cố Đô</image:title>
+    </image:image>
+  </url>
+
+  <!-- Đặt Bàn Giữ Chỗ Trực Tuyến -->
+  <url>
+    <loc>${baseUrl}/dat-ban</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Hệ thống Cửa hàng Go Coffee -->
+  <url>
+    <loc>${baseUrl}/cua-hang</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Câu Chuyện Cầu Đất & Di Sản Cà Phê -->
+  <url>
+    <loc>${baseUrl}/cau-chuyen</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+</urlset>`;
+
+  res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+  res.send(sitemapXml);
+});
+
+// Google Search Console HTML File Verification auto-handler: /google:code.html
+app.get('/google:code.html', (req, res) => {
+  const code = req.params.code;
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.send(`google-site-verification: google${code}.html\n`);
+});
+
 async function startServer() {
   // Mount Vite middleware in development
   if (process.env.NODE_ENV !== 'production') {

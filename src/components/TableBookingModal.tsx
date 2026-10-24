@@ -26,7 +26,9 @@ import {
   ShieldCheck,
   RefreshCw,
   HelpCircle,
-  AlertTriangle
+  AlertTriangle,
+  Settings,
+  ArrowLeft
 } from 'lucide-react';
 import { StoreLocation, TableReservation } from '../types/coffee';
 import { STORES } from '../data/coffeeData';
@@ -698,69 +700,80 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="font-bold text-sm sm:text-base font-display tracking-tight text-white">
-                  Đặt Bàn Go Coffee
+                  Đặt Bàn Giữ Chỗ • Go Coffee
                 </h3>
                 <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-400 text-stone-950 px-2 py-0.5 rounded-full shadow-2xs">
-                  Google Sheet & Telegram
+                  Miễn phí
                 </span>
               </div>
               <p className="text-xs text-amber-200/80 line-clamp-1">
-                Tự động đẩy thông tin đặt bàn về Google Sheet & Telegram Bot quán
+                Giữ chỗ ưu tiên • Không gian thư thái • Chuẩn bị chu đáo trước khi bạn đến
               </p>
             </div>
           </div>
 
-          <button
-            onClick={handleResetAndClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-amber-200 hover:text-white hover:bg-white/10 transition cursor-pointer shrink-0"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Discreet Admin Toggle for Sheet/Telegram Config */}
+            <button
+              type="button"
+              onClick={() => setActiveTab(activeTab === 'form' ? 'sheets' : 'form')}
+              className="p-1.5 rounded-lg text-amber-300 hover:text-white hover:bg-white/10 transition cursor-pointer"
+              title={activeTab === 'form' ? "Cấu hình quản lý (Google Sheet & Telegram)" : "Quay lại biểu mẫu đặt bàn"}
+            >
+              <Settings className="w-4 h-4" />
+            </button>
+
+            <button
+              onClick={handleResetAndClose}
+              className="w-8 h-8 rounded-full flex items-center justify-center text-amber-200 hover:text-white hover:bg-white/10 transition cursor-pointer shrink-0"
+              aria-label="Đóng"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="flex items-center border-b border-stone-200 bg-stone-100/70 p-1.5 gap-1.5 overflow-x-auto">
-          <button
-            onClick={() => setActiveTab('form')}
-            className={`flex-1 min-w-[120px] py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${
-              activeTab === 'form'
-                ? 'bg-white text-stone-900 shadow-sm border border-stone-200/80'
-                : 'text-stone-600 hover:text-stone-900 hover:bg-white/50'
-            }`}
-          >
-            <User className="w-3.5 h-3.5 text-amber-800" />
-            <span>1. Biểu Mẫu Đặt Bàn</span>
-          </button>
+        {/* Tab Navigation (Only visible when admin switches to configuration) */}
+        {activeTab !== 'form' && (
+          <div className="flex items-center border-b border-stone-200 bg-stone-100/70 p-1.5 gap-1.5 overflow-x-auto">
+            <button
+              onClick={() => setActiveTab('form')}
+              className="py-1.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer bg-white text-stone-900 shadow-sm border border-stone-200 shrink-0"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 text-stone-700" />
+              <span>← Đặt bàn</span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('sheets')}
-            className={`flex-1 min-w-[130px] py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${
-              activeTab === 'sheets'
-                ? 'bg-emerald-700 text-white shadow-sm'
-                : 'text-emerald-900 bg-emerald-50/80 hover:bg-emerald-100 border border-emerald-200'
-            }`}
-          >
-            <FileSpreadsheet className="w-3.5 h-3.5" />
-            <span>2. Google Sheet</span>
-            {isSheetConfigured ? (
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
-            ) : (
-              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-            )}
-          </button>
+            <button
+              onClick={() => setActiveTab('sheets')}
+              className={`flex-1 min-w-[120px] py-1.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${
+                activeTab === 'sheets'
+                  ? 'bg-emerald-700 text-white shadow-sm'
+                  : 'text-emerald-900 bg-emerald-50/80 hover:bg-emerald-100 border border-emerald-200'
+              }`}
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5" />
+              <span>Google Sheet</span>
+              {isSheetConfigured ? (
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              ) : (
+                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+              )}
+            </button>
 
-          <button
-            onClick={() => setActiveTab('telegram')}
-            className={`flex-1 min-w-[140px] py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${
-              activeTab === 'telegram'
-                ? 'bg-sky-600 text-white shadow-sm'
-                : 'text-sky-900 bg-sky-50/80 hover:bg-sky-100 border border-sky-200'
-            }`}
-          >
-            <Bot className="w-3.5 h-3.5" />
-            <span>3. Telegram (@{botUsername})</span>
-          </button>
-        </div>
+            <button
+              onClick={() => setActiveTab('telegram')}
+              className={`flex-1 min-w-[130px] py-1.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${
+                activeTab === 'telegram'
+                  ? 'bg-sky-600 text-white shadow-sm'
+                  : 'text-sky-900 bg-sky-50/80 hover:bg-sky-100 border border-sky-200'
+              }`}
+            >
+              <Bot className="w-3.5 h-3.5" />
+              <span>Telegram (@{botUsername})</span>
+            </button>
+          </div>
+        )}
 
         {/* Modal Body */}
         <div className="p-4 sm:p-5 overflow-y-auto space-y-5">
@@ -1418,43 +1431,17 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                   Go Coffee đã sẵn sàng tiếp đón quý khách.
                 </p>
                 
-                {/* Sync status pills */}
+                {/* Clean Customer Status Badges */}
                 <div className="pt-2 flex flex-wrap items-center justify-center gap-2 text-[11px] font-semibold">
-                  {sheetsSyncStatus === 'synced' ? (
-                    <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full border border-emerald-300">
-                      <Check className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>Đã ghi vào Google Sheet</span>
-                    </span>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab('sheets')}
-                      className="inline-flex items-center gap-1 bg-amber-100 hover:bg-amber-200 text-amber-900 px-2.5 py-1 rounded-full border border-amber-300 cursor-pointer"
-                    >
-                      <AlertTriangle className="w-3.5 h-3.5 text-amber-700" />
-                      <span>Google Sheet chưa nhận: Bấm để cấu hình</span>
-                    </button>
-                  )}
-
-                  {telegramSyncStatus === 'synced' ? (
-                    <span className="inline-flex items-center gap-1 bg-sky-100 text-sky-800 px-2.5 py-1 rounded-full border border-sky-300">
-                      <Bot className="w-3.5 h-3.5 text-sky-600" />
-                      <span>Đã báo Telegram (@{botUsername})</span>
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1 bg-stone-100 text-stone-700 px-2.5 py-1 rounded-full border border-stone-200">
-                      <Bot className="w-3.5 h-3.5 text-stone-500" />
-                      <span>Telegram Bot sẵn sàng</span>
-                    </span>
-                  )}
+                  <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full border border-emerald-300">
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Hệ thống đã ghi nhận & Giữ bàn thành công</span>
+                  </span>
+                  <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-900 px-3 py-1 rounded-full border border-amber-300">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-700" />
+                    <span>Ưu tiên chỗ ngồi đẹp nhất</span>
+                  </span>
                 </div>
-
-                {/* Warning note if Sheet failed */}
-                {sheetsSyncStatus !== 'synced' && sheetsSyncError && (
-                  <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-900 text-left">
-                    <span className="font-bold">Lưu ý về Google Sheet:</span> {sheetsSyncError}
-                  </div>
-                )}
               </div>
 
               {/* Digital Table Pass Card */}

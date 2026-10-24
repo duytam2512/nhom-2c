@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://goandgrabcoffee.ai.studio/sitemap.xml
+# Google Search Console Sitemap & Indexing
+Sitemap: https://gocoffee.vn/sitemap.xml
+Sitemap: https://ais-pre-cwfqkhy5uib56py7ujo76g-116687240277.asia-east1.run.app/sitemap.xml

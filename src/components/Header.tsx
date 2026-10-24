@@ -18,8 +18,7 @@ import {
   Flame,
   Star,
   Tag,
-  ExternalLink,
-  FileSpreadsheet
+  ExternalLink
 } from 'lucide-react';
 import { Logo } from './Logo';
 import { CoffeeCategory, StoreLocation } from '../types/coffee';
@@ -297,25 +296,6 @@ export const Header: React.FC<HeaderProps> = ({
             <span>Ưu Đãi</span>
           </button>
 
-          {/* MENU 5: CHIA SẺ & SEO PREVIEW */}
-          <button
-            onClick={onOpenSeoShare}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-amber-100/50 hover:text-amber-900 text-stone-700"
-            title="Xem chuẩn SEO & Chia sẻ link"
-          >
-            <Share2 className="w-4 h-4 text-amber-800" />
-            <span>Chia Sẻ</span>
-          </button>
-
-          {/* MENU 6: KẾT NỐI GOOGLE SHEET & TELEGRAM */}
-          <button
-            onClick={() => onOpenTableBooking('sheets')}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-emerald-100/60 hover:text-emerald-900 text-stone-700"
-            title="Quản lý đồng bộ tệp khách hàng về Google Sheet & Telegram Bot"
-          >
-            <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
-            <span>Sheet & Bot</span>
-          </button>
         </nav>
 
         {/* Right: Action Buttons */}
@@ -495,37 +475,6 @@ export const Header: React.FC<HeaderProps> = ({
               </span>
             </button>
 
-            {/* Chia Sẻ Link & SEO */}
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenSeoShare();
-              }}
-              className="w-full text-left p-2.5 rounded-xl hover:bg-stone-50 text-stone-700 text-xs flex items-center justify-between border border-stone-100"
-            >
-              <span className="flex items-center gap-2">
-                <Share2 className="w-4 h-4 text-amber-700" />
-                <span>Chia Sẻ Link Quán & Chuẩn SEO</span>
-              </span>
-              <ExternalLink className="w-3.5 h-3.5 text-stone-400" />
-            </button>
-
-            {/* Đồng Bộ Google Sheet & Telegram Bot */}
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenTableBooking('sheets');
-              }}
-              className="w-full text-left p-2.5 rounded-xl bg-emerald-50/70 hover:bg-emerald-100 text-emerald-950 font-bold text-xs flex items-center justify-between border border-emerald-200/80"
-            >
-              <span className="flex items-center gap-2">
-                <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
-                <span>Kết Nối Google Sheet & Telegram</span>
-              </span>
-              <span className="text-[10px] bg-emerald-200 text-emerald-900 font-black px-1.5 py-0.5 rounded">
-                Tự động
-              </span>
-            </button>
           </div>
         </div>
       )}
