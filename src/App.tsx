@@ -155,8 +155,25 @@ export default function App() {
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const handleResetHome = () => {
+    setSelectedCategory('all');
+    setIsCartOpen(false);
+    setIsCheckoutOpen(false);
+    setIsTableBookingOpen(false);
+    setIsOrderTrackerOpen(false);
+    setIsSeoShareOpen(false);
+    setIsChatbotOpen(false);
+    setCustomizingItem(null);
+    if (typeof window !== 'undefined') {
+      window.history.pushState(null, '', '/');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
+      document.body.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[#faf7f2] flex flex-col relative selection:bg-amber-800 selection:text-white">
+    <div id="top" className="min-h-screen bg-[#faf7f2] flex flex-col relative selection:bg-amber-800 selection:text-white">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-20 right-4 z-50 bg-stone-900/95 text-white px-4 py-3 rounded-2xl shadow-xl border border-amber-600/40 text-xs sm:text-sm font-semibold flex items-center gap-2.5 animate-in slide-in-from-top-4 duration-300">
@@ -176,6 +193,7 @@ export default function App() {
         onSelectCategory={(category) => {
           setSelectedCategory(category);
         }}
+        onResetHome={handleResetHome}
       />
 
       {/* Hero Section */}
@@ -213,7 +231,10 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <Footer onOpenSeoShare={() => setIsSeoShareOpen(true)} />
+      <Footer 
+        onOpenSeoShare={() => setIsSeoShareOpen(true)} 
+        onResetHome={handleResetHome}
+      />
 
       {/* Floating Action Button for Mobile Cart */}
       {totalCartCount > 0 && !isCartOpen && !isCheckoutOpen && (

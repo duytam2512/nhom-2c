@@ -33,6 +33,7 @@ interface HeaderProps {
   onOpenStoreModal?: () => void;
   onSelectCategory?: (category: CoffeeCategory) => void;
   onOpenChatbot?: () => void;
+  onResetHome?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -44,6 +45,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenStoreModal,
   onSelectCategory,
   onOpenChatbot,
+  onResetHome,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<'menu' | 'services' | 'explore' | null>(null);
@@ -67,13 +69,34 @@ export const Header: React.FC<HeaderProps> = ({
     if (typeof window !== 'undefined') {
       window.history.pushState(null, '', path);
     }
-    if (id) {
+    if (id && id !== 'top') {
       const element = document.getElementById(id);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
       }
     } else {
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleLogoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setMobileMenuOpen(false);
+    setActiveDropdown(null);
+    if (typeof window !== 'undefined') {
+      window.history.pushState(null, '', '/');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
+      document.body.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    if (onResetHome) {
+      onResetHome();
+    } else if (onSelectCategory) {
+      onSelectCategory('all');
     }
   };
 
@@ -102,12 +125,9 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center gap-5">
           <a
             href="/"
-            onClick={(e) => {
-              e.preventDefault();
-              handleLinkClick('/', 'top');
-            }}
-            className="flex items-center gap-2"
-            title="Go Coffee"
+            onClick={handleLogoClick}
+            className="flex items-center gap-2 cursor-pointer transition hover:opacity-90 active:scale-95"
+            title="Go Coffee - Về trang bắt đầu"
           >
             <Logo size="md" />
           </a>

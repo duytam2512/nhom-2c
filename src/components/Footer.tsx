@@ -4,9 +4,21 @@ import { Logo } from './Logo';
 
 interface FooterProps {
   onOpenSeoShare: () => void;
+  onResetHome?: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare }) => {
+export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare, onResetHome }) => {
+  const handleLogoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (onResetHome) {
+      onResetHome();
+    } else if (typeof window !== 'undefined') {
+      window.history.pushState(null, '', '/');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   return (
     <footer className="bg-stone-950 text-stone-300 pt-16 pb-12 border-t border-stone-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
@@ -15,7 +27,12 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare }) => {
           {/* Brand Col */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-2">
-              <a href="/" title="Go Coffee" className="inline-block">
+              <a 
+                href="/" 
+                onClick={handleLogoClick}
+                title="Go Coffee - Về trang bắt đầu" 
+                className="inline-block cursor-pointer transition hover:opacity-90 active:scale-95"
+              >
                 <Logo size="md" className="[&_span]:text-white" />
               </a>
             </div>
@@ -38,26 +55,26 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare }) => {
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-white">Menu Đặc Sắc</h4>
             <ul className="space-y-2 text-xs text-stone-400">
-              <li><a href="#menu" className="hover:text-amber-400 transition">Cà Phê Muối Xứ Huế</a></li>
-              <li><a href="#menu" className="hover:text-amber-400 transition">Bạc Xỉu 3 Tầng Sài Gòn</a></li>
-              <li><a href="#menu" className="hover:text-amber-400 transition">Cold Brew Cam Sả 24H</a></li>
-              <li><a href="#menu" className="hover:text-amber-400 transition">Oatly Vanilla Latte</a></li>
-              <li><a href="#menu" className="hover:text-amber-400 transition">Trà Sen Vàng Kem Macchiato</a></li>
-              <li><a href="#menu" className="hover:text-amber-400 transition">Croissant Bơ Pháp Nóng Giòn</a></li>
+              <li><a href="#menu" className="hover:text-amber-400 transition">Phin Sữa Đá Go Coffee</a></li>
+              <li><a href="#menu" className="hover:text-amber-400 transition">Cà Phê Muối Cố Đô</a></li>
+              <li><a href="#menu" className="hover:text-amber-400 transition">PhinDi Hạnh Nhân Bùi Béo</a></li>
+              <li><a href="#menu" className="hover:text-amber-400 transition">Freeze Trà Xanh Thạch Giòn</a></li>
+              <li><a href="#menu" className="hover:text-amber-400 transition">Trà Sen Vàng Hạt Sen Huế</a></li>
+              <li><a href="#menu" className="hover:text-amber-400 transition">Bánh Mì Que Pate Cay Hải Phòng</a></li>
             </ul>
           </div>
 
           {/* Stores Col */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Chi Nhánh Pickup</h4>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Chi Nhánh Quán</h4>
             <ul className="space-y-2 text-xs text-stone-400">
-              <li>128 Nguyễn Đình Chiểu, Q.3, TP.HCM</li>
-              <li>42 Xuân Thủy, Thảo Điền, TP. Thủ Đức</li>
-              <li>Tòa Bitexco, Q.1, TP.HCM</li>
-              <li>99 Duy Tân, Cầu Giấy, Hà Nội</li>
+              <li>7 Công Trường Lam Sơn, Q.1, TP.HCM</li>
+              <li>135 Nam Kỳ Khởi Nghĩa, Q.1, TP.HCM</li>
+              <li>34 Lê Duẩn, Diamond Plaza, TP.HCM</li>
+              <li>1-3-5 Đinh Tiên Hoàng, Hàm Cá Mập, Hà Nội</li>
               <li className="pt-1 text-emerald-400 font-semibold flex items-center gap-1">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                Mở cửa: 06:30 - 22:30 hàng ngày
+                Mở cửa: 06:30 - 23:00 hàng ngày
               </li>
             </ul>
           </div>
