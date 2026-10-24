@@ -16,6 +16,7 @@ import { CheckoutModal } from './components/CheckoutModal';
 import { OrderTrackerModal } from './components/OrderTrackerModal';
 import { SeoShareModal } from './components/SeoShareModal';
 import { TableBookingModal } from './components/TableBookingModal';
+import { AdminDashboardModal } from './components/AdminDashboardModal';
 import { ChatbotWidget } from './components/ChatbotWidget';
 import { STORES } from './data/coffeeData';
 import { CartItem, MenuItem, Order, StoreLocation, Voucher, TableReservation, CoffeeCategory } from './types/coffee';
@@ -30,6 +31,10 @@ export default function App() {
   const [appliedVoucher, setAppliedVoucher] = useState<Voucher | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<CoffeeCategory>('all');
 
+  // Admin / Store Owner state
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+
   // Modals
   const [customizingItem, setCustomizingItem] = useState<MenuItem | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -37,12 +42,10 @@ export default function App() {
   const [isOrderTrackerOpen, setIsOrderTrackerOpen] = useState(false);
   const [isSeoShareOpen, setIsSeoShareOpen] = useState(false);
   const [isTableBookingOpen, setIsTableBookingOpen] = useState(false);
-  const [bookingModalTab, setBookingModalTab] = useState<'form' | 'sheets' | 'telegram'>('form');
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [currentOrder, setCurrentOrder] = useState<Order | null>(null);
 
-  const openBookingModal = (tab: 'form' | 'sheets' | 'telegram' = 'form') => {
-    setBookingModalTab(tab);
+  const openBookingModal = () => {
     setIsTableBookingOpen(true);
   };
 
@@ -114,8 +117,15 @@ export default function App() {
 
   const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
-  // Sync scroll & state with URL pathname (/thuc-don, /cau-chuyen, /cua-hang, /gio-hang)
+  // Check admin session on mount & Sync scroll & state with URL pathname
   React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedAuth = localStorage.getItem('go_coffee_admin_session');
+      if (savedAuth === 'active') {
+        setIsAdminLoggedIn(true);
+      }
+    }
+
     const handleUrlRoute = () => {
       if (typeof window === 'undefined') return;
       const path = window.location.pathname;
@@ -139,6 +149,8 @@ export default function App() {
         setIsTableBookingOpen(true);
       } else if (path === '/gio-hang') {
         setIsCartOpen(true);
+      } else if (path === '/admin' || path === '/quan-tri' || path === '/owner') {
+        setIsAdminModalOpen(true);
       }
     };
 
@@ -179,6 +191,35 @@ export default function App() {
         <div className="fixed top-20 right-4 z-50 bg-stone-900/95 text-white px-4 py-3 rounded-2xl shadow-xl border border-amber-600/40 text-xs sm:text-sm font-semibold flex items-center gap-2.5 animate-in slide-in-from-top-4 duration-300">
           <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Admin Top Status Bar (Only shown to Store Owner when authenticated) */}
+      {isAdminLoggedIn && (
+        <div className="bg-stone-900 border-b border-amber-500/40 text-stone-200 px-4 py-2 flex items-center justify-between text-xs sticky top-0 z-50 shadow-md">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="font-bold text-amber-300">👑 Chế Độ Chủ Quán</span>
+            <span className="hidden md:inline text-stone-400">• Đang hoạt động riêng tư (Khách hàng không nhìn thấy dữ liệu kỹ thuật)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsAdminModalOpen(true)}
+              className="px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs transition cursor-pointer shadow-xs active:scale-95"
+            >
+              Bảng Quản Trị & Google Sheet
+            </button>
+            <button
+              onClick={() => {
+                localStorage.removeItem('go_coffee_admin_session');
+                setIsAdminLoggedIn(false);
+                showToast('Đã đăng xuất, chuyển về chế độ khách hàng thông thường.');
+              }}
+              className="px-2.5 py-1 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-300 font-semibold text-xs transition cursor-pointer"
+            >
+              Đăng xuất
+            </button>
+          </div>
         </div>
       )}
 
@@ -234,6 +275,7 @@ export default function App() {
       <Footer 
         onOpenSeoShare={() => setIsSeoShareOpen(true)} 
         onResetHome={handleResetHome}
+        onOpenAdmin={() => setIsAdminModalOpen(true)}
       />
 
       {/* Floating Action Button for Mobile Cart */}
@@ -301,13 +343,11 @@ export default function App() {
         onClose={() => setIsSeoShareOpen(false)}
       />
 
-      {/* Table Reservation & Integration Modal */}
+      {/* Table Reservation Customer Modal */}
       <TableBookingModal
         isOpen={isTableBookingOpen}
-        initialTab={bookingModalTab}
         onClose={() => {
           setIsTableBookingOpen(false);
-          setBookingModalTab('form');
           if (typeof window !== 'undefined' && window.location.pathname === '/dat-ban') {
             window.history.pushState(null, '', '/');
           }
@@ -323,6 +363,23 @@ export default function App() {
         onToggle={() => setIsChatbotOpen((prev) => !prev)}
         onOpenTableBooking={() => setIsTableBookingOpen(true)}
         onScrollToMenu={scrollToMenu}
+      />
+
+      {/* Store Owner / Admin Dedicated Portal (PIN-protected, completely hidden from customers) */}
+      <AdminDashboardModal
+        isOpen={isAdminModalOpen}
+        onClose={() => {
+          setIsAdminModalOpen(false);
+          if (typeof window !== 'undefined') {
+            setIsAdminLoggedIn(localStorage.getItem('go_coffee_admin_session') === 'active');
+            if (window.location.pathname === '/admin' || window.location.pathname === '/quan-tri') {
+              window.history.pushState(null, '', '/');
+            }
+          }
+        }}
+        onSwitchToCustomerView={() => {
+          setIsAdminModalOpen(false);
+        }}
       />
     </div>
   );

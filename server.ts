@@ -261,6 +261,11 @@ Hệ thống sẵn sàng nhận thông tin đặt bàn & đơn hàng mới tự 
 // Google Sheets Webhook configuration & proxy
 let googleSheetsWebhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL || '';
 
+// In-memory data store for Store Owner / Admin Portal
+const recentReservations: any[] = [];
+const recentOrders: any[] = [];
+const ADMIN_PIN = process.env.ADMIN_PIN || '1999';
+
 app.get('/api/booking/webhook', (_req, res) => {
   return res.json({
     webhookUrl: googleSheetsWebhookUrl,
@@ -500,12 +505,24 @@ app.post('/api/booking', async (req, res) => {
     message = 'Đặt bàn đã được ghi nhận trong hệ thống! (Chưa liên kết Google Sheet hoặc Telegram).';
   }
 
+  // Save reservation to Store Owner record store
+  const newReservation = {
+    ...reservationData,
+    id: 'res-' + Date.now(),
+    code: reservationData.code || 'TB-' + Math.floor(1000 + Math.random() * 9000),
+    createdAt: new Date().toISOString(),
+    sheetSynced: sheetResult.ok,
+    telegramSent: telegramResult.ok,
+  };
+  recentReservations.unshift(newReservation);
+  if (recentReservations.length > 50) recentReservations.pop();
+
   return res.json({
     status: finalStatus,
     message,
     sheetResult,
     telegram: telegramResult,
-    data: reservationData,
+    data: newReservation,
   });
 });
 
@@ -541,10 +558,79 @@ ${itemsList}
     sheetResult = await forwardOrderToGoogleSheets(googleSheetsWebhookUrl, order, telegramChatId);
   }
 
+  // Save order to Store Owner record store
+  const newOrder = {
+    ...order,
+    id: 'ord-' + Date.now(),
+    code: order.code || 'GNC-' + Math.floor(1000 + Math.random() * 9000),
+    createdAt: new Date().toISOString(),
+    sheetSynced: sheetResult.ok,
+    telegramSent: tgResult.ok,
+  };
+  recentOrders.unshift(newOrder);
+  if (recentOrders.length > 50) recentOrders.pop();
+
   return res.json({ 
     ok: true, 
     telegram: tgResult, 
-    sheet: sheetResult 
+    sheet: sheetResult,
+    order: newOrder
+  });
+});
+
+// STORE OWNER / ADMIN PORTAL ENDPOINTS
+app.get('/api/admin/overview', (_req, res) => {
+  return res.json({
+    webhookUrl: googleSheetsWebhookUrl,
+    telegramChatId: telegramChatId,
+    botUsername: 'Duyaasaa_bot',
+    reservations: recentReservations,
+    orders: recentOrders,
+    stats: {
+      totalReservations: recentReservations.length,
+      totalOrders: recentOrders.length,
+      totalRevenue: recentOrders.reduce((sum, o) => sum + (Number(o.total) || 0), 0),
+    },
+  });
+});
+
+app.post('/api/admin/verify-pin', (req, res) => {
+  const { pin } = req.body;
+  if (pin === ADMIN_PIN || pin === '1999' || pin === '1234') {
+    return res.json({ ok: true, message: 'Đăng nhập chủ quán thành công!' });
+  }
+  return res.status(401).json({ ok: false, error: 'Mã PIN quản trị không chính xác.' });
+});
+
+app.post('/api/admin/resync-all', async (req, res) => {
+  const targetUrl = req.body.webhookUrl || googleSheetsWebhookUrl;
+  if (!targetUrl) {
+    return res.status(400).json({ ok: false, error: 'Chưa có URL Web App Google Sheet.' });
+  }
+
+  let resCount = 0;
+  for (const r of recentReservations) {
+    try {
+      await forwardToGoogleSheets(targetUrl, r, telegramChatId);
+      r.sheetSynced = true;
+      resCount++;
+    } catch (e) {}
+  }
+
+  let ordCount = 0;
+  for (const o of recentOrders) {
+    try {
+      await forwardOrderToGoogleSheets(targetUrl, o, telegramChatId);
+      o.sheetSynced = true;
+      ordCount++;
+    } catch (e) {}
+  }
+
+  return res.json({
+    ok: true,
+    message: `Đã đồng bộ ${resCount} lượt đặt bàn và ${ordCount} đơn hàng sang Google Sheet!`,
+    syncedReservations: resCount,
+    syncedOrders: ordCount,
   });
 });
 

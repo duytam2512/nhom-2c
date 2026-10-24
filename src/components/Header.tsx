@@ -27,7 +27,7 @@ interface HeaderProps {
   cartCount: number;
   onOpenCart: () => void;
   onOpenSeoShare: () => void;
-  onOpenTableBooking: (initialTab?: 'form' | 'sheets' | 'telegram') => void;
+  onOpenTableBooking: () => void;
   selectedStore: StoreLocation;
   onOpenStoreModal?: () => void;
   onSelectCategory?: (category: CoffeeCategory) => void;

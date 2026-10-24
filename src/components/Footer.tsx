@@ -3,11 +3,12 @@ import { Phone, Mail, MapPin, Sparkles, Heart, ShieldCheck, QrCode } from 'lucid
 import { Logo } from './Logo';
 
 interface FooterProps {
-  onOpenSeoShare: () => void;
+  onOpenSeoShare?: () => void;
   onResetHome?: () => void;
+  onOpenAdmin?: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare, onResetHome }) => {
+export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare, onResetHome, onOpenAdmin }) => {
   const handleLogoClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (onResetHome) {
@@ -96,23 +97,27 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare, onResetHome }) =
 
         </div>
 
-        {/* Bottom bar with SEO metadata badge */}
+        {/* Bottom bar with clean customer copyright and discreet owner portal link */}
         <div className="pt-8 border-t border-stone-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
           <p>
             © 2026 <strong>Go Coffee</strong>. Tự hào cà phê Việt - Đậm đà bản sắc.
           </p>
           <div className="flex items-center gap-3 text-[11px]">
             <span className="flex items-center gap-1 text-stone-400">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> Thanh toán tự động VietQR & MoMo
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> Thanh toán an toàn VietQR & MoMo
             </span>
-            <span>•</span>
-            <button
-              onClick={onOpenSeoShare}
-              className="text-stone-600 hover:text-stone-400 transition cursor-pointer text-[10px]"
-              title="Dành cho quản lý: Kiểm tra SEO & Google Console"
-            >
-              Cấu hình SEO / Console
-            </button>
+            {onOpenAdmin && (
+              <>
+                <span className="text-stone-700">•</span>
+                <button
+                  onClick={onOpenAdmin}
+                  className="text-stone-600 hover:text-amber-400 transition cursor-pointer text-[11px] flex items-center gap-1"
+                  title="Dành riêng cho chủ quán Go Coffee (Quản lý Sheet, Bot & Đơn hàng)"
+                >
+                  <span>🔒 Chủ Quán</span>
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
