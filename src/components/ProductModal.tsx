@@ -77,27 +77,27 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white w-full sm:max-w-xl rounded-t-3xl sm:rounded-2xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[92vh]">
-        {/* Modal Header & Hero Image */}
-        <div className="relative h-56 sm:h-64 bg-stone-900 shrink-0">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white w-full sm:max-w-xl md:max-w-3xl lg:max-w-4xl rounded-t-3xl sm:rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col md:flex-row max-h-[92dvh] sm:max-h-[88vh]">
+        {/* Left Side (Desktop): Product Image & Heritage Story */}
+        <div className="relative h-56 sm:h-64 md:h-auto md:w-5/12 bg-stone-900 shrink-0 flex flex-col justify-end p-5 text-white overflow-hidden">
           <img
             src={item.image}
             alt={item.name}
-            className="w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
           
-          {/* Close button */}
+          {/* Close button (Mobile only) */}
           <button
             onClick={onClose}
-            className="absolute top-3.5 right-3.5 w-9 h-9 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur text-white flex items-center justify-center transition"
+            className="md:hidden absolute top-3.5 right-3.5 w-9 h-9 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur text-white flex items-center justify-center transition cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
 
           {/* Item details overlay */}
-          <div className="absolute bottom-4 left-4 right-4 text-white">
+          <div className="relative z-10 space-y-1.5">
             <div className="flex items-center gap-2 mb-1.5 flex-wrap">
               {item.isSignature && (
                 <span className="px-2.5 py-0.5 rounded-full bg-amber-500 text-stone-950 text-[11px] font-bold flex items-center gap-1 shadow">
@@ -115,7 +115,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 </span>
               )}
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold font-display leading-tight">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-black font-display leading-tight">
               {item.name}
             </h2>
             {item.vietnameseName && (
@@ -123,15 +123,34 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 {item.vietnameseName}
               </p>
             )}
+            <p className="text-xs text-stone-200/90 line-clamp-3 hidden md:block pt-1">
+              {item.description}
+            </p>
           </div>
         </div>
 
-        {/* Modal Body with Customization Options */}
-        <div className="p-5 overflow-y-auto space-y-6 flex-1">
-          {/* Description */}
-          <p className="text-xs sm:text-sm text-stone-600 leading-relaxed bg-stone-50 p-3 rounded-xl border border-stone-200/60">
-            {item.description}
-          </p>
+        {/* Right Side (Desktop): Customization Options & Add to Cart */}
+        <div className="md:w-7/12 flex flex-col flex-1 overflow-hidden bg-white">
+          {/* Desktop Close Button Header */}
+          <div className="hidden md:flex items-center justify-between p-4 border-b border-stone-100 bg-stone-50/70">
+            <div>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-amber-800">Tùy Chọn Đồ Uống</span>
+              <h3 className="text-sm font-bold text-stone-900 leading-tight">Tùy biến theo khẩu vị riêng của bạn</h3>
+            </div>
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-full flex items-center justify-center text-stone-400 hover:text-stone-700 hover:bg-stone-200 transition cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Modal Body with Customization Options */}
+          <div className="p-4 sm:p-6 overflow-y-auto space-y-5 flex-1">
+            {/* Description (Mobile only) */}
+            <p className="md:hidden text-xs text-stone-600 leading-relaxed bg-stone-50 p-3 rounded-xl border border-stone-200/60">
+              {item.description}
+            </p>
 
           {/* Size Choice */}
           <div className="space-y-2">
@@ -380,5 +399,6 @@ export const ProductModal: React.FC<ProductModalProps> = ({
         </div>
       </div>
     </div>
+  </div>
   );
 };

@@ -147,8 +147,8 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white w-full sm:max-w-xl rounded-t-[28px] sm:rounded-3xl shadow-2xl border-t sm:border border-stone-200 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[90vh] pb-[env(safe-area-inset-bottom,8px)] sm:pb-0">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl rounded-t-[28px] sm:rounded-3xl shadow-2xl border-t sm:border border-stone-200 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[90vh] pb-[env(safe-area-inset-bottom,8px)] sm:pb-0">
         
         {/* Header - Highlands Crimson Red Styling */}
         <div className="p-4 sm:p-5 border-b border-[#630f14] flex items-center justify-between bg-gradient-to-r from-[#7a1218] via-[#9e1c24] to-[#7a1218] text-white">
@@ -192,188 +192,206 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                 </div>
               )}
 
-              {/* Form Grid */}
-              <div className="space-y-3.5">
-                {/* Full name & Phone */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Form Grid: 2 Columns on Desktop (md:), 1 Column on Mobile */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+                
+                {/* Column 1: Quán & Thời gian & Không gian bàn */}
+                <div className="space-y-3 bg-stone-50/80 p-3.5 sm:p-4 rounded-2xl border border-stone-200/80">
+                  <div className="text-xs font-bold uppercase tracking-wider text-amber-950 flex items-center gap-1.5 pb-1 border-b border-stone-200/80">
+                    <MapPin className="w-3.5 h-3.5 text-[#b22830]" />
+                    <span>1. Chi Nhánh & Thời Gian Nhận Bàn</span>
+                  </div>
+
+                  {/* Branch selection */}
                   <div>
                     <label className="block text-[11px] font-semibold text-stone-700 mb-1">
-                      Họ và tên quý khách <span className="text-red-500">*</span>
+                      Chi nhánh quán Go Coffee
                     </label>
                     <div className="relative">
-                      <User className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                      <input
-                        type="text"
-                        required
-                        placeholder="Nguyễn Văn A"
-                        value={customerName}
-                        onChange={(e) => setCustomerName(e.target.value)}
-                        className="w-full text-[15px] sm:text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium"
-                      />
+                      <MapPin className="w-4 h-4 text-amber-800 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <select
+                        value={store.id}
+                        onChange={(e) => {
+                          const found = STORES.find((s) => s.id === e.target.value);
+                          if (found) setStore(found);
+                        }}
+                        className="w-full text-[15px] sm:text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium cursor-pointer"
+                      >
+                        {STORES.map((s) => (
+                          <option key={s.id} value={s.id}>
+                            {s.name} ({s.district}, {s.city})
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-[11px] font-semibold text-stone-700 mb-1">
-                      Số điện thoại <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <Phone className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                      <input
-                        type="tel"
-                        required
-                        placeholder="0901 234 567"
-                        value={customerPhone}
-                        onChange={(e) => setCustomerPhone(e.target.value)}
-                        className="w-full text-[15px] sm:text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium"
-                      />
+                  {/* Date and Time slot */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                        Ngày nhận bàn
+                      </label>
+                      <div className="relative">
+                        <Calendar className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                        <input
+                          type="date"
+                          min={new Date().toISOString().split('T')[0]}
+                          value={bookingDate}
+                          onChange={(e) => setBookingDate(e.target.value)}
+                          className="w-full text-[15px] sm:text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                        Khung giờ đến
+                      </label>
+                      <div className="relative">
+                        <Clock className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                        <select
+                          value={timeSlot}
+                          onChange={(e) => setTimeSlot(e.target.value)}
+                          className="w-full text-[15px] sm:text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-bold text-stone-800 cursor-pointer"
+                        >
+                          {timeSlots.map((slot) => (
+                            <option key={slot} value={slot}>
+                              {slot}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Email & Guests count */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-[11px] font-semibold text-stone-700 mb-1">
-                      Email nhận xác nhận
+                  {/* Seating Area Preference */}
+                  <div className="space-y-1.5 pt-1">
+                    <label className="block text-[11px] font-semibold text-stone-700">
+                      Chọn không gian & loại bàn mong muốn:
                     </label>
-                    <div className="relative">
-                      <Mail className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                      <input
-                        type="email"
-                        placeholder="email@example.com"
-                        value={customerEmail}
-                        onChange={(e) => setCustomerEmail(e.target.value)}
-                        className="w-full text-[15px] sm:text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-semibold text-stone-700 mb-1">
-                      Số lượng người
-                    </label>
-                    <div className="flex items-center gap-1.5 sm:gap-2">
-                      {[1, 2, 4, 6, 8].map((num) => (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {seatingOptions.map((opt) => (
                         <button
-                          key={num}
+                          key={opt.id}
                           type="button"
-                          onClick={() => setGuestCount(num)}
-                          className={`flex-1 py-2 text-xs font-bold rounded-xl border transition cursor-pointer ${
-                            guestCount === num
-                              ? 'bg-amber-900 text-white border-amber-950 shadow-xs'
-                              : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100'
+                          onClick={() => setSeatingArea(opt.id)}
+                          className={`p-2.5 rounded-xl text-left border transition cursor-pointer flex flex-col justify-between ${
+                            seatingArea === opt.id
+                              ? 'bg-amber-900 text-white border-amber-950 shadow-sm'
+                              : 'bg-white text-stone-700 hover:bg-stone-50 border-stone-200'
                           }`}
                         >
-                          {num === 8 ? '8+' : `${num}`}
+                          <span className="font-bold text-xs">{opt.name}</span>
+                          <span className={`text-[10px] mt-0.5 line-clamp-1 ${seatingArea === opt.id ? 'text-amber-200' : 'text-stone-400'}`}>
+                            {opt.desc}
+                          </span>
                         </button>
                       ))}
                     </div>
                   </div>
                 </div>
 
-                {/* Branch selection */}
-                <div>
-                  <label className="block text-[11px] font-semibold text-stone-700 mb-1">
-                    Chi nhánh quán Go Coffee
-                  </label>
-                  <div className="relative">
-                    <MapPin className="w-4 h-4 text-amber-800 absolute left-3 top-1/2 -translate-y-1/2" />
-                    <select
-                      value={store.id}
-                      onChange={(e) => {
-                        const found = STORES.find((s) => s.id === e.target.value);
-                        if (found) setStore(found);
-                      }}
-                      className="w-full text-[15px] sm:text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium cursor-pointer"
-                    >
-                      {STORES.map((s) => (
-                        <option key={s.id} value={s.id}>
-                          {s.name} ({s.district}, {s.city})
-                        </option>
-                      ))}
-                    </select>
+                {/* Column 2: Thông tin quý khách & Yêu cầu */}
+                <div className="space-y-3 bg-stone-50/80 p-3.5 sm:p-4 rounded-2xl border border-stone-200/80">
+                  <div className="text-xs font-bold uppercase tracking-wider text-amber-950 flex items-center gap-1.5 pb-1 border-b border-stone-200/80">
+                    <User className="w-3.5 h-3.5 text-[#b22830]" />
+                    <span>2. Thông Tin Khách Hàng & Số Lượng</span>
                   </div>
-                </div>
 
-                {/* Date and Time slot */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-[11px] font-semibold text-stone-700 mb-1">
-                      Ngày nhận bàn
-                    </label>
-                    <div className="relative">
-                      <Calendar className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                      <input
-                        type="date"
-                        min={new Date().toISOString().split('T')[0]}
-                        value={bookingDate}
-                        onChange={(e) => setBookingDate(e.target.value)}
-                        className="w-full text-[15px] sm:text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium"
-                      />
+                  {/* Full name & Phone */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                        Họ và tên quý khách <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <User className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                        <input
+                          type="text"
+                          required
+                          placeholder="Nguyễn Văn A"
+                          value={customerName}
+                          onChange={(e) => setCustomerName(e.target.value)}
+                          className="w-full text-[15px] sm:text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                        Số điện thoại <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <Phone className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                        <input
+                          type="tel"
+                          required
+                          placeholder="0901 234 567"
+                          value={customerPhone}
+                          onChange={(e) => setCustomerPhone(e.target.value)}
+                          className="w-full text-[15px] sm:text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium"
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-[11px] font-semibold text-stone-700 mb-1">
-                      Khung giờ đến
-                    </label>
-                    <div className="relative">
-                      <Clock className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                      <select
-                        value={timeSlot}
-                        onChange={(e) => setTimeSlot(e.target.value)}
-                        className="w-full text-[15px] sm:text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-bold text-stone-800 cursor-pointer"
-                      >
-                        {timeSlots.map((slot) => (
-                          <option key={slot} value={slot}>
-                            {slot}
-                          </option>
+                  {/* Email & Guests count */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                        Email nhận xác nhận
+                      </label>
+                      <div className="relative">
+                        <Mail className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                        <input
+                          type="email"
+                          placeholder="email@example.com"
+                          value={customerEmail}
+                          onChange={(e) => setCustomerEmail(e.target.value)}
+                          className="w-full text-[15px] sm:text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                        Số lượng người
+                      </label>
+                      <div className="flex items-center gap-1.5 sm:gap-2">
+                        {[1, 2, 4, 6, 8].map((num) => (
+                          <button
+                            key={num}
+                            type="button"
+                            onClick={() => setGuestCount(num)}
+                            className={`flex-1 py-2 text-xs font-bold rounded-xl border transition cursor-pointer ${
+                              guestCount === num
+                                ? 'bg-amber-900 text-white border-amber-950 shadow-xs'
+                                : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-100'
+                            }`}
+                          >
+                            {num === 8 ? '8+' : `${num}`}
+                          </button>
                         ))}
-                      </select>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Seating Area Preference */}
-                <div className="space-y-1.5 pt-1">
-                  <label className="block text-[11px] font-semibold text-stone-700">
-                    Chọn không gian & loại bàn mong muốn:
-                  </label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {seatingOptions.map((opt) => (
-                      <button
-                        key={opt.id}
-                        type="button"
-                        onClick={() => setSeatingArea(opt.id)}
-                        className={`p-2.5 rounded-xl text-left border transition cursor-pointer flex flex-col justify-between ${
-                          seatingArea === opt.id
-                            ? 'bg-amber-900 text-white border-amber-950 shadow-sm'
-                            : 'bg-white text-stone-700 hover:bg-stone-50 border-stone-200'
-                        }`}
-                      >
-                        <span className="font-bold text-xs">{opt.name}</span>
-                        <span className={`text-[10px] mt-0.5 line-clamp-1 ${seatingArea === opt.id ? 'text-amber-200' : 'text-stone-400'}`}>
-                          {opt.desc}
-                        </span>
-                      </button>
-                    ))}
+                  {/* Note */}
+                  <div>
+                    <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                      Yêu cầu đặc biệt (tùy chọn)
+                    </label>
+                    <textarea
+                      rows={2}
+                      placeholder="Ví dụ: Bàn gần cửa sổ, chuẩn bị ghế trẻ em, kỷ niệm sinh nhật..."
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)}
+                      className="w-full text-[15px] sm:text-xs p-3 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium resize-none"
+                    />
                   </div>
                 </div>
 
-                {/* Note */}
-                <div>
-                  <label className="block text-[11px] font-semibold text-stone-700 mb-1">
-                    Yêu cầu đặc biệt (tùy chọn)
-                  </label>
-                  <textarea
-                    rows={2}
-                    placeholder="Ví dụ: Bàn gần cửa sổ, chuẩn bị ghế trẻ em, kỷ niệm sinh nhật..."
-                    value={note}
-                    onChange={(e) => setNote(e.target.value)}
-                    className="w-full text-[15px] sm:text-xs p-3 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium resize-none"
-                  />
-                </div>
               </div>
 
               {/* Submit Button */}
@@ -453,7 +471,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                 </div>
 
                 {/* Booking Reservation Details (Clean & Concise - No duplicate customer credentials) */}
-                <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
                   <div>
                     <span className="text-[10px] text-stone-400 block uppercase font-medium">Số lượng khách</span>
                     <span className="font-bold text-amber-900">{confirmedReservation.guestCount} người</span>
@@ -463,16 +481,16 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                     <span className="font-bold text-stone-900">{confirmedReservation.timeSlot} • {confirmedReservation.date}</span>
                   </div>
                   <div className="col-span-2">
+                    <span className="text-[10px] text-stone-400 block uppercase font-medium">Khu vực bàn</span>
+                    <span className="font-semibold text-amber-800">{confirmedReservation.seatingArea}</span>
+                  </div>
+                  <div className="col-span-2 md:col-span-4 pt-1 border-t border-amber-200/60">
                     <span className="text-[10px] text-stone-400 block uppercase font-medium">Chi nhánh quán</span>
                     <span className="font-bold text-stone-900">{confirmedReservation.store.name}</span>
                     <p className="text-[11px] text-stone-500 mt-0.5">{confirmedReservation.store.address}</p>
                   </div>
-                  <div className="col-span-2">
-                    <span className="text-[10px] text-stone-400 block uppercase font-medium">Khu vực bàn</span>
-                    <span className="font-semibold text-amber-800">{confirmedReservation.seatingArea}</span>
-                  </div>
                   {confirmedReservation.note && (
-                    <div className="col-span-2">
+                    <div className="col-span-2 md:col-span-4">
                       <span className="text-[10px] text-stone-400 block uppercase font-medium">Yêu cầu đặc biệt</span>
                       <span className="italic text-stone-600">"{confirmedReservation.note}"</span>
                     </div>
