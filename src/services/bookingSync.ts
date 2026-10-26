@@ -158,7 +158,7 @@ export async function sendDirectToGoogleSheets(webhookUrl: string, payload: any)
       url.searchParams.set('telegramChatId', payload.telegramChatId);
     }
 
-    // 1. Direct POST with text/plain (avoids CORS preflight)
+    // Single direct POST with text/plain (avoids CORS preflight and avoids double execution)
     await fetch(url.toString(), {
       method: 'POST',
       mode: 'no-cors',
@@ -167,12 +167,6 @@ export async function sendDirectToGoogleSheets(webhookUrl: string, payload: any)
       },
       body: JSON.stringify(payload),
     });
-
-    // 2. Also send GET beacon fallback so Google Apps Script doGet(e) records row with 100% certainty
-    fetch(url.toString(), {
-      method: 'GET',
-      mode: 'no-cors',
-    }).catch(() => {});
 
     return { ok: true, direct: true };
   } catch (err) {
@@ -295,7 +289,12 @@ export async function submitCoffeeOrder(order: any): Promise<{
 
     if (res.ok) {
       const data = await res.json();
-      if (data.sheet && data.sheet.ok) {
+      if (
+        (data.sheet && data.sheet.ok) ||
+        (data.sheetResult && data.sheetResult.ok) ||
+        data.status === 'synced_to_sheets' ||
+        data.status === 'synced_to_sheets_and_telegram'
+      ) {
         sheetSynced = true;
       }
     }

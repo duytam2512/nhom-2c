@@ -147,8 +147,8 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white w-full max-w-xl rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col max-h-[94vh]">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white w-full sm:max-w-xl rounded-t-[28px] sm:rounded-3xl shadow-2xl border-t sm:border border-stone-200 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[90vh] pb-[env(safe-area-inset-bottom,8px)] sm:pb-0">
         
         {/* Header - Highlands Crimson Red Styling */}
         <div className="p-4 sm:p-5 border-b border-[#630f14] flex items-center justify-between bg-gradient-to-r from-[#7a1218] via-[#9e1c24] to-[#7a1218] text-white">
@@ -208,7 +208,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                         placeholder="Nguyễn Văn A"
                         value={customerName}
                         onChange={(e) => setCustomerName(e.target.value)}
-                        className="w-full text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium"
+                        className="w-full text-[15px] sm:text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium"
                       />
                     </div>
                   </div>
@@ -225,7 +225,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                         placeholder="0901 234 567"
                         value={customerPhone}
                         onChange={(e) => setCustomerPhone(e.target.value)}
-                        className="w-full text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium"
+                        className="w-full text-[15px] sm:text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium"
                       />
                     </div>
                   </div>
@@ -244,7 +244,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                         placeholder="email@example.com"
                         value={customerEmail}
                         onChange={(e) => setCustomerEmail(e.target.value)}
-                        className="w-full text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium"
+                        className="w-full text-[15px] sm:text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium"
                       />
                     </div>
                   </div>
@@ -253,7 +253,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                     <label className="block text-[11px] font-semibold text-stone-700 mb-1">
                       Số lượng người
                     </label>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
                       {[1, 2, 4, 6, 8].map((num) => (
                         <button
                           key={num}
@@ -285,7 +285,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                         const found = STORES.find((s) => s.id === e.target.value);
                         if (found) setStore(found);
                       }}
-                      className="w-full text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium cursor-pointer"
+                      className="w-full text-[15px] sm:text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium cursor-pointer"
                     >
                       {STORES.map((s) => (
                         <option key={s.id} value={s.id}>
@@ -309,7 +309,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                         min={new Date().toISOString().split('T')[0]}
                         value={bookingDate}
                         onChange={(e) => setBookingDate(e.target.value)}
-                        className="w-full text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium"
+                        className="w-full text-[15px] sm:text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium"
                       />
                     </div>
                   </div>
@@ -323,7 +323,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                       <select
                         value={timeSlot}
                         onChange={(e) => setTimeSlot(e.target.value)}
-                        className="w-full text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-bold text-stone-800 cursor-pointer"
+                        className="w-full text-[15px] sm:text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-bold text-stone-800 cursor-pointer"
                       >
                         {timeSlots.map((slot) => (
                           <option key={slot} value={slot}>
@@ -371,7 +371,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                     placeholder="Ví dụ: Bàn gần cửa sổ, chuẩn bị ghế trẻ em, kỷ niệm sinh nhật..."
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
-                    className="w-full text-xs p-3 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium resize-none"
+                    className="w-full text-[15px] sm:text-xs p-3 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium resize-none"
                   />
                 </div>
               </div>
@@ -452,12 +452,8 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                   </div>
                 </div>
 
-                {/* Recapped Details Grid */}
+                {/* Booking Reservation Details (Clean & Concise - No duplicate customer credentials) */}
                 <div className="grid grid-cols-2 gap-3 text-xs">
-                  <div>
-                    <span className="text-[10px] text-stone-400 block uppercase font-medium">Khách đặt bàn</span>
-                    <span className="font-bold text-stone-900">{confirmedReservation.customerName}</span>
-                  </div>
                   <div>
                     <span className="text-[10px] text-stone-400 block uppercase font-medium">Số lượng khách</span>
                     <span className="font-bold text-amber-900">{confirmedReservation.guestCount} người</span>
@@ -466,22 +462,18 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                     <span className="text-[10px] text-stone-400 block uppercase font-medium">Thời gian nhận bàn</span>
                     <span className="font-bold text-stone-900">{confirmedReservation.timeSlot} • {confirmedReservation.date}</span>
                   </div>
-                  <div>
-                    <span className="text-[10px] text-stone-400 block uppercase font-medium">Số điện thoại</span>
-                    <span className="font-mono font-bold text-stone-900">{confirmedReservation.customerPhone}</span>
+                  <div className="col-span-2">
+                    <span className="text-[10px] text-stone-400 block uppercase font-medium">Chi nhánh quán</span>
+                    <span className="font-bold text-stone-900">{confirmedReservation.store.name}</span>
+                    <p className="text-[11px] text-stone-500 mt-0.5">{confirmedReservation.store.address}</p>
                   </div>
                   <div className="col-span-2">
-                    <span className="text-[10px] text-stone-400 block uppercase font-medium">Địa điểm chi nhánh</span>
-                    <span className="font-semibold text-stone-900">{confirmedReservation.store.name}</span>
-                    <p className="text-[11px] text-stone-500">{confirmedReservation.store.address}</p>
-                  </div>
-                  <div className="col-span-2">
-                    <span className="text-[10px] text-stone-400 block uppercase font-medium">Khu vực đã chọn</span>
+                    <span className="text-[10px] text-stone-400 block uppercase font-medium">Khu vực bàn</span>
                     <span className="font-semibold text-amber-800">{confirmedReservation.seatingArea}</span>
                   </div>
                   {confirmedReservation.note && (
                     <div className="col-span-2">
-                      <span className="text-[10px] text-stone-400 block uppercase font-medium">Ghi chú</span>
+                      <span className="text-[10px] text-stone-400 block uppercase font-medium">Yêu cầu đặc biệt</span>
                       <span className="italic text-stone-600">"{confirmedReservation.note}"</span>
                     </div>
                   )}

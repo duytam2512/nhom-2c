@@ -182,7 +182,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   return (
     <>
       {/* Floating Launcher Button */}
-      <div className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-40">
+      <div className="fixed bottom-18 right-4 sm:bottom-6 sm:right-6 z-40">
         <button
           onClick={onToggle}
           aria-label="Mở Chat với Barista . Go Coffee"

@@ -18,6 +18,7 @@ import { SeoShareModal } from './components/SeoShareModal';
 import { TableBookingModal } from './components/TableBookingModal';
 import { AdminDashboardModal } from './components/AdminDashboardModal';
 import { ChatbotWidget } from './components/ChatbotWidget';
+import { MobileBottomNav } from './components/MobileBottomNav';
 import { STORES } from './data/coffeeData';
 import { CartItem, MenuItem, Order, StoreLocation, Voucher, TableReservation, CoffeeCategory } from './types/coffee';
 import { ShoppingBag, CheckCircle, Sparkles, ArrowUp } from 'lucide-react';
@@ -191,7 +192,7 @@ export default function App() {
   };
 
   return (
-    <div id="top" className="min-h-screen bg-[#faf7f2] flex flex-col relative selection:bg-amber-800 selection:text-white">
+    <div id="top" className="min-h-screen bg-[#faf7f2] flex flex-col relative selection:bg-amber-800 selection:text-white pb-16 md:pb-0">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-20 right-4 z-50 bg-stone-900/95 text-white px-4 py-3 rounded-2xl shadow-xl border border-amber-600/40 text-xs sm:text-sm font-semibold flex items-center gap-2.5 animate-in slide-in-from-top-4 duration-300">
@@ -284,23 +285,18 @@ export default function App() {
         onOpenAdmin={() => setIsAdminModalOpen(true)}
       />
 
-      {/* Floating Action Button for Mobile Cart */}
-      {totalCartCount > 0 && !isCartOpen && !isCheckoutOpen && (
-        <div className="fixed bottom-5 right-5 z-40 lg:hidden">
-          <button
-            onClick={() => setIsCartOpen(true)}
-            className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-gradient-to-r from-amber-800 to-amber-950 text-white font-bold text-xs shadow-2xl ring-2 ring-amber-400/50 active:scale-95 transition cursor-pointer"
-          >
-            <div className="relative">
-              <ShoppingBag className="w-4 h-4 text-amber-200" />
-              <span className="absolute -top-2 -right-2 bg-amber-400 text-stone-950 font-black text-[9px] w-4 h-4 rounded-full flex items-center justify-center">
-                {totalCartCount}
-              </span>
-            </div>
-            <span>Giỏ hàng</span>
-          </button>
-        </div>
-      )}
+      {/* Dedicated Native-feel Mobile Bottom Navigation Bar (Phone-optimized) */}
+      <MobileBottomNav
+        cartCount={totalCartCount}
+        onOpenCart={() => setIsCartOpen(true)}
+        onOpenTableBooking={openBookingModal}
+        onScrollToMenu={scrollToMenu}
+        onScrollToStores={() => {
+          const el = document.getElementById('stores');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }}
+        onGoHome={handleResetHome}
+      />
 
       {/* Modals */}
       <ProductModal
