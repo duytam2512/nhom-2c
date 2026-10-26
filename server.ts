@@ -1,6 +1,7 @@
 import express from 'express';
 import { createServer as createViteServer } from 'vite';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { GoogleGenAI } from '@google/genai';
@@ -258,8 +259,52 @@ Hệ thống sẵn sàng nhận thông tin đặt bàn & đơn hàng mới tự 
   return res.json(result);
 });
 
-// Google Sheets Webhook configuration & proxy
+// Persistent Store Configuration (survives dev server restarts & static export)
+const APP_CONFIG_FILE = path.resolve(__dirname, 'public', 'app-config.json');
+
 let googleSheetsWebhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL || '';
+
+function loadAppConfig() {
+  try {
+    if (fs.existsSync(APP_CONFIG_FILE)) {
+      const content = fs.readFileSync(APP_CONFIG_FILE, 'utf-8');
+      const parsed = JSON.parse(content);
+      if (parsed.googleSheetsWebhookUrl && !process.env.GOOGLE_SHEETS_WEBHOOK_URL) {
+        googleSheetsWebhookUrl = parsed.googleSheetsWebhookUrl;
+      }
+      if (parsed.telegramChatId && !process.env.TELEGRAM_CHAT_ID) {
+        telegramChatId = parsed.telegramChatId;
+      }
+    }
+  } catch (err) {
+    console.warn('Could not read app-config.json:', err);
+  }
+}
+
+function persistAppConfig(updates: { googleSheetsWebhookUrl?: string; telegramChatId?: string }) {
+  try {
+    let current: any = {
+      storeName: 'Go & Grab Coffee',
+      botUsername: 'Duyaasaa_bot',
+    };
+    if (fs.existsSync(APP_CONFIG_FILE)) {
+      try {
+        current = JSON.parse(fs.readFileSync(APP_CONFIG_FILE, 'utf-8'));
+      } catch {}
+    }
+    const merged = {
+      ...current,
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    };
+    fs.writeFileSync(APP_CONFIG_FILE, JSON.stringify(merged, null, 2), 'utf-8');
+  } catch (err) {
+    console.warn('Could not persist app-config.json:', err);
+  }
+}
+
+// Initial load on server boot
+loadAppConfig();
 
 // In-memory data store for Store Owner / Admin Portal
 const recentReservations: any[] = [];
@@ -269,16 +314,27 @@ const ADMIN_PIN = process.env.ADMIN_PIN || '1999';
 app.get('/api/booking/webhook', (_req, res) => {
   return res.json({
     webhookUrl: googleSheetsWebhookUrl,
+    telegramChatId: telegramChatId,
     isConfigured: Boolean(googleSheetsWebhookUrl),
   });
 });
 
 app.post('/api/booking/webhook', (req, res) => {
-  const { webhookUrl } = req.body;
-  googleSheetsWebhookUrl = (webhookUrl || '').trim();
+  const { webhookUrl, telegramChatId: newChatId } = req.body;
+  if (webhookUrl !== undefined) {
+    googleSheetsWebhookUrl = (webhookUrl || '').trim();
+  }
+  if (newChatId !== undefined) {
+    telegramChatId = (newChatId || '').trim();
+  }
+  persistAppConfig({
+    googleSheetsWebhookUrl,
+    telegramChatId,
+  });
   return res.json({
     success: true,
     webhookUrl: googleSheetsWebhookUrl,
+    telegramChatId: telegramChatId,
     isConfigured: Boolean(googleSheetsWebhookUrl),
   });
 });
@@ -423,23 +479,35 @@ async function forwardOrderToGoogleSheets(url: string, order: any, telegramChatI
 
 // Test endpoint for Google Sheets Webhook
 app.post('/api/booking/test-sheets', async (req, res) => {
-  const urlToTest = req.body.webhookUrl || googleSheetsWebhookUrl;
+  const urlToTest = (req.body.webhookUrl || googleSheetsWebhookUrl || '').trim();
+  const chatIdToTest = (req.body.telegramChatId || telegramChatId || '').trim();
+
   const result = await forwardToGoogleSheets(
     urlToTest,
     {
-      code: 'TEST-DIAGNOSTIC',
+      code: 'TEST-' + Math.floor(1000 + Math.random() * 9000),
       customerName: 'Kiểm Tra Hệ Thống (Test)',
       customerPhone: '0909123456',
       customerEmail: 'duykhaikhan@gmail.com',
       guestCount: 2,
       date: new Date().toISOString().split('T')[0],
       timeSlot: '09:00',
-      storeName: 'Go Coffee - Nhà Hát Thành Phố',
+      storeName: 'Go Coffee - Chi Nhánh Mẫu',
       seatingArea: 'Khu làm việc thử nghiệm',
       note: 'Dòng test tự động kiểm tra kết nối từ website Go Coffee',
     },
-    req.body.telegramChatId || telegramChatId
+    chatIdToTest
   );
+
+  // If the test succeeded, immediately persist the verified webhook URL so real bookings use it!
+  if (result.ok && urlToTest) {
+    googleSheetsWebhookUrl = urlToTest;
+    if (chatIdToTest) telegramChatId = chatIdToTest;
+    persistAppConfig({
+      googleSheetsWebhookUrl: urlToTest,
+      telegramChatId: chatIdToTest || telegramChatId,
+    });
+  }
 
   return res.json(result);
 });
@@ -447,8 +515,18 @@ app.post('/api/booking/test-sheets', async (req, res) => {
 // Table booking endpoint: sends to Google Sheets AND Telegram Bot
 app.post('/api/booking', async (req, res) => {
   const reservationData = req.body;
-  const targetUrl = req.body.webhookUrl || googleSheetsWebhookUrl;
-  const targetTelegramChatId = req.body.telegramChatId || telegramChatId;
+  const targetUrl = (req.body.webhookUrl || googleSheetsWebhookUrl || '').trim();
+  const targetTelegramChatId = (req.body.telegramChatId || telegramChatId || '').trim();
+
+  // If client provided a valid webhookUrl and server didn't have one cached, persist it
+  if (targetUrl && targetUrl !== googleSheetsWebhookUrl) {
+    googleSheetsWebhookUrl = targetUrl;
+    persistAppConfig({ googleSheetsWebhookUrl: targetUrl });
+  }
+  if (targetTelegramChatId && targetTelegramChatId !== telegramChatId) {
+    telegramChatId = targetTelegramChatId;
+    persistAppConfig({ telegramChatId: targetTelegramChatId });
+  }
 
   // Format message for Telegram
   const telegramMessage = `🔔 <b>CÓ KHÁCH ĐẶT BÀN MỚI TẠI GO COFFEE!</b>
@@ -526,9 +604,16 @@ app.post('/api/booking', async (req, res) => {
   });
 });
 
-// Online coffee order endpoint: sends notification to Telegram Bot
+// Online coffee order endpoint: sends notification to Telegram Bot & Google Sheets
 app.post('/api/order', async (req, res) => {
   const order = req.body;
+  const targetUrl = (req.body.webhookUrl || googleSheetsWebhookUrl || '').trim();
+  const targetTelegramChatId = (req.body.telegramChatId || telegramChatId || '').trim();
+
+  if (targetUrl && targetUrl !== googleSheetsWebhookUrl) {
+    googleSheetsWebhookUrl = targetUrl;
+    persistAppConfig({ googleSheetsWebhookUrl: targetUrl });
+  }
 
   const itemsList = Array.isArray(order.items)
     ? order.items
@@ -551,11 +636,11 @@ ${itemsList}
 🛵 <b>Hình thức:</b> ${order.orderType === 'pickup' ? `Ghé lấy tại quầy (${order.store?.name || 'Chi nhánh'})` : `Giao tận nơi: ${order.deliveryAddress || 'Địa chỉ khách'}`}
 📝 <b>Ghi chú:</b> <i>${order.customerNote || 'Không có'}</i>`;
 
-  const tgResult = await sendTelegramNotification(orderMessage);
+  const tgResult = await sendTelegramNotification(orderMessage, targetTelegramChatId);
 
   let sheetResult: any = { ok: false };
-  if (googleSheetsWebhookUrl) {
-    sheetResult = await forwardOrderToGoogleSheets(googleSheetsWebhookUrl, order, telegramChatId);
+  if (targetUrl) {
+    sheetResult = await forwardOrderToGoogleSheets(targetUrl, order, targetTelegramChatId);
   }
 
   // Save order to Store Owner record store

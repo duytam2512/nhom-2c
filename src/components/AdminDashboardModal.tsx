@@ -22,6 +22,7 @@ import {
   KeyRound,
   Code2
 } from 'lucide-react';
+import { getStoreSyncConfig, saveStoreSyncConfig, sendDirectToGoogleSheets } from '../services/bookingSync';
 
 interface AdminDashboardModalProps {
   isOpen: boolean;
@@ -167,17 +168,44 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
     }
   }, [isAuthenticated, isOpen]);
 
+  const fallbackLocalOverview = () => {
+    try {
+      const resList = JSON.parse(localStorage.getItem('go_coffee_local_reservations') || '[]');
+      const ordList = JSON.parse(localStorage.getItem('go_coffee_local_orders') || '[]');
+      setOverviewData({
+        webhookUrl: localStorage.getItem('go_grab_sheets_webhook') || '',
+        telegramChatId: localStorage.getItem('go_grab_telegram_chat_id') || '',
+        botUsername: 'Duyaasaa_bot',
+        reservations: resList,
+        orders: ordList,
+        stats: {
+          totalReservations: resList.length,
+          totalOrders: ordList.length,
+          totalRevenue: ordList.reduce((sum: number, o: any) => sum + (Number(o.total) || 0), 0),
+        },
+      });
+    } catch (e) {}
+  };
+
   const loadOverview = async () => {
     setIsLoadingOverview(true);
     try {
+      const syncConfig = await getStoreSyncConfig();
+      if (syncConfig.webhookUrl && !webhookUrl) setWebhookUrl(syncConfig.webhookUrl);
+      if (syncConfig.telegramChatId && !telegramChatId) setTelegramChatId(syncConfig.telegramChatId);
+
       const res = await fetch('/api/admin/overview');
-      const data = await res.json();
-      setOverviewData(data);
-      if (data.webhookUrl && !webhookUrl) setWebhookUrl(data.webhookUrl);
-      if (data.telegramChatId && !telegramChatId) setTelegramChatId(data.telegramChatId);
-      if (data.botUsername) setBotUsername(data.botUsername);
+      if (res.ok) {
+        const data = await res.json();
+        setOverviewData(data);
+        if (data.webhookUrl && !webhookUrl) setWebhookUrl(data.webhookUrl);
+        if (data.telegramChatId && !telegramChatId) setTelegramChatId(data.telegramChatId);
+        if (data.botUsername) setBotUsername(data.botUsername);
+      } else {
+        fallbackLocalOverview();
+      }
     } catch (err) {
-      console.error('Lỗi tải dữ liệu tổng quan:', err);
+      fallbackLocalOverview();
     } finally {
       setIsLoadingOverview(false);
     }
@@ -188,7 +216,6 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
   const handleLogin = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setAuthError('');
-
     // Verify PIN: '1999' or '1234'
     if (pinInput === '1999' || pinInput === '1234' || pinInput === 'duykhaikhan') {
       setIsAuthenticated(true);
@@ -212,17 +239,18 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
 
   const handleSaveWebhook = async () => {
     setIsSavingWebhook(true);
-    const clean = webhookUrl.trim();
-    localStorage.setItem('go_grab_sheets_webhook', clean);
+    const cleanUrl = webhookUrl.trim();
+    const cleanChatId = telegramChatId.trim();
+
     try {
-      await fetch('/api/booking/webhook', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ webhookUrl: clean }),
+      await saveStoreSyncConfig({
+        webhookUrl: cleanUrl,
+        telegramChatId: cleanChatId,
       });
+
       setSheetsTestStatus({
         type: 'success',
-        text: '✅ Đã lưu cấu hình Google Sheet Webhook thành công!',
+        text: '✅ Đã lưu cấu hình Google Sheet Webhook vào toàn hệ thống quán thành công!',
       });
     } catch (err: any) {
       setSheetsTestStatus({
@@ -238,29 +266,83 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
   const handleTestWebhook = async () => {
     setIsTestingWebhook(true);
     setSheetsTestStatus({ type: 'info', text: 'Đang gửi dòng thử nghiệm đến Google Sheet...' });
+    const cleanUrl = webhookUrl.trim();
+    const cleanTg = telegramChatId.trim();
+
+    if (!cleanUrl) {
+      setSheetsTestStatus({
+        type: 'error',
+        text: 'Vui lòng dán link Web App (https://script.google.com/macros/s/.../exec) trước khi bấm thử nghiệm!',
+      });
+      setIsTestingWebhook(false);
+      return;
+    }
+
+    // Auto-save verified URL so owner doesn't forget
+    await saveStoreSyncConfig({ webhookUrl: cleanUrl, telegramChatId: cleanTg });
+
     try {
+      // 1. Try server-side test
       const res = await fetch('/api/booking/test-sheets', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          webhookUrl: webhookUrl.trim(),
-          telegramChatId: telegramChatId.trim(),
+          webhookUrl: cleanUrl,
+          telegramChatId: cleanTg,
         }),
       });
-      const data = await res.json();
-      if (data.ok) {
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.ok) {
+          setSheetsTestStatus({
+            type: 'success',
+            text: '🎉 THÀNH CÔNG! Dữ liệu thử nghiệm đã được ghi vào file Google Sheet của bạn & kích hoạt tự động cho mọi lượt đặt bàn trên website.',
+          });
+          setIsTestingWebhook(false);
+          return;
+        } else {
+          setSheetsTestStatus({
+            type: 'error',
+            text: data.error || 'Gửi thất bại. Kiểm tra xem quyền truy cập Web App đã để "Bất kỳ ai (Anyone)" chưa.',
+          });
+          setIsTestingWebhook(false);
+          return;
+        }
+      }
+    } catch (e: any) {
+      // Server not reachable (e.g. running on static Vercel)
+    }
+
+    // 2. Direct client-side forward test (for Vercel / static deployments)
+    try {
+      const directRes = await sendDirectToGoogleSheets(cleanUrl, {
+        code: 'TEST-WEB-DIRECT',
+        customerName: 'Kiểm Tra Kết Nối Website',
+        customerPhone: '0909123456',
+        customerEmail: 'duykhaikhan@gmail.com',
+        guestCount: 2,
+        date: new Date().toISOString().split('T')[0],
+        timeSlot: '09:00',
+        storeName: 'Go Coffee - Chi Nhánh Mẫu',
+        seatingArea: 'Khu làm việc thử nghiệm',
+        note: 'Dòng test trực tiếp từ trình duyệt web (kênh Vercel fallback)',
+        telegramChatId: cleanTg,
+      });
+
+      if (directRes.ok) {
         setSheetsTestStatus({
           type: 'success',
-          text: '🎉 THÀNH CÔNG! Dữ liệu thử nghiệm đã được ghi vào file Google Sheet của bạn.',
+          text: '🎉 THÀNH CÔNG! Đã gửi trực tiếp từ trình duyệt đến Web App Google Sheet của bạn. Hệ thống sẵn sàng hoạt động trên cả Vercel & AI Studio!',
         });
       } else {
         setSheetsTestStatus({
           type: 'error',
-          text: data.error || 'Gửi thất bại. Kiểm tra xem quyền truy cập Web App đã để "Bất kỳ ai (Anyone)" chưa.',
+          text: 'Không thể kết nối đến Web App. Vui lòng kiểm tra lại URL.',
         });
       }
-    } catch (e: any) {
-      setSheetsTestStatus({ type: 'error', text: 'Lỗi kết nối: ' + e.message });
+    } catch (directErr: any) {
+      setSheetsTestStatus({ type: 'error', text: 'Lỗi kết nối: ' + directErr.message });
     } finally {
       setIsTestingWebhook(false);
     }

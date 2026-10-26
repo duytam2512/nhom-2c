@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { MenuSection } from './components/MenuSection';
@@ -21,6 +21,7 @@ import { ChatbotWidget } from './components/ChatbotWidget';
 import { STORES } from './data/coffeeData';
 import { CartItem, MenuItem, Order, StoreLocation, Voucher, TableReservation, CoffeeCategory } from './types/coffee';
 import { ShoppingBag, CheckCircle, Sparkles, ArrowUp } from 'lucide-react';
+import { getStoreSyncConfig } from './services/bookingSync';
 
 export default function App() {
   // State
@@ -34,6 +35,11 @@ export default function App() {
   // Admin / Store Owner state
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+
+  // Preload store sync configuration (Google Sheets Webhook & Telegram)
+  useEffect(() => {
+    getStoreSyncConfig().catch(() => {});
+  }, []);
 
   // Modals
   const [customizingItem, setCustomizingItem] = useState<MenuItem | null>(null);

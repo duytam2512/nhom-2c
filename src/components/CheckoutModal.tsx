@@ -18,6 +18,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { CartItem, Order, PaymentMethodType, StoreLocation, Voucher } from '../types/coffee';
+import { submitCoffeeOrder } from '../services/bookingSync';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -125,12 +126,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         estimatedReadyTime: readyTime,
       };
 
-      // Notify Telegram Bot in background
-      fetch('/api/order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newOrder),
-      }).catch((e) => console.error('Order notification error:', e));
+      // Dual-channel notify Telegram Bot & Google Sheets in background
+      submitCoffeeOrder(newOrder).catch((e) => console.error('Order sync error:', e));
 
       setIsProcessing(false);
       onOrderSuccess(newOrder);

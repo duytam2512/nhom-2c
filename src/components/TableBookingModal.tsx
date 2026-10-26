@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { StoreLocation, TableReservation } from '../types/coffee';
 import { STORES } from '../data/coffeeData';
+import { submitTableBooking } from '../services/bookingSync';
 
 interface TableBookingModalProps {
   isOpen: boolean;
@@ -102,14 +103,10 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
     };
 
     try {
-      // Background submit to server (which silently forwards to Sheets & Telegram)
-      await fetch('/api/booking', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...reservation,
-          storeName: store.name,
-        }),
+      // Dual-channel submit: sends to server & directly to Google Sheets Web App fallback
+      await submitTableBooking({
+        ...reservation,
+        storeName: store.name,
       });
     } catch (err) {
       console.warn('Booking recorded locally');
