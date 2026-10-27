@@ -84,6 +84,9 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           <img
             src={item.image}
             alt={item.name}
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).src = '/images/phindi-hanh-nhan.jpg';
+            }}
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />

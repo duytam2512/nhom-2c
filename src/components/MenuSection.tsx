@@ -183,7 +183,7 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
       </div>
 
       {/* Unified Menu Control Bar: Signature Red & Gold Palette */}
-      <div className="bg-white rounded-3xl border-2 border-stone-200/90 shadow-lg p-3.5 sm:p-5 mb-8 space-y-4">
+      <div className="bg-white rounded-3xl border-2 border-stone-200/90 shadow-lg p-3.5 sm:p-5 mb-8 space-y-4 overflow-hidden">
         
         {/* Header Announcement Strip */}
         <div className="bg-gradient-to-r from-[#8f1920] via-[#b22830] to-[#701217] text-white p-3 sm:px-5 sm:py-3 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-2 shadow-md border-b-2 border-amber-400">
@@ -207,8 +207,8 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
           </div>
         </div>
 
-        {/* Row 1: Grouped Category Navigation Bar with Highlands Red & Gold Highlights */}
-        <div className="hidden lg:flex items-center gap-2 p-2 bg-gradient-to-b from-[#faf5ee] to-[#f4ebe0] rounded-2xl border border-amber-900/10 shadow-inner">
+        {/* Row 1: Category Navigation - Responsive Desktop & Tablet Grid */}
+        <div className="hidden md:grid md:grid-cols-4 xl:grid-cols-7 gap-1.5 xl:gap-2 p-2 bg-gradient-to-b from-[#faf5ee] to-[#f4ebe0] rounded-2xl border border-amber-900/10 shadow-inner">
           {categories.map((cat) => {
             const Icon = cat.icon;
             const isSelected = selectedCategory === cat.id;
@@ -217,15 +217,16 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`flex-1 py-3 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer ${
+                title={cat.name}
+                className={`w-full min-w-0 py-2.5 px-2 xl:px-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 xl:gap-2 cursor-pointer ${
                   isSelected
-                    ? 'bg-gradient-to-r from-[#b22830] via-[#c41e27] to-[#8f1920] text-white shadow-lg shadow-red-950/25 ring-2 ring-amber-400 scale-[1.02]'
+                    ? 'bg-gradient-to-r from-[#b22830] via-[#c41e27] to-[#8f1920] text-white shadow-lg shadow-red-950/25 ring-2 ring-amber-400 scale-[1.01]'
                     : `bg-white/90 text-stone-800 border border-stone-200/80 ${cat.bgHover} shadow-2xs`
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isSelected ? 'text-amber-300' : cat.accentColor}`} />
+                <Icon className={`w-4 h-4 shrink-0 ${isSelected ? 'text-amber-300' : cat.accentColor}`} />
                 <span className="truncate">{cat.name}</span>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-black ${
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-black shrink-0 ${
                   isSelected ? 'bg-amber-400 text-[#701217] shadow-xs' : cat.badgeColor
                 }`}>
                   {count}
@@ -235,25 +236,54 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
           })}
         </div>
 
-        {/* Mobile / Tablet Category Dropdown & Scrollable Pills */}
-        <div className="lg:hidden space-y-2">
+        {/* Mobile Category Selector: Dropdown + Swipeable Pill Strip */}
+        <div className="md:hidden space-y-2.5">
+          {/* Quick Swipeable Category Pill Strip */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none -mx-1 px-1">
+            {categories.map((cat) => {
+              const Icon = cat.icon;
+              const isSelected = selectedCategory === cat.id;
+              const count = categoryCounts[cat.id] || 0;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                    isSelected
+                      ? 'bg-gradient-to-r from-[#b22830] to-[#8f1920] text-white shadow-md ring-2 ring-amber-400'
+                      : 'bg-stone-50 text-stone-700 border border-stone-200/90 hover:bg-stone-100'
+                  }`}
+                >
+                  <Icon className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-amber-300' : cat.accentColor}`} />
+                  <span>{cat.name}</span>
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-black shrink-0 ${
+                    isSelected ? 'bg-amber-400 text-[#701217]' : cat.badgeColor
+                  }`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Collapsible Dropdown for complete category overview */}
           <div className="relative">
             <button
               onClick={() => setIsMobileCategoryOpen(!isMobileCategoryOpen)}
-              className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-[#b22830] to-[#8f1920] text-white font-black text-xs shadow-md border-2 border-amber-400/60 cursor-pointer"
+              className="w-full flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-[#8f1920] to-[#b22830] text-white font-bold text-xs shadow-sm border border-amber-400/50 cursor-pointer"
             >
-              <span className="flex items-center gap-2.5">
-                <currentCategoryObj.icon className="w-4 h-4 text-amber-300" />
-                <span>Danh mục: {currentCategoryObj.name}</span>
-                <span className="text-[10px] bg-amber-400 text-[#701217] font-black px-2 py-0.5 rounded-full shadow-xs">
+              <span className="flex items-center gap-2">
+                <currentCategoryObj.icon className="w-4 h-4 text-amber-300 shrink-0" />
+                <span className="truncate">Đang xem: {currentCategoryObj.name}</span>
+                <span className="text-[10px] bg-amber-400 text-[#701217] font-black px-2 py-0.5 rounded-full shadow-xs shrink-0">
                   {categoryCounts[currentCategoryObj.id]} món
                 </span>
               </span>
-              <ChevronDown className={`w-4 h-4 text-amber-200 transition-transform ${isMobileCategoryOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-4 h-4 text-amber-200 shrink-0 transition-transform ${isMobileCategoryOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {isMobileCategoryOpen && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border-2 border-[#b22830]/30 p-2 z-30 space-y-1">
+              <div className="absolute top-full left-0 right-0 mt-1.5 bg-white rounded-2xl shadow-2xl border-2 border-[#b22830]/30 p-2 z-30 space-y-1">
                 {categories.map((cat) => {
                   const Icon = cat.icon;
                   const isSelected = selectedCategory === cat.id;
@@ -264,17 +294,17 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                         setSelectedCategory(cat.id);
                         setIsMobileCategoryOpen(false);
                       }}
-                      className={`w-full flex items-center justify-between p-3 rounded-xl text-xs font-bold text-left transition ${
+                      className={`w-full flex items-center justify-between p-2.5 rounded-xl text-xs font-bold text-left transition ${
                         isSelected
                           ? 'bg-gradient-to-r from-[#b22830] to-[#8f1920] text-white font-black'
                           : 'text-stone-800 hover:bg-red-50'
                       }`}
                     >
                       <span className="flex items-center gap-2">
-                        <Icon className={`w-4 h-4 ${isSelected ? 'text-amber-300' : cat.accentColor}`} />
+                        <Icon className={`w-4 h-4 shrink-0 ${isSelected ? 'text-amber-300' : cat.accentColor}`} />
                         <span>{cat.name}</span>
                       </span>
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0 ${
                         isSelected ? 'bg-amber-400 text-[#701217]' : cat.badgeColor
                       }`}>
                         {categoryCounts[cat.id]} món
@@ -394,12 +424,20 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                     src={item.image}
                     alt={item.name}
                     loading="lazy"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = '/images/phindi-hanh-nhan.jpg';
+                    }}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
                   {/* Badges */}
                   <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 items-start">
+                    {item.category === 'combo' && (
+                      <span className="px-2 py-0.5 rounded-md bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 text-white text-[10px] font-black uppercase tracking-wider shadow flex items-center gap-1">
+                        <Zap className="w-2.5 h-2.5 text-yellow-300" /> Combo Tiết Kiệm
+                      </span>
+                    )}
                     {item.isSignature && (
                       <span className="px-2 py-0.5 rounded-md bg-amber-500 text-stone-950 text-[10px] font-black uppercase tracking-wider shadow">
                         Signature

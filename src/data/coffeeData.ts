@@ -235,7 +235,7 @@ export const MENU_ITEMS: MenuItem[] = [
     price: 49000,
     originalPrice: 55000,
     description: 'Cà phê Phin thế hệ mới kết hợp cùng hạnh nhân thơm bùi, lớp sữa êm dịu đem đến trải nghiệm uống cà phê phin hiện đại, độc đáo và lôi cuốn.',
-    image: 'https://images.unsplash.com/photo-1485808191629-597e7a830444?auto=format&fit=crop&w=800&q=80',
+    image: '/images/phindi-hanh-nhan.jpg',
     isSignature: true,
     isBestSeller: true,
     calories: 230,
