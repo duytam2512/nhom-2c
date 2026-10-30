@@ -170,9 +170,9 @@ export const Hero: React.FC<HeroProps> = ({
             {/* Main Headline */}
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-display text-stone-900 tracking-tight leading-[1.12]">
               Hương Vị Go Coffee <br />
-              <span className="text-[#b22830] underline decoration-amber-400 decoration-wavy decoration-2">
+              <span className="text-[#b22830]">
                 Đậm Đà Bản Sắc
-              </span>{' '}
+              </span> <br />
               Tiện Lợi Mọi Nơi
             </h1>
 
@@ -198,10 +198,10 @@ export const Hero: React.FC<HeroProps> = ({
               ))}
             </div>
 
-            {/* Context-aware Featured Product Action (Optimized & Non-repetitive) */}
+            {/* Context-aware Featured Product Action */}
             <div className="pt-2">
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
-                {/* 1. Direct Customize & Add Current Featured Drink */}
+                {/* 1. Direct Customize & Add Current Featured Item */}
                 <button
                   onClick={() => {
                     const targetItem =
@@ -220,35 +220,14 @@ export const Hero: React.FC<HeroProps> = ({
                   <ArrowRight className="w-4 h-4 text-amber-200 group-hover:translate-x-1 transition-transform" />
                 </button>
 
-                {/* 2. Find Nearest Store (Distinct from Menu & Booking) */}
+                {/* 2. Direct Link to Full Menu */}
                 <button
-                  onClick={() => {
-                    const el = document.getElementById('stores');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }}
+                  onClick={onOrderNow}
                   className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-white hover:bg-stone-50 border border-stone-200 text-stone-800 font-bold text-sm flex items-center justify-center gap-2 shadow-2xs transition active:scale-95 cursor-pointer"
-                  title="Tìm điểm quán Go Coffee gần bạn nhất"
+                  title="Xem toàn bộ thực đơn 18 món Go Coffee"
                 >
-                  <MapPin className="w-4 h-4 text-amber-800" />
-                  <span>Tìm Quán Gần Bạn</span>
+                  <span>Xem Toàn Bộ Thực Đơn</span>
                 </button>
-              </div>
-
-              {/* Sub-bar: Chat với Barista . Go Coffee Callout */}
-              <div className="pt-3 flex flex-wrap items-center justify-center lg:justify-start gap-3 text-xs">
-                {onOpenChatbot && (
-                  <button
-                    onClick={onOpenChatbot}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-100/80 hover:bg-amber-200 border border-amber-300 text-[#8c141c] font-bold text-xs cursor-pointer transition active:scale-95 shadow-2xs group"
-                    title="Bấm để mở Chat với Barista . Go Coffee tư vấn món hợp khẩu vị"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-[#b22830] group-hover:rotate-12 transition-transform" />
-                    <span>Chat với <strong>Barista . Go Coffee</strong></span>
-                    <span className="px-1.5 py-0.5 rounded text-[9px] bg-[#b22830] text-amber-200 font-black uppercase tracking-wider">
-                      Gemini AI
-                    </span>
-                  </button>
-                )}
               </div>
             </div>
 

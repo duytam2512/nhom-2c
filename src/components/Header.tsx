@@ -120,8 +120,8 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Main navigation bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
-        {/* Left: Brand Logo & Store pill */}
-        <div className="flex items-center gap-5">
+        {/* Left: Brand Logo */}
+        <div className="flex items-center">
           <a
             href="/"
             onClick={handleLogoClick}
@@ -130,33 +130,25 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <Logo size="md" />
           </a>
-
-          {/* Desktop Store Location Pill */}
-          <button
-            onClick={() => handleLinkClick('/cua-hang', 'stores')}
-            className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-100/60 hover:bg-amber-100 border border-amber-300/60 text-xs text-amber-950 transition cursor-pointer"
-            title="Bấm để xem các điểm lấy hàng"
-          >
-            <MapPin className="w-3.5 h-3.5 text-amber-800" />
-            <span className="font-semibold">{selectedStore.district}:</span>
-            <span className="text-stone-600 truncate max-w-[120px]">{selectedStore.name}</span>
-          </button>
         </div>
 
-        {/* Center: Clean Grouped Dropdown Navigation */}
-        <nav ref={dropdownRef} className="hidden md:flex items-center gap-2 text-xs font-semibold text-stone-700">
+        {/* Center: Clean Grouped Dropdown Navigation evenly spaced */}
+        <nav
+          ref={dropdownRef}
+          className="hidden md:flex items-center justify-center flex-1 max-w-3xl mx-auto gap-2 lg:gap-6 xl:gap-8 text-xs sm:text-sm font-bold text-stone-700"
+        >
           
-          {/* MENU GROUP 1: THỰC ĐƠN */}
+          {/* MENU 1: THỰC ĐƠN */}
           <div 
             className="relative"
             onMouseEnter={() => setActiveDropdown('menu')}
           >
             <button
               onClick={() => setActiveDropdown(activeDropdown === 'menu' ? null : 'menu')}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl transition cursor-pointer uppercase tracking-wider text-xs font-bold ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition cursor-pointer uppercase tracking-wider text-xs font-bold ${
                 activeDropdown === 'menu'
-                  ? 'bg-amber-100/80 text-amber-900 shadow-2xs'
-                  : 'hover:bg-amber-100/50 hover:text-amber-900'
+                  ? 'bg-amber-100/90 text-amber-950 shadow-2xs'
+                  : 'hover:bg-amber-100/60 hover:text-amber-950 text-stone-800'
               }`}
             >
               <Coffee className="w-4 h-4 text-amber-800" />
@@ -269,31 +261,42 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </div>
 
-          {/* MENU 2: QUÁN CÀ PHÊ (HỆ THỐNG QUÁN) */}
+          {/* MENU 2: TÌM QUÁN */}
           <button
             onClick={() => handleLinkClick('/cua-hang', 'stores')}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-amber-100/50 hover:text-amber-900"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-amber-100/60 hover:text-amber-950 text-stone-800"
+            title="Xem hệ thống 500+ điểm quán Go Coffee"
           >
             <MapPin className="w-4 h-4 text-amber-800" />
-            <span>Quán Cà Phê</span>
+            <span>Tìm Quán</span>
           </button>
 
-          {/* MENU 3: CÂU CHUYỆN DI SẢN */}
+          {/* MENU 3: CÂU CHUYỆN */}
           <button
             onClick={() => handleLinkClick('/cau-chuyen', 'story')}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-amber-100/50 hover:text-amber-900"
+            className="flex items-center gap-2 px-3.5 lg:px-4 py-2.5 rounded-xl transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-amber-100/60 hover:text-amber-950 text-stone-800"
+            title="Câu chuyện di sản hạt cà phê Cầu Đất"
           >
             <BookOpen className="w-4 h-4 text-amber-800" />
             <span>Câu Chuyện</span>
           </button>
 
-          {/* MENU 4: ƯU ĐÃI & VOUCHER */}
+          {/* MENU 4: ƯU ĐÃI */}
           <button
-            onClick={() => handleLinkClick('/thuc-don', 'menu')}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-amber-100/50 hover:text-amber-900 text-stone-700"
+            onClick={() => {
+              if (onSelectCategory) {
+                onSelectCategory('combo');
+              }
+              handleLinkClick('/uu-dai', 'menu');
+            }}
+            className="flex items-center gap-1.5 px-3.5 lg:px-4 py-2.5 rounded-xl transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-amber-100/60 hover:text-amber-950 text-stone-800"
+            title="Xem mã giảm giá & combo ưu đãi hôm nay"
           >
             <Tag className="w-4 h-4 text-amber-800" />
             <span>Ưu Đãi</span>
+            <span className="px-1.5 py-0.5 rounded text-[10px] bg-red-100 text-[#b22830] font-black lowercase tracking-normal">
+              -20%
+            </span>
           </button>
 
         </nav>
@@ -437,14 +440,14 @@ export const Header: React.FC<HeaderProps> = ({
               </span>
             </button>
 
-            {/* Quán Cà Phê */}
+            {/* Tìm Quán Gần Bạn */}
             <button
               onClick={() => handleLinkClick('/cua-hang', 'stores')}
-              className="w-full text-left p-2.5 rounded-xl hover:bg-amber-50 text-stone-800 font-bold text-xs flex items-center justify-between border border-stone-100"
+              className="w-full text-left p-2.5 rounded-xl hover:bg-amber-50 text-stone-800 font-bold text-xs flex items-center justify-between border border-stone-100 cursor-pointer"
             >
               <span className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-amber-800" />
-                <span>Hệ Thống Quán Go Coffee</span>
+                <span>Tìm Quán Gần Bạn</span>
               </span>
               <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
             </button>

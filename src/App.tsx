@@ -152,6 +152,12 @@ export default function App() {
           const el = document.getElementById('stores');
           if (el) el.scrollIntoView({ behavior: 'smooth' });
         }, 100);
+      } else if (path === '/uu-dai' || path === '/khuyen-mai') {
+        setSelectedCategory('combo');
+        setTimeout(() => {
+          const el = document.getElementById('menu');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
       } else if (path === '/dat-ban') {
         setIsTableBookingOpen(true);
       } else if (path === '/gio-hang') {

@@ -214,7 +214,9 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     src={item.image}
                     alt={item.name}
                     onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).src = '/images/phindi-hanh-nhan.jpg';
+                      const target = e.currentTarget as HTMLImageElement;
+                      target.onerror = null;
+                      target.src = '/images/phindi-hanh-nhan.jpg';
                     }}
                     className="w-16 h-16 rounded-xl object-cover shrink-0"
                   />

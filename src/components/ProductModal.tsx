@@ -85,7 +85,9 @@ export const ProductModal: React.FC<ProductModalProps> = ({
             src={item.image}
             alt={item.name}
             onError={(e) => {
-              (e.currentTarget as HTMLImageElement).src = '/images/phindi-hanh-nhan.jpg';
+              const target = e.currentTarget as HTMLImageElement;
+              target.onerror = null;
+              target.src = '/images/phindi-hanh-nhan.jpg';
             }}
             className="absolute inset-0 w-full h-full object-cover"
           />

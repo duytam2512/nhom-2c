@@ -425,7 +425,9 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                     alt={item.name}
                     loading="lazy"
                     onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).src = '/images/phindi-hanh-nhan.jpg';
+                      const target = e.currentTarget as HTMLImageElement;
+                      target.onerror = null;
+                      target.src = '/images/phindi-hanh-nhan.jpg';
                     }}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
