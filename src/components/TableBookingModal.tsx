@@ -199,30 +199,22 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                 <div className="space-y-3 bg-stone-50/80 p-3.5 sm:p-4 rounded-2xl border border-stone-200/80">
                   <div className="text-xs font-bold uppercase tracking-wider text-amber-950 flex items-center gap-1.5 pb-1 border-b border-stone-200/80">
                     <MapPin className="w-3.5 h-3.5 text-[#b22830]" />
-                    <span>1. Chi Nhánh & Thời Gian Nhận Bàn</span>
+                    <span>1. Địa Điểm & Thời Gian Nhận Bàn</span>
                   </div>
 
-                  {/* Branch selection */}
+                  {/* Confirmed Single Store Location */}
                   <div>
                     <label className="block text-[11px] font-semibold text-stone-700 mb-1">
-                      Chi nhánh quán Go Coffee
+                      Địa điểm nhận bàn (Quán duy nhất)
                     </label>
-                    <div className="relative">
-                      <MapPin className="w-4 h-4 text-amber-800 absolute left-3 top-1/2 -translate-y-1/2" />
-                      <select
-                        value={store.id}
-                        onChange={(e) => {
-                          const found = STORES.find((s) => s.id === e.target.value);
-                          if (found) setStore(found);
-                        }}
-                        className="w-full text-[15px] sm:text-xs pl-9 pr-3 py-2.5 bg-white rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 font-medium cursor-pointer"
-                      >
-                        {STORES.map((s) => (
-                          <option key={s.id} value={s.id}>
-                            {s.name} ({s.district}, {s.city})
-                          </option>
-                        ))}
-                      </select>
+                    <div className="p-2.5 bg-white rounded-xl border border-stone-200 shadow-2xs flex items-start gap-2.5">
+                      <div className="w-7 h-7 rounded-lg bg-red-100 text-[#b22830] flex items-center justify-center shrink-0 mt-0.5">
+                        <MapPin className="w-4 h-4" />
+                      </div>
+                      <div className="text-xs">
+                        <div className="font-bold text-stone-900">Go Coffee - Quận 1</div>
+                        <div className="text-[11px] text-stone-600">7 Công Trường Lam Sơn, P. Bến Nghé, Quận 1, TP.HCM</div>
+                      </div>
                     </div>
                   </div>
 

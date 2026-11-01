@@ -23,6 +23,7 @@ import {
   Code2
 } from 'lucide-react';
 import { getStoreSyncConfig, saveStoreSyncConfig, sendDirectToGoogleSheets } from '../services/bookingSync';
+import { safeStorage } from '../utils/safeStorage';
 
 interface AdminDashboardModalProps {
   isOpen: boolean;
@@ -95,7 +96,7 @@ function handleIncoming(e) {
     isOrder ? (data.itemsSummary || (data.total + " đ")) : (data.guestCount + " người"),
     data.date || "Hôm nay",
     data.timeSlot || "",
-    data.storeName || (data.store ? data.store.name : "Go Coffee"),
+    data.storeName || (data.store ? data.store.name : "Go Coffee - Quận 1"),
     data.seatingArea || data.deliveryAddress || "Khu vực chuẩn",
     data.note || "",
     "Mới tiếp nhận"
@@ -148,18 +149,16 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
   const [copiedType, setCopiedType] = useState<string | null>(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedAuth = localStorage.getItem('go_coffee_admin_session');
-      if (savedAuth === 'active') {
-        setIsAuthenticated(true);
-      }
-      const savedWebhook = localStorage.getItem('go_grab_sheets_webhook');
-      if (savedWebhook) setWebhookUrl(savedWebhook);
-      const savedChatId = localStorage.getItem('go_grab_telegram_chat_id');
-      if (savedChatId) setTelegramChatId(savedChatId);
-      const savedGsc = localStorage.getItem('gsc_verification_code');
-      if (savedGsc) setGscCode(savedGsc);
+    const savedAuth = safeStorage.getItem('go_coffee_admin_session');
+    if (savedAuth === 'active') {
+      setIsAuthenticated(true);
     }
+    const savedWebhook = safeStorage.getItem('go_grab_sheets_webhook');
+    if (savedWebhook) setWebhookUrl(savedWebhook);
+    const savedChatId = safeStorage.getItem('go_grab_telegram_chat_id');
+    if (savedChatId) setTelegramChatId(savedChatId);
+    const savedGsc = safeStorage.getItem('gsc_verification_code');
+    if (savedGsc) setGscCode(savedGsc);
   }, [isOpen]);
 
   useEffect(() => {
@@ -170,11 +169,11 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
 
   const fallbackLocalOverview = () => {
     try {
-      const resList = JSON.parse(localStorage.getItem('go_coffee_local_reservations') || '[]');
-      const ordList = JSON.parse(localStorage.getItem('go_coffee_local_orders') || '[]');
+      const resList = JSON.parse(safeStorage.getItem('go_coffee_local_reservations') || '[]');
+      const ordList = JSON.parse(safeStorage.getItem('go_coffee_local_orders') || '[]');
       setOverviewData({
-        webhookUrl: localStorage.getItem('go_grab_sheets_webhook') || '',
-        telegramChatId: localStorage.getItem('go_grab_telegram_chat_id') || '',
+        webhookUrl: safeStorage.getItem('go_grab_sheets_webhook') || '',
+        telegramChatId: safeStorage.getItem('go_grab_telegram_chat_id') || '',
         botUsername: 'Duyaasaa_bot',
         reservations: resList,
         orders: ordList,
@@ -219,7 +218,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
     // Verify PIN: '1999' or '1234'
     if (pinInput === '1999' || pinInput === '1234' || pinInput === 'duykhaikhan') {
       setIsAuthenticated(true);
-      localStorage.setItem('go_coffee_admin_session', 'active');
+      safeStorage.setItem('go_coffee_admin_session', 'active');
       setPinInput('');
     } else {
       setAuthError('Mã PIN chủ quán không đúng. Vui lòng nhập mã PIN hợp lệ (mặc định: 1999).');
@@ -228,13 +227,13 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
 
   const handleQuickUnlock = () => {
     setIsAuthenticated(true);
-    localStorage.setItem('go_coffee_admin_session', 'active');
+    safeStorage.setItem('go_coffee_admin_session', 'active');
     setPinInput('');
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    localStorage.removeItem('go_coffee_admin_session');
+    safeStorage.removeItem('go_coffee_admin_session');
   };
 
   const handleSaveWebhook = async () => {
@@ -357,7 +356,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
       if (data.detectedChatId) {
         const idStr = String(data.detectedChatId);
         setTelegramChatId(idStr);
-        localStorage.setItem('go_grab_telegram_chat_id', idStr);
+        safeStorage.setItem('go_grab_telegram_chat_id', idStr);
         setTelegramStatusMsg({
           type: 'success',
           text: `🎉 Đã tìm thấy Chat ID của bạn: ${idStr}! Đã tự động lưu cấu hình.`,
@@ -424,7 +423,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
   };
 
   const handleSaveGsc = () => {
-    localStorage.setItem('gsc_verification_code', gscCode);
+    safeStorage.setItem('gsc_verification_code', gscCode);
     let meta = document.querySelector('meta[name="google-site-verification"]');
     if (!meta) {
       meta = document.createElement('meta');
@@ -943,7 +942,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                           <button
                             type="button"
                             onClick={() => {
-                              localStorage.setItem('go_grab_telegram_chat_id', telegramChatId.trim());
+                              safeStorage.setItem('go_grab_telegram_chat_id', telegramChatId.trim());
                               setTelegramStatusMsg({ type: 'success', text: '✅ Đã lưu Chat ID Telegram!' });
                               setTimeout(() => setTelegramStatusMsg(null), 3000);
                             }}

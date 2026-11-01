@@ -8,6 +8,8 @@
  * 4. Works for both store owners and everyday customers on any mobile or desktop device
  */
 
+import { safeStorage } from '../utils/safeStorage';
+
 export interface SyncConfig {
   webhookUrl: string;
   telegramChatId: string;
@@ -19,11 +21,11 @@ let cachedConfig: SyncConfig | null = null;
 
 /**
  * Loads the active store configuration from all available sources:
- * In-memory cache -> localStorage -> /app-config.json -> /api/booking/webhook
+ * In-memory cache -> safeStorage -> /app-config.json -> /api/booking/webhook
  */
 export async function getStoreSyncConfig(): Promise<SyncConfig> {
-  const localWebhook = typeof window !== 'undefined' ? localStorage.getItem('go_grab_sheets_webhook') || '' : '';
-  const localChatId = typeof window !== 'undefined' ? localStorage.getItem('go_grab_telegram_chat_id') || '' : '';
+  const localWebhook = safeStorage.getItem('go_grab_sheets_webhook') || '';
+  const localChatId = safeStorage.getItem('go_grab_telegram_chat_id') || '';
 
   if (cachedConfig && (cachedConfig.webhookUrl || localWebhook)) {
     return {
@@ -66,43 +68,39 @@ export async function getStoreSyncConfig(): Promise<SyncConfig> {
   const effectiveWebhook = (localWebhook || fileWebhook).trim();
   const effectiveChatId = (localChatId || fileChatId).trim();
 
-  // Keep localStorage in sync if we discovered a webhook from the store config
-  if (typeof window !== 'undefined') {
-    if (fileWebhook && !localWebhook) {
-      localStorage.setItem('go_grab_sheets_webhook', fileWebhook);
-    }
-    if (fileChatId && !localChatId) {
-      localStorage.setItem('go_grab_telegram_chat_id', fileChatId);
-    }
+  // Keep safeStorage in sync if we discovered a webhook from the store config
+  if (fileWebhook && !localWebhook) {
+    safeStorage.setItem('go_grab_sheets_webhook', fileWebhook);
+  }
+  if (fileChatId && !localChatId) {
+    safeStorage.setItem('go_grab_telegram_chat_id', fileChatId);
   }
 
   cachedConfig = {
     webhookUrl: effectiveWebhook,
     telegramChatId: effectiveChatId,
     botUsername: 'Duyaasaa_bot',
-    storeName: 'Go & Grab Coffee',
+    storeName: 'Go Coffee - Quận 1',
   };
 
   return cachedConfig;
 }
 
 /**
- * Saves store configuration across localStorage, public/app-config.json, and backend
+ * Saves store configuration across safeStorage, public/app-config.json, and backend
  */
 export async function saveStoreSyncConfig(config: { webhookUrl: string; telegramChatId?: string }): Promise<boolean> {
   const cleanUrl = (config.webhookUrl || '').trim();
   const cleanChatId = (config.telegramChatId || '').trim();
 
-  if (typeof window !== 'undefined') {
-    if (cleanUrl) localStorage.setItem('go_grab_sheets_webhook', cleanUrl);
-    if (cleanChatId) localStorage.setItem('go_grab_telegram_chat_id', cleanChatId);
-  }
+  if (cleanUrl) safeStorage.setItem('go_grab_sheets_webhook', cleanUrl);
+  if (cleanChatId) safeStorage.setItem('go_grab_telegram_chat_id', cleanChatId);
 
   cachedConfig = {
     webhookUrl: cleanUrl,
     telegramChatId: cleanChatId,
     botUsername: 'Duyaasaa_bot',
-    storeName: 'Go & Grab Coffee',
+    storeName: 'Go Coffee - Quận 1',
   };
 
   try {
@@ -230,18 +228,14 @@ export async function submitTableBooking(reservation: any): Promise<{
   }
 
   // 3. Save reservation in client history for instant retrieval in Admin/Customer view
-  if (typeof window !== 'undefined') {
-    try {
-      const existingStr = localStorage.getItem('go_coffee_local_reservations');
-      const existing = existingStr ? JSON.parse(existingStr) : [];
-      existing.unshift({
-        ...fullReservation,
-        createdAt: new Date().toISOString(),
-        sheetSynced,
-      });
-      localStorage.setItem('go_coffee_local_reservations', JSON.stringify(existing.slice(0, 50)));
-    } catch (e) {}
-  }
+  const existingStr = safeStorage.getItem('go_coffee_local_reservations');
+  const existing = existingStr ? JSON.parse(existingStr) : [];
+  existing.unshift({
+    ...fullReservation,
+    createdAt: new Date().toISOString(),
+    sheetSynced,
+  });
+  safeStorage.setItem('go_coffee_local_reservations', JSON.stringify(existing.slice(0, 50)));
 
   return {
     ok: true,
@@ -311,18 +305,14 @@ export async function submitCoffeeOrder(order: any): Promise<{
   }
 
   // 3. Save order locally
-  if (typeof window !== 'undefined') {
-    try {
-      const existingStr = localStorage.getItem('go_coffee_local_orders');
-      const existing = existingStr ? JSON.parse(existingStr) : [];
-      existing.unshift({
-        ...fullOrder,
-        createdAt: new Date().toISOString(),
-        sheetSynced,
-      });
-      localStorage.setItem('go_coffee_local_orders', JSON.stringify(existing.slice(0, 50)));
-    } catch (e) {}
-  }
+  const existingOrdersStr = safeStorage.getItem('go_coffee_local_orders');
+  const existingOrders = existingOrdersStr ? JSON.parse(existingOrdersStr) : [];
+  existingOrders.unshift({
+    ...fullOrder,
+    createdAt: new Date().toISOString(),
+    sheetSynced,
+  });
+  safeStorage.setItem('go_coffee_local_orders', JSON.stringify(existingOrders.slice(0, 50)));
 
   return {
     ok: true,

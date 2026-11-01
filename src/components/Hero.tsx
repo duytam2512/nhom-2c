@@ -95,7 +95,7 @@ export const Hero: React.FC<HeroProps> = ({
     return () => clearInterval(timer);
   }, []);
 
-  const currentSlide = HERO_FEATURED_SLIDES[activeSlideIndex];
+  const currentSlide = HERO_FEATURED_SLIDES[activeSlideIndex] || HERO_FEATURED_SLIDES[0];
 
   const handleCopyCode = (code: string) => {
     if (navigator.clipboard) {
@@ -204,8 +204,9 @@ export const Hero: React.FC<HeroProps> = ({
                 {/* 1. Direct Customize & Add Current Featured Item */}
                 <button
                   onClick={() => {
+                    const slideId = currentSlide?.id || 'phin';
                     const targetItem =
-                      MENU_ITEMS.find((m) => m.id === SLIDE_ITEM_MAP[currentSlide.id]) || MENU_ITEMS[0];
+                      MENU_ITEMS.find((m) => m.id === SLIDE_ITEM_MAP[slideId]) || MENU_ITEMS[0];
                     if (onCustomizeItem) {
                       onCustomizeItem(targetItem);
                     } else {
@@ -213,10 +214,10 @@ export const Hero: React.FC<HeroProps> = ({
                     }
                   }}
                   className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-gradient-to-r from-[#b22830] via-[#c41e27] to-[#8f1920] hover:from-[#c41e27] hover:to-[#9b1c24] text-white font-black text-sm shadow-xl shadow-red-950/25 ring-2 ring-amber-400/50 flex items-center justify-center gap-2.5 transition active:scale-95 group cursor-pointer"
-                  title={`Bấm để chọn size, đá, đường cho ${currentSlide.title}`}
+                  title={`Bấm để chọn size, đá, đường cho ${currentSlide?.title || 'món'}`}
                 >
                   <Coffee className="w-4 h-4 text-amber-300" />
-                  <span>Thưởng Thức {currentSlide.title.split(' ')[0]} {currentSlide.title.split(' ')[1]} ({currentSlide.price})</span>
+                  <span>Thưởng Thức {(currentSlide?.title || 'Cà Phê').split(' ').slice(0, 2).join(' ')} ({currentSlide?.price || '39.000đ'})</span>
                   <ArrowRight className="w-4 h-4 text-amber-200 group-hover:translate-x-1 transition-transform" />
                 </button>
 
@@ -238,7 +239,7 @@ export const Hero: React.FC<HeroProps> = ({
                   <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
                   <span>4.9 / 5</span>
                 </div>
-                <p className="text-[11px] text-stone-500 font-medium">Hơn 500+ quán toàn quốc</p>
+                <p className="text-[11px] text-stone-500 font-medium">Không gian đẹp tại Quận 1</p>
               </div>
 
               <div className="space-y-0.5">

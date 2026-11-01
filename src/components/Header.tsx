@@ -261,14 +261,14 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </div>
 
-          {/* MENU 2: TÌM QUÁN */}
+          {/* MENU 2: ĐỊA CHỈ QUÁN (QUẬN 1) */}
           <button
             onClick={() => handleLinkClick('/cua-hang', 'stores')}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-amber-100/60 hover:text-amber-950 text-stone-800"
-            title="Xem hệ thống 500+ điểm quán Go Coffee"
+            title="Địa chỉ quán duy nhất: 7 Công Trường Lam Sơn, P. Bến Nghé, Quận 1, TP.HCM"
           >
             <MapPin className="w-4 h-4 text-amber-800" />
-            <span>Tìm Quán</span>
+            <span>Địa Chỉ Quán</span>
           </button>
 
           {/* MENU 3: CÂU CHUYỆN */}
@@ -347,9 +347,9 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Current store summary */}
           <div className="flex items-center justify-between pb-3 border-b border-stone-100">
             <span className="text-xs font-semibold text-stone-600 flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5 text-amber-800" /> Điểm lấy gần nhất:
+              <MapPin className="w-3.5 h-3.5 text-amber-800" /> Quán tại Quận 1:
             </span>
-            <span className="text-xs font-bold text-stone-900 truncate max-w-[180px]">{selectedStore.name}</span>
+            <span className="text-xs font-bold text-stone-900 truncate max-w-[200px]">7 Công Trường Lam Sơn, Q.1</span>
           </div>
 
           {/* GROUP 1: THỰC ĐƠN ACCORDION */}
@@ -440,14 +440,14 @@ export const Header: React.FC<HeaderProps> = ({
               </span>
             </button>
 
-            {/* Tìm Quán Gần Bạn */}
+            {/* Địa Chỉ Quán (Quận 1) */}
             <button
               onClick={() => handleLinkClick('/cua-hang', 'stores')}
               className="w-full text-left p-2.5 rounded-xl hover:bg-amber-50 text-stone-800 font-bold text-xs flex items-center justify-between border border-stone-100 cursor-pointer"
             >
               <span className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-amber-800" />
-                <span>Tìm Quán Gần Bạn</span>
+                <span>Địa Chỉ Quán (7 Lam Sơn, Quận 1)</span>
               </span>
               <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
             </button>

@@ -154,24 +154,13 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 <div className="space-y-0.5">
                   <div className="flex items-center gap-1.5 font-bold text-amber-950">
                     <MapPin className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-                    <span>{selectedStore.name}</span>
+                    <span>Go Coffee - Quận 1</span>
                   </div>
-                  <p className="text-[11px] text-stone-600 pl-5">{selectedStore.address}</p>
+                  <p className="text-[11px] text-stone-600 pl-5">7 Công Trường Lam Sơn, P. Bến Nghé, Quận 1 (Cạnh Nhà Hát)</p>
                 </div>
-                <select
-                  value={selectedStore.id}
-                  onChange={(e) => {
-                    const st = STORES.find((s) => s.id === e.target.value);
-                    if (st) setSelectedStore(st);
-                  }}
-                  className="text-[11px] bg-white border border-amber-300 rounded-lg px-2 py-1 text-amber-900 font-semibold focus:outline-none"
-                >
-                  {STORES.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.district}
-                    </option>
-                  ))}
-                </select>
+                <span className="text-[11px] bg-amber-100 text-amber-950 font-bold px-2 py-1 rounded-lg shrink-0">
+                  Quận 1
+                </span>
               </div>
             ) : (
               <div className="mt-2.5 space-y-1.5">

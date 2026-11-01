@@ -17,6 +17,8 @@ import {
   ArrowRight
 } from 'lucide-react';
 
+import { safeStorage } from '../utils/safeStorage';
+
 interface SeoShareModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -31,16 +33,14 @@ export const SeoShareModal: React.FC<SeoShareModalProps> = ({ isOpen, onClose })
   const [isSavedGsc, setIsSavedGsc] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('gsc_verification_code');
-      if (saved) {
-        setGscCode(saved);
-      } else {
-        const meta = document.querySelector('meta[name="google-site-verification"]');
-        if (meta) {
-          const val = meta.getAttribute('content');
-          if (val) setGscCode(val);
-        }
+    const saved = safeStorage.getItem('gsc_verification_code');
+    if (saved) {
+      setGscCode(saved);
+    } else if (typeof document !== 'undefined') {
+      const meta = document.querySelector('meta[name="google-site-verification"]');
+      if (meta) {
+        const val = meta.getAttribute('content');
+        if (val) setGscCode(val);
       }
     }
   }, [isOpen]);
@@ -65,8 +65,8 @@ export const SeoShareModal: React.FC<SeoShareModalProps> = ({ isOpen, onClose })
   };
 
   const handleSaveGscCode = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('gsc_verification_code', gscCode);
+    safeStorage.setItem('gsc_verification_code', gscCode);
+    if (typeof document !== 'undefined') {
       let meta = document.querySelector('meta[name="google-site-verification"]');
       if (!meta) {
         meta = document.createElement('meta');

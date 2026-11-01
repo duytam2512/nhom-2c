@@ -38,7 +38,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare, onResetHome, onO
               </a>
             </div>
             <p className="text-xs sm:text-sm text-stone-400 max-w-sm leading-relaxed">
-              Chuỗi cà phê mang đi cao cấp từ hạt Cầu Đất nguyên chất. Đặt món trước qua website, tới quầy nhận đồ sau 5 phút không xếp hàng, thanh toán tự động qua VietQR & Ví MoMo.
+              Quán cà phê mang đi & đặt bàn chất lượng cao tại trung tâm Quận 1, TP.HCM từ hạt Cầu Đất nguyên chất. Đặt món trước qua website, tới quầy nhận đồ sau 5 phút không xếp hàng, thanh toán tự động qua VietQR & MoMo.
             </p>
             
           </div>
@@ -56,19 +56,18 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare, onResetHome, onO
             </ul>
           </div>
 
-          {/* Stores Col */}
+          {/* Store Address Col */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Chi Nhánh Quán</h4>
-            <ul className="space-y-2 text-xs text-stone-400">
-              <li>7 Công Trường Lam Sơn, Q.1, TP.HCM</li>
-              <li>135 Nam Kỳ Khởi Nghĩa, Q.1, TP.HCM</li>
-              <li>34 Lê Duẩn, Diamond Plaza, TP.HCM</li>
-              <li>1-3-5 Đinh Tiên Hoàng, Hàm Cá Mập, Hà Nội</li>
-              <li className="pt-1 text-emerald-400 font-semibold flex items-center gap-1">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Địa Chỉ Quán Duy Nhất</h4>
+            <div className="space-y-2 text-xs text-stone-400">
+              <p className="font-bold text-stone-200">Go Coffee - Quận 1</p>
+              <p>7 Công Trường Lam Sơn, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh</p>
+              <p className="text-[11px] text-stone-500">(Cạnh Nhà Hát Lớn TP.HCM, đối diện Phố Đi Bộ Nguyễn Huệ)</p>
+              <div className="pt-1 text-emerald-400 font-semibold flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                Mở cửa: 06:30 - 23:00 hàng ngày
-              </li>
-            </ul>
+                <span>Mở cửa: 06:30 - 23:00 hàng ngày</span>
+              </div>
+            </div>
           </div>
 
           {/* Contact & Legal Col */}

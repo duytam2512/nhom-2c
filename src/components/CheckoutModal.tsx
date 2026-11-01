@@ -164,7 +164,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             <h4 className="text-xs font-bold uppercase tracking-wider text-stone-800 flex items-center justify-between">
               <span>Thông tin khách nhận</span>
               <span className="text-[11px] text-amber-700 font-normal">
-                {orderType === 'pickup' ? `Lấy tại: ${selectedStore.name}` : `Giao đến: ${deliveryAddress || 'Chưa nhập địa chỉ'}`}
+                {orderType === 'pickup' ? `Lấy tại: Go Coffee - 7 Lam Sơn, Quận 1` : `Giao đến: ${deliveryAddress || 'Chưa nhập địa chỉ'}`}
               </span>
             </h4>
             

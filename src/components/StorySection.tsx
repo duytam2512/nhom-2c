@@ -29,8 +29,8 @@ export const StorySection: React.FC = () => {
 
             <div className="space-y-4 pt-8">
               <div className="p-4 rounded-2xl bg-[#5c1015]/80 border border-red-700/50 space-y-1">
-                <span className="text-amber-300 font-black text-2xl block font-display">500+</span>
-                <span className="text-xs text-stone-200 font-medium">Quán cà phê trên khắp mọi miền</span>
+                <span className="text-amber-300 font-black text-2xl block font-display">Quận 1</span>
+                <span className="text-xs text-stone-200 font-medium">Không gian cà phê duy nhất tại trung tâm Sài Gòn</span>
               </div>
               <div className="rounded-2xl overflow-hidden aspect-4/5 shadow-2xl ring-1 ring-amber-400/30">
                 <img

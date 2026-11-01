@@ -32,6 +32,7 @@ if (apiKey) {
 
 // System prompt for Chat với Barista . Go Coffee
 const SYSTEM_INSTRUCTION = `Bạn là Barista thông minh, am hiểu và tận tâm trong tính năng "Chat với Barista . Go Coffee" của thương hiệu cà phê "Go Coffee" (chuyên cà phê hạt nguyên chất Tây Nguyên & Cầu Đất, menu phong phú, đặt món tiện lợi lấy sau 5 phút và dịch vụ đặt bàn chu đáo).
+Quán có ĐỊA CHỈ DUY NHẤT: Số 7 Công Trường Lam Sơn, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh (ngay cạnh Nhà Hát Thành Phố). Giờ mở cửa: 06:30 - 23:00 hàng ngày. Hotline: 1900 1755 / 0909 123 456.
 Nhiệm vụ của bạn:
 1. Tư vấn đồ uống và món ăn phù hợp với khẩu vị, tâm trạng, thời điểm (buổi sáng tỉnh táo làm việc, buổi chiều giải nhiệt thanh mát, không say caffein, ít ngọt, ăn chay):
    - Cà Phê Phin Truyền Thống Go Coffee:
@@ -64,8 +65,9 @@ Nhiệm vụ của bạn:
    - GOCOFFEE30: Giảm 30.000đ cho đơn từ 99.000đ.
    - BANMOI15: Giảm 15.000đ cho thành viên mới.
 3. Hướng dẫn các tiện ích của Go Coffee:
+   - Vị trí quán: Quán tọa lạc tại địa chỉ duy nhất 7 Công Trường Lam Sơn, Bến Nghé, Quận 1 (có chỗ để xe máy, ôtô, view Nhà Hát TP, wifi 300Mbps).
    - Đặt món mang đi (Quick Pickup): Chuẩn bị sẵn sau 5 phút không cần xếp hàng.
-   - Đặt bàn trực tuyến: Giữ chỗ không gian phòng lạnh / sân vườn hoàn toàn miễn phí, tự động đồng bộ tức thì vào Google Sheet của quán và thông báo qua Telegram Bot (@Duyaasaa_bot).
+   - Đặt bàn trực tuyến: Giữ chỗ không gian phòng lạnh / sân vườn tại Quận 1 hoàn toàn miễn phí, tự động đồng bộ tức thì vào Google Sheet của quán và thông báo qua Telegram Bot (@Duyaasaa_bot).
    - Thanh toán VietQR NAPAS 24/7 tự động xác nhận trong 1s, ví MoMo, thẻ ngân hàng, tiền mặt.
 4. Phong cách giao tiếp: Lịch sự, ấm áp, đậm bản sắc người Việt, xưng "mình" hoặc "Barista Go Coffee" và gọi khách là "bạn" hoặc "quý khách". Khuyến khích gợi ý món kèm nút hành động xem menu hoặc đặt bàn.`;
 
@@ -284,7 +286,7 @@ function loadAppConfig() {
 function persistAppConfig(updates: { googleSheetsWebhookUrl?: string; telegramChatId?: string }) {
   try {
     let current: any = {
-      storeName: 'Go & Grab Coffee',
+      storeName: 'Go Coffee - Quận 1',
       botUsername: 'Duyaasaa_bot',
     };
     if (fs.existsSync(APP_CONFIG_FILE)) {
@@ -538,7 +540,7 @@ app.post('/api/booking', async (req, res) => {
 👥 <b>Số lượng:</b> <b>${reservationData.guestCount || 1} người</b>
 📅 <b>Ngày đến:</b> ${reservationData.date || 'Hôm nay'}
 ⏰ <b>Khung giờ:</b> ${reservationData.timeSlot || '09:00'}
-📍 <b>Chi nhánh:</b> ${reservationData.storeName || (reservationData.store?.name || 'Go Coffee')}
+📍 <b>Địa điểm:</b> ${reservationData.storeName || (reservationData.store?.name || 'Go Coffee - Quận 1 (7 Công Trường Lam Sơn)')}
 🪑 <b>Khu vực bàn:</b> ${reservationData.seatingArea || 'Khu vực chuẩn'}
 📝 <b>Yêu cầu đặc biệt:</b> <i>${reservationData.note || 'Không có'}</i>
 ⏰ <b>Thời gian gửi:</b> ${new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}
@@ -633,7 +635,7 @@ app.post('/api/order', async (req, res) => {
 ${itemsList}
 💰 <b>Tổng tiền:</b> <b>${Number(order.total || 0).toLocaleString('vi-VN')} đ</b>
 💳 <b>Thanh toán:</b> ${order.paymentMethod ? order.paymentMethod.toUpperCase() : 'VIETQR'} (${order.paymentStatus === 'paid' ? '✅ Đã thanh toán' : '⏳ Chưa thanh toán'})
-🛵 <b>Hình thức:</b> ${order.orderType === 'pickup' ? `Ghé lấy tại quầy (${order.store?.name || 'Chi nhánh'})` : `Giao tận nơi: ${order.deliveryAddress || 'Địa chỉ khách'}`}
+🛵 <b>Hình thức:</b> ${order.orderType === 'pickup' ? `Ghé lấy tại quán: Go Coffee - Quận 1 (7 Công Trường Lam Sơn, Q.1)` : `Giao tận nơi: ${order.deliveryAddress || 'Địa chỉ khách'}`}
 📝 <b>Ghi chú:</b> <i>${order.customerNote || 'Không có'}</i>`;
 
   const tgResult = await sendTelegramNotification(orderMessage, targetTelegramChatId);

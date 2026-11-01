@@ -23,6 +23,7 @@ import { STORES } from './data/coffeeData';
 import { CartItem, MenuItem, Order, StoreLocation, Voucher, TableReservation, CoffeeCategory } from './types/coffee';
 import { ShoppingBag, CheckCircle, Sparkles, ArrowUp } from 'lucide-react';
 import { getStoreSyncConfig } from './services/bookingSync';
+import { safeStorage } from './utils/safeStorage';
 
 export default function App() {
   // State
@@ -126,11 +127,9 @@ export default function App() {
 
   // Check admin session on mount & Sync scroll & state with URL pathname
   React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedAuth = localStorage.getItem('go_coffee_admin_session');
-      if (savedAuth === 'active') {
-        setIsAdminLoggedIn(true);
-      }
+    const savedAuth = safeStorage.getItem('go_coffee_admin_session');
+    if (savedAuth === 'active') {
+      setIsAdminLoggedIn(true);
     }
 
     const handleUrlRoute = () => {
@@ -224,7 +223,7 @@ export default function App() {
             </button>
             <button
               onClick={() => {
-                localStorage.removeItem('go_coffee_admin_session');
+                safeStorage.removeItem('go_coffee_admin_session');
                 setIsAdminLoggedIn(false);
                 showToast('Đã đăng xuất, chuyển về chế độ khách hàng thông thường.');
               }}
@@ -378,8 +377,8 @@ export default function App() {
         isOpen={isAdminModalOpen}
         onClose={() => {
           setIsAdminModalOpen(false);
+          setIsAdminLoggedIn(safeStorage.getItem('go_coffee_admin_session') === 'active');
           if (typeof window !== 'undefined') {
-            setIsAdminLoggedIn(localStorage.getItem('go_coffee_admin_session') === 'active');
             if (window.location.pathname === '/admin' || window.location.pathname === '/quan-tri') {
               window.history.pushState(null, '', '/');
             }
