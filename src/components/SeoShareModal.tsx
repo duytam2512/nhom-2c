@@ -52,9 +52,9 @@ export const SeoShareModal: React.FC<SeoShareModalProps> = ({ isOpen, onClose })
   const sitemapUrl = `${currentOrigin}/sitemap.xml`;
   const robotsUrl = `${currentOrigin}/robots.txt`;
 
-  const displayTitle = "Go Coffee | Đặt Cà Phê Trực Tuyến & Thanh Toán Nhanh";
-  const displayDesc = "Go Coffee - Đặt cà phê Phin Sữa Đá Cầu Đất, Cà Phê Muối Cố Đô, Freeze Trà Xanh mát lạnh, Trà Sen Vàng và đặt bàn trực tuyến tiện lợi. Chuẩn bị sau 5 phút, thanh toán VietQR & MoMo.";
-  const previewImg = "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1200&h=630&q=85";
+  const displayTitle = "Go Coffee | Cà Phê Phin Takeaway & Đặt Món Trực Tuyến";
+  const displayDesc = "Go Coffee - Quán cà phê Takeaway tại số 7 Công Trường Lam Sơn, Quận 1. Đặt cà phê Phin Sữa Đá Cầu Đất, Cà Phê Muối Cố Đô, Freeze Trà Xanh mang đi sau 5 phút, thanh toán VietQR & MoMo.";
+  const previewImg = "/src/assets/images/gocoffee_takeaway_conn_1793543647729.jpg";
 
   const copyWithFeedback = (text: string, type: string) => {
     if (navigator.clipboard) {

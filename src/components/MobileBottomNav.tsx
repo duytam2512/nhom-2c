@@ -43,16 +43,17 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           <span className="text-[10px] font-bold mt-1 tracking-tight">Thực đơn</span>
         </button>
 
-        {/* 3. Đặt bàn (Center Signature Highlands Red Action) */}
+        {/* 3. Đặt món (Center Signature Highlands Red Action) */}
         <button
-          onClick={onOpenTableBooking}
+          onClick={onScrollToMenu}
           className="flex flex-col items-center justify-center -mt-4 transition active:scale-90 cursor-pointer group"
+          title="Đặt món mang đi ngay"
         >
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#8c141c] via-[#b22830] to-[#c41e27] text-white flex items-center justify-center shadow-lg shadow-red-950/30 border-2 border-white ring-2 ring-red-400/40 group-hover:scale-105 transition-transform">
-            <Armchair className="w-6 h-6 text-amber-200" />
+            <Coffee className="w-6 h-6 text-amber-200" />
           </div>
           <span className="text-[10px] font-extrabold mt-1 text-[#8c141c] tracking-tight">
-            Đặt Bàn
+            Đặt Món
           </span>
         </button>
 

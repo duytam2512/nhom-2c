@@ -178,7 +178,7 @@ export const Hero: React.FC<HeroProps> = ({
 
             {/* Description */}
             <p className="text-stone-600 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
-              Thưởng thức tinh hoa Cà phê Phin Sữa Đá truyền thống, Freeze Trà Xanh mát lạnh, Trà Sen Vàng dẻo bùi và Bánh mì que giòn rụm. Đặt trước nhận hàng sau 5 phút hoặc đặt bàn giữ chỗ không gian thoải mái.
+              Thưởng thức tinh hoa Cà phê Phin Sữa Đá truyền thống, Freeze Trà Xanh mát lạnh, Trà Sen Vàng dẻo bùi và Bánh mì que giòn rụm. Đặt trước qua web nhận nước sau 5 phút, mô hình Takeaway tinh gọn mang đi tiện lợi tại trung tâm Quận 1.
             </p>
 
             {/* Interactive Slide Selector Tabs (like Highlands Website) */}
@@ -239,7 +239,7 @@ export const Hero: React.FC<HeroProps> = ({
                   <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
                   <span>4.9 / 5</span>
                 </div>
-                <p className="text-[11px] text-stone-500 font-medium">Không gian đẹp tại Quận 1</p>
+                <p className="text-[11px] text-stone-500 font-medium">Quầy Takeaway tại Quận 1</p>
               </div>
 
               <div className="space-y-0.5">

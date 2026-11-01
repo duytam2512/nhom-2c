@@ -38,7 +38,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare, onResetHome, onO
               </a>
             </div>
             <p className="text-xs sm:text-sm text-stone-400 max-w-sm leading-relaxed">
-              Quán cà phê mang đi & đặt bàn chất lượng cao tại trung tâm Quận 1, TP.HCM từ hạt Cầu Đất nguyên chất. Đặt món trước qua website, tới quầy nhận đồ sau 5 phút không xếp hàng, thanh toán tự động qua VietQR & MoMo.
+              Quầy cà phê chuyên Takeaway chất lượng cao tại trung tâm Quận 1, TP.HCM từ hạt Cầu Đất nguyên chất. Đặt món trước qua website, tới quầy nhận đồ sau 5 phút không cần xếp hàng, thanh toán tự động qua VietQR & MoMo.
             </p>
             
           </div>

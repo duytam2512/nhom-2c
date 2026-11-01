@@ -78,7 +78,7 @@ export interface ExtendedStoreLocation extends StoreLocation {
 export const STORES: ExtendedStoreLocation[] = [
   {
     id: 'go-coffee-quan-1',
-    name: 'Go Coffee - Quận 1 (Địa Điểm Duy Nhất)',
+    name: 'Go Coffee - Quận 1 (Takeaway & Giao Nhanh)',
     address: '7 Công Trường Lam Sơn, Phường Bến Nghé, Quận 1',
     district: 'Quận 1',
     city: 'Hồ Chí Minh',
@@ -89,14 +89,14 @@ export const STORES: ExtendedStoreLocation[] = [
     isOpen: true,
     landmark: 'Cạnh Nhà Hát Lớn TP.HCM, đối diện Phố Đi Bộ Nguyễn Huệ',
     amenities: [
-      'Máy lạnh công suất lớn',
-      'Wifi tốc độ cao miễn phí',
-      'Có chỗ đỗ ô tô & xe máy thuận tiện',
-      'Khu vực ngồi trong nhà & sân vườn thoáng mát',
-      'Ổ cắm điện từng bàn phục vụ làm việc',
-      'Thanh toán nhanh VietQR & MoMo'
+      'Quầy pha chế & lấy nước Grab & Go trong 5 phút',
+      'Đóng gói ly 2 lớp chuyên dụng chống đổ cho xe máy',
+      'Chỗ tấp lề xe máy & ô tô nhận đồ uống nhanh',
+      'Thanh toán siêu tốc VietQR NAPAS 24/7 & MoMo không chạm',
+      '100% Hạt Robusta Cầu Đất xay pha tươi tại quầy',
+      'Dịch vụ giao tận nơi nội thành Quận 1 & các quận lân cận'
     ],
-    image: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1000&q=85',
+    image: '/src/assets/images/gocoffee_takeaway_conn_1793543647729.jpg',
   },
 ];
 

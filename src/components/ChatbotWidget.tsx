@@ -55,7 +55,7 @@ const QUICK_SUGGESTIONS = [
   { label: '🍵 Freeze Trà Xanh có gì ngon?', query: 'Freeze Trà Xanh của quán có những thành phần và topping gì?' },
   { label: '🌿 Trà Sen Vàng ít ngọt?', query: 'Trà Sen Vàng hạt sen có vị như thế nào, mình muốn uống ít ngọt có được không?' },
   { label: '🎟️ Mã giảm giá Go Coffee', query: 'Hôm nay Go Coffee có những voucher mã giảm giá nào?' },
-  { label: '🪑 Đặt bàn & Google Sheet', query: 'Làm sao để đặt bàn giữ chỗ trước tại Go Coffee và đồng bộ Google Sheet?' },
+  { label: '🛵 Đặt món mang đi 5 phút?', query: 'Làm sao để đặt món mang đi lấy sau 5 phút tại quầy Go Coffee Quận 1?' },
 ];
 
 export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({

@@ -30,12 +30,13 @@ export const StorySection: React.FC = () => {
             <div className="space-y-4 pt-8">
               <div className="p-4 rounded-2xl bg-[#5c1015]/80 border border-red-700/50 space-y-1">
                 <span className="text-amber-300 font-black text-2xl block font-display">Quận 1</span>
-                <span className="text-xs text-stone-200 font-medium">Không gian cà phê duy nhất tại trung tâm Sài Gòn</span>
+                <span className="text-xs text-stone-200 font-medium">Quầy cà phê Takeaway duy nhất tại trung tâm Sài Gòn</span>
               </div>
               <div className="rounded-2xl overflow-hidden aspect-4/5 shadow-2xl ring-1 ring-amber-400/30">
                 <img
-                  src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=700&q=80"
-                  alt="Không gian Go Coffee"
+                  src="/src/assets/images/gocoffee_kiosk_conn_1793543647195.jpg"
+                  alt="Quầy cà phê mang đi Go Coffee Quận 1"
+                  referrerPolicy="no-referrer"
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                 />
               </div>
@@ -55,7 +56,7 @@ export const StorySection: React.FC = () => {
             </h2>
 
             <p className="text-sm sm:text-base text-stone-300 leading-relaxed font-normal">
-              Bắt đầu từ tình yêu hạt cà phê Tây Nguyên và cao nguyên Cầu Đất trù phú, Go Coffee gìn giữ nét văn hóa cà phê phin truyền thống, kết hợp cùng phong cách thưởng thức hiện đại để mang đến từng ly Phin Sữa Đá, Freeze mát lạnh và Trà Sen Vàng đậm đà khó quên.
+              Bắt đầu từ tình yêu hạt cà phê Tây Nguyên và cao nguyên Cầu Đất trù phú, Go Coffee gìn giữ nét văn hóa cà phê phin truyền thống, kết hợp cùng phong cách Takeaway hiện đại để mang đến từng ly Phin Sữa Đá, Freeze mát lạnh và Trà Sen Vàng đậm đà mang đi nhanh chóng.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
@@ -73,9 +74,9 @@ export const StorySection: React.FC = () => {
                 <div className="w-9 h-9 rounded-xl bg-amber-900/80 text-amber-200 flex items-center justify-center font-bold">
                   <Coffee className="w-4 h-4" />
                 </div>
-                <h4 className="font-bold text-sm text-white">Cộng Đồng Gắn Kết</h4>
+                <h4 className="font-bold text-sm text-white">Takeaway Tiện Lợi</h4>
                 <p className="text-xs text-stone-400 leading-relaxed">
-                  Nơi gặp gỡ của bạn bè, đồng nghiệp và gia đình trong không gian ấm áp, thân thuộc với hương thơm cà phê nồng nàn.
+                  Ly cà phê đồng hành cùng dân văn phòng và giới trẻ Sài Gòn trên mọi nẻo đường, đóng gói 2 lớp chống tràn an toàn khi di chuyển.
                 </p>
               </div>
             </div>
@@ -87,7 +88,7 @@ export const StorySection: React.FC = () => {
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>Dịch vụ đặt món mang đi nhận sau 5 phút & đặt bàn không gian thoáng mát</span>
+                <span>Dịch vụ đặt món mang đi (Takeaway) nhận ngay sau 5 phút, tiện lợi không cần xếp hàng</span>
               </div>
             </div>
           </div>

@@ -114,7 +114,7 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="bg-gradient-to-r from-[#7f131a] via-[#9e1c24] to-[#7f131a] text-amber-200 text-[11px] py-1.5 px-4 text-center font-medium flex items-center justify-center gap-2 overflow-x-auto whitespace-nowrap border-b border-[#630f14] shadow-xs">
         <span className="flex items-center gap-1.5">
           <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-          <span>⚡ Nhận cà phê sau 5 phút • Giữ chỗ bàn miễn phí • Giảm 20% đơn đầu tiên: <strong className="text-white underline decoration-amber-400">GOCOFFEE20</strong></span>
+          <span>⚡ Cà phê mang đi Takeaway • Lấy sau 5 phút • Giảm 20% đơn đầu tiên: <strong className="text-white underline decoration-amber-400">GOCOFFEE20</strong></span>
         </span>
       </div>
 
@@ -303,17 +303,14 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Right: Action Buttons */}
         <div className="flex items-center gap-2.5">
-          {/* Direct CTA: Đặt Bàn Nhanh */}
+          {/* Direct CTA: Đặt Món Nhanh */}
           <button
-            onClick={() => {
-              onOpenTableBooking();
-              handleLinkClick('/dat-ban');
-            }}
+            onClick={() => handleLinkClick('/thuc-don', 'menu')}
             className="hidden sm:flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#b22830] via-[#c41e27] to-[#8f1920] hover:from-[#c41e27] hover:to-[#9b1c24] text-white font-black text-xs transition cursor-pointer active:scale-95 shadow-md shadow-red-950/20 ring-2 ring-amber-400/50"
-            title="Đặt bàn trước, giữ chỗ miễn phí"
+            title="Đặt món mang đi, nhận sau 5 phút"
           >
-            <Armchair className="w-4 h-4 text-amber-300" />
-            <span>Đặt Bàn</span>
+            <Coffee className="w-4 h-4 text-amber-300" />
+            <span>Đặt Món</span>
           </button>
 
           {/* Cart Button */}
@@ -422,18 +419,17 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* QUICK LINKS SECTION */}
           <div className="space-y-1.5 pt-1">
-            {/* Direct CTA: Đặt bàn giữ chỗ */}
+            {/* Direct CTA: Đặt Món Mang Đi */}
             <button
               onClick={() => {
                 setMobileMenuOpen(false);
-                onOpenTableBooking();
-                handleLinkClick('/dat-ban');
+                handleLinkClick('/thuc-don', 'menu');
               }}
               className="w-full text-left p-3 rounded-2xl bg-gradient-to-r from-[#b22830] via-[#c41e27] to-[#8f1920] text-white font-black text-xs flex items-center justify-between shadow-md ring-2 ring-amber-400/50 active:scale-95 transition"
             >
               <span className="flex items-center gap-2">
-                <Armchair className="w-4 h-4 text-amber-300" />
-                <span>Đặt Bàn Giữ Chỗ Trước (Miễn phí)</span>
+                <Coffee className="w-4 h-4 text-amber-300" />
+                <span>Đặt Món Mang Đi (Lấy Sau 5 Phút)</span>
               </span>
               <span className="px-2 py-0.5 rounded text-[10px] bg-amber-400 text-stone-950 font-black">
                 Hot
