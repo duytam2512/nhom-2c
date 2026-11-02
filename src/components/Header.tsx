@@ -265,7 +265,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={() => handleLinkClick('/cua-hang', 'stores')}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-amber-100/60 hover:text-amber-950 text-stone-800"
-            title="Địa chỉ quán duy nhất: 7 Công Trường Lam Sơn, P. Bến Nghé, Quận 1, TP.HCM"
+            title="Địa chỉ quán: 7 Công Trường Lam Sơn, P. Bến Nghé, Quận 1, TP.HCM"
           >
             <MapPin className="w-4 h-4 text-amber-800" />
             <span>Địa Chỉ Quán</span>

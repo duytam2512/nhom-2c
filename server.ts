@@ -32,7 +32,7 @@ if (apiKey) {
 
 // System prompt for Chat với Barista . Go Coffee
 const SYSTEM_INSTRUCTION = `Bạn là Barista thông minh, am hiểu và tận tâm trong tính năng "Chat với Barista . Go Coffee" của thương hiệu cà phê "Go Coffee" (chuyên cà phê hạt nguyên chất Tây Nguyên & Cầu Đất, menu phong phú, mô hình mang đi Takeaway tiện lợi lấy sau 5 phút).
-Quán có ĐỊA CHỈ DUY NHẤT: Số 7 Công Trường Lam Sơn, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh (ngay cạnh Nhà Hát Thành Phố). 
+Quán tọa lạc tại: Số 7 Công Trường Lam Sơn, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh (ngay cạnh Nhà Hát Thành Phố). 
 LƯU Ý QUAN TRỌNG VỀ KHÔNG GIAN: Quán hoạt động theo mô hình TAKEAWAY (mang đi) và Giao hàng tận nơi, hoàn toàn KHÔNG CÓ DIỆN TÍCH KÊ BÀN GHẾ ngồi lại. Khách hàng đặt món trước qua website để tới quầy lấy nhanh sau 5 phút hoặc chọn giao tận nơi. Giờ mở cửa: 06:30 - 23:00 hàng ngày. Hotline: 1900 1755 / 0909 123 456.
 Nhiệm vụ của bạn:
 1. Tư vấn đồ uống và món ăn phù hợp với khẩu vị, tâm trạng, thời điểm (buổi sáng tỉnh táo làm việc, buổi chiều giải nhiệt thanh mát, không say caffein, ít ngọt, ăn chay):
@@ -806,6 +806,10 @@ app.get('/google:code.html', (req, res) => {
 });
 
 async function startServer() {
+  // Serve static public assets directly
+  app.use('/images', express.static(path.resolve(__dirname, 'public/images')));
+  app.use(express.static(path.resolve(__dirname, 'public')));
+
   // Mount Vite middleware in development
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({

@@ -37,21 +37,24 @@ export const StoreLocator: React.FC<StoreLocatorProps> = ({
 
   const STORE_PHOTOS = [
     {
-      url: '/src/assets/images/gocoffee_quan1_storefront_1793580329452.jpg',
+      url: '/images/gocoffee_quan1_storefront.jpg',
+      fallbackUrl: '/images/gocoffee_quan1_storefront_1793580329452.jpg',
       label: 'Kiosk Q.1 Lam Sơn',
       tag: '7 Công Trường Lam Sơn, Q.1',
       title: 'Quầy Kiosk Go Coffee Lam Sơn - Quận 1',
       desc: 'Tọa lạc vỉa hè góc phố trung tâm Q.1 bên cạnh Nhà Hát Lớn & Khách sạn Continental, tấp xe máy nhận cà phê 5 phút.'
     },
     {
-      url: '/src/assets/images/gocoffee_quan1_handover_1793580330615.jpg',
+      url: '/images/gocoffee_quan1_handover.jpg',
+      fallbackUrl: '/images/gocoffee_quan1_handover_1793580330615.jpg',
       label: 'Cửa Sổ Giao Nhanh',
       tag: 'Nhận Món Trong 5 Phút',
       title: 'Trao Tay Ly Cà Phê Siêu Tốc',
       desc: 'Nhân viên barista Việt Nam thân thiện trao đồ uống nắp 2 lớp chống tràn chuyên dụng cho khách đi xe máy.'
     },
     {
-      url: '/src/assets/images/gocoffee_quan1_barista_1793580330531.jpg',
+      url: '/images/gocoffee_quan1_barista.jpg',
+      fallbackUrl: '/images/gocoffee_quan1_barista_1793580330531.jpg',
       label: 'Pha Phin Thủ Công',
       tag: '100% Cà Phê Cầu Đất',
       title: 'Pha Phin Truyền Thống Đậm Vị',
@@ -72,7 +75,7 @@ export const StoreLocator: React.FC<StoreLocatorProps> = ({
       <div className="text-center space-y-3 mb-12">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-100 border border-red-300 text-[#8c141c] text-xs font-black uppercase tracking-wider shadow-2xs">
           <Store className="w-3.5 h-3.5 text-[#b22830]" />
-          <span>Quầy Cà Phê Takeaway • Trụ Sở Duy Nhất Tại Quận 1</span>
+          <span>Quầy Cà Phê Takeaway • 7 Công Trường Lam Sơn, Quận 1</span>
         </div>
         
         <h2 className="text-2xl sm:text-4xl font-black font-display text-stone-900 tracking-tight">
@@ -95,7 +98,14 @@ export const StoreLocator: React.FC<StoreLocatorProps> = ({
             src={currentPhoto.url}
             alt={currentPhoto.title}
             referrerPolicy="no-referrer"
+            loading="eager"
             className="absolute inset-0 w-full h-full object-cover opacity-95 transition-all duration-700 animate-in fade-in"
+            onError={(e) => {
+              const target = e.currentTarget;
+              if (currentPhoto.fallbackUrl && target.src.indexOf(currentPhoto.fallbackUrl) === -1) {
+                target.src = currentPhoto.fallbackUrl;
+              }
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/30 pointer-events-none" />
 
@@ -153,7 +163,7 @@ export const StoreLocator: React.FC<StoreLocatorProps> = ({
             <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-stone-100">
               <div>
                 <span className="text-xs font-bold text-stone-400 uppercase tracking-wider block">
-                  Địa Chỉ Quán Duy Nhất (Chuyên Mang Đi)
+                  Địa Chỉ Quán (Chuyên Mang Đi)
                 </span>
                 <h4 className="text-lg sm:text-xl font-black text-stone-900 font-display">
                   7 Công Trường Lam Sơn, Phường Bến Nghé, Quận 1

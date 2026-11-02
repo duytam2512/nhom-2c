@@ -30,14 +30,21 @@ export const StorySection: React.FC = () => {
             <div className="space-y-4 pt-8">
               <div className="p-4 rounded-2xl bg-[#5c1015]/80 border border-red-700/50 space-y-1">
                 <span className="text-amber-300 font-black text-2xl block font-display">Quận 1</span>
-                <span className="text-xs text-stone-200 font-medium">Quầy cà phê Takeaway duy nhất tại trung tâm Sài Gòn</span>
+                <span className="text-xs text-stone-200 font-medium">Quầy cà phê Takeaway tại trung tâm Quận 1, Sài Gòn</span>
               </div>
               <div className="rounded-2xl overflow-hidden aspect-4/5 shadow-2xl ring-1 ring-amber-400/30">
                 <img
-                  src="/src/assets/images/gocoffee_quan1_barista_1793580330531.jpg"
+                  src="/images/gocoffee_quan1_barista.jpg"
                   alt="Barista Việt Nam pha phin truyền thống tại Go Coffee Quận 1"
                   referrerPolicy="no-referrer"
+                  loading="eager"
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (target.src.indexOf('1793580330531') === -1) {
+                      target.src = '/images/gocoffee_quan1_barista_1793580330531.jpg';
+                    }
+                  }}
                 />
               </div>
             </div>

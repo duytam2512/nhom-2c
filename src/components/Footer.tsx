@@ -58,7 +58,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare, onResetHome, onO
 
           {/* Store Address Col */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Địa Chỉ Quán Duy Nhất</h4>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Địa Chỉ Quán (Quận 1)</h4>
             <div className="space-y-2 text-xs text-stone-400">
               <p className="font-bold text-stone-200">Go Coffee - Quận 1</p>
               <p>7 Công Trường Lam Sơn, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh</p>

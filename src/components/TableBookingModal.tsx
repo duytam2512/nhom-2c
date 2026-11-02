@@ -205,7 +205,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                   {/* Confirmed Single Store Location */}
                   <div>
                     <label className="block text-[11px] font-semibold text-stone-700 mb-1">
-                      Địa điểm nhận bàn (Quán duy nhất)
+                      Địa điểm lấy món (Go Coffee Quận 1)
                     </label>
                     <div className="p-2.5 bg-white rounded-xl border border-stone-200 shadow-2xs flex items-start gap-2.5">
                       <div className="w-7 h-7 rounded-lg bg-red-100 text-[#b22830] flex items-center justify-center shrink-0 mt-0.5">

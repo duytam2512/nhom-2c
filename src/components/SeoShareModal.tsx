@@ -54,7 +54,7 @@ export const SeoShareModal: React.FC<SeoShareModalProps> = ({ isOpen, onClose })
 
   const displayTitle = "Go Coffee | Cà Phê Phin Takeaway & Đặt Món Trực Tuyến";
   const displayDesc = "Go Coffee - Quán cà phê Takeaway tại số 7 Công Trường Lam Sơn, Quận 1. Đặt cà phê Phin Sữa Đá Cầu Đất, Cà Phê Muối Cố Đô, Freeze Trà Xanh mang đi sau 5 phút, thanh toán VietQR & MoMo.";
-  const previewImg = "/src/assets/images/gocoffee_quan1_storefront_1793580329452.jpg";
+  const previewImg = "/images/gocoffee_quan1_storefront.jpg";
 
   const copyWithFeedback = (text: string, type: string) => {
     if (navigator.clipboard) {
