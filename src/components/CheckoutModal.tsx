@@ -15,7 +15,9 @@ import {
   ArrowRight,
   Smartphone,
   ChevronRight,
-  AlertCircle
+  AlertCircle,
+  Zap,
+  Calendar
 } from 'lucide-react';
 import { CartItem, Order, PaymentMethodType, StoreLocation, Voucher } from '../types/coffee';
 import { submitCoffeeOrder } from '../services/bookingSync';
@@ -29,6 +31,8 @@ interface CheckoutModalProps {
   deliveryAddress: string;
   appliedVoucher: Voucher | null;
   onOrderSuccess: (order: Order) => void;
+  pickupTime?: string;
+  setPickupTime?: (time: string) => void;
 }
 
 export const CheckoutModal: React.FC<CheckoutModalProps> = ({
@@ -40,13 +44,33 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   deliveryAddress,
   appliedVoucher,
   onOrderSuccess,
+  pickupTime,
+  setPickupTime,
 }) => {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>('vietqr');
   const [customerName, setCustomerName] = useState('Nguyễn Văn Khải');
   const [customerPhone, setCustomerPhone] = useState('0909123456');
   const [customerNote, setCustomerNote] = useState('');
+  const [localPickupTime, setLocalPickupTime] = useState<string>(
+    pickupTime || (orderType === 'pickup' ? 'Lấy ngay (~5 - 8 phút)' : 'Giao ngay (~15 - 20 phút)')
+  );
+  const [customTimeInput, setCustomTimeInput] = useState<string>('09:00');
   const [isProcessing, setIsProcessing] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  const handleSelectPickupTime = (time: string) => {
+    setLocalPickupTime(time);
+    setPickupTime?.(time);
+  };
+
+  const isAsap = localPickupTime.startsWith('Lấy ngay') || localPickupTime.startsWith('Giao ngay');
+
+  const TIME_SLOTS = [
+    '07:30', '08:00', '08:30', '09:00', '09:30', '10:00', 
+    '10:30', '11:00', '11:30', '12:00', '13:30', '14:00', 
+    '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', 
+    '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00'
+  ];
 
   if (!isOpen) return null;
 
@@ -100,10 +124,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         // Confetti fallback
       }
 
-      const readyTime = new Date(Date.now() + (orderType === 'pickup' ? 8 : 20) * 60000).toLocaleTimeString('vi-VN', {
-        hour: '2-digit',
-        minute: '2-digit',
-      });
+      const readyTime = localPickupTime.startsWith('Hẹn lúc')
+        ? localPickupTime.replace('Hẹn lúc ', '')
+        : new Date(Date.now() + (orderType === 'pickup' ? 8 : 20) * 60000).toLocaleTimeString('vi-VN', {
+            hour: '2-digit',
+            minute: '2-digit',
+          });
 
       const newOrder: Order = {
         id: `ord-${Date.now()}`,
@@ -119,6 +145,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         customerName: customerName.trim(),
         customerPhone: customerPhone.trim(),
         customerNote: customerNote.trim() ? customerNote.trim() : undefined,
+        pickupTime: localPickupTime,
         paymentMethod,
         paymentStatus: paymentMethod === 'cash' ? 'pending' : 'paid',
         status: 'brewing',
@@ -208,6 +235,104 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 className="w-full text-xs px-3 py-2 bg-white rounded-lg border border-stone-200 focus:outline-none focus:ring-1 focus:ring-amber-700"
               />
             </div>
+          </div>
+
+          {/* Giờ Nhận Hàng (Pickup / Delivery Time Selection) */}
+          <div className="p-4 rounded-xl bg-gradient-to-br from-amber-50/80 via-white to-amber-50/40 border border-amber-200/90 shadow-2xs space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold uppercase tracking-wider text-amber-950 flex items-center gap-1.5">
+                <Clock className="w-4 h-4 text-[#b22830]" />
+                <span>Giờ nhận hàng ({orderType === 'pickup' ? 'Ghé lấy tại quầy Q.1' : 'Giao tận nơi'}) *</span>
+              </label>
+              <span className="text-[11px] font-black text-[#b22830] bg-red-50 border border-red-200 px-2.5 py-0.5 rounded-full shadow-2xs">
+                {localPickupTime}
+              </span>
+            </div>
+
+            {/* Mode Toggle: Lấy ngay vs Hẹn giờ */}
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => handleSelectPickupTime(orderType === 'pickup' ? 'Lấy ngay (~5 - 8 phút)' : 'Giao ngay (~15 - 20 phút)')}
+                className={`py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border cursor-pointer ${
+                  isAsap
+                    ? 'bg-[#b22830] text-white border-[#b22830] shadow-sm font-black'
+                    : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
+                }`}
+              >
+                <Zap className="w-3.5 h-3.5" />
+                <span>{orderType === 'pickup' ? 'Lấy ngay (~5-8 phút)' : 'Giao ngay (~15-20 phút)'}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (isAsap) {
+                    handleSelectPickupTime('Hẹn lúc 09:00');
+                  }
+                }}
+                className={`py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border cursor-pointer ${
+                  !isAsap
+                    ? 'bg-[#b22830] text-white border-[#b22830] shadow-sm font-black'
+                    : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
+                }`}
+              >
+                <Clock className="w-3.5 h-3.5" />
+                <span>Hẹn giờ nhận hôm nay</span>
+              </button>
+            </div>
+
+            {/* Scheduled Time Picker */}
+            {!isAsap && (
+              <div className="pt-2 border-t border-amber-200/60 space-y-2.5 animate-in fade-in duration-200">
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <span className="text-stone-700 font-semibold flex items-center gap-1">
+                    <Calendar className="w-3.5 h-3.5 text-amber-800" />
+                    <span>Chọn khung giờ chuẩn bị nước:</span>
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] text-stone-500">Hoặc tự nhập giờ:</span>
+                    <input
+                      type="time"
+                      min="06:30"
+                      max="22:45"
+                      value={customTimeInput}
+                      onChange={(e) => {
+                        setCustomTimeInput(e.target.value);
+                        if (e.target.value) {
+                          handleSelectPickupTime(`Hẹn lúc ${e.target.value}`);
+                        }
+                      }}
+                      className="px-2 py-1 text-xs font-bold bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#b22830]"
+                    />
+                  </div>
+                </div>
+
+                {/* Popular chips */}
+                <div className="flex items-center gap-1.5 flex-wrap max-h-24 overflow-y-auto p-1.5 bg-white rounded-xl border border-stone-200">
+                  {TIME_SLOTS.map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => {
+                        setCustomTimeInput(t);
+                        handleSelectPickupTime(`Hẹn lúc ${t}`);
+                      }}
+                      className={`px-2.5 py-1 text-xs rounded-lg font-bold transition cursor-pointer ${
+                        localPickupTime === `Hẹn lúc ${t}`
+                          ? 'bg-amber-400 text-stone-950 font-black shadow-xs ring-1 ring-amber-500 scale-105'
+                          : 'bg-stone-50 text-stone-700 hover:bg-stone-200 border border-stone-200/80'
+                      }`}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <p className="text-[11px] text-stone-500 italic">
+              * Quầy Go Coffee tại 7 Công Trường Lam Sơn sẽ bắt đầu pha chế tươi đúng khung giờ bạn chọn để đảm bảo hương vị cà phê và độ lạnh chuẩn nhất.
+            </p>
           </div>
 
           {/* Payment Method Selector */}

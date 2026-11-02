@@ -150,6 +150,7 @@ export async function sendDirectToGoogleSheets(webhookUrl: string, payload: any)
       url.searchParams.set('total', String(payload.total || 0));
       url.searchParams.set('paymentMethod', payload.paymentMethod || 'vietqr');
       url.searchParams.set('itemsSummary', payload.itemsSummary || 'Đồ uống');
+      url.searchParams.set('pickupTime', payload.pickupTime || 'Lấy ngay (~5 - 8 phút)');
     }
 
     if (payload.telegramChatId) {

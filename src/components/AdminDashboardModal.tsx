@@ -757,6 +757,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                                 <th className="p-3">Tổng Tiền</th>
                                 <th className="p-3">Thanh Toán</th>
                                 <th className="p-3">Hình Thức</th>
+                                <th className="p-3">Giờ Nhận Hàng</th>
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-stone-100 text-[11px]">
@@ -779,6 +780,11 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                                   </td>
                                   <td className="p-3 text-stone-600">
                                     {ord.orderType === 'pickup' ? 'Ghé lấy' : 'Giao hàng'}
+                                  </td>
+                                  <td className="p-3 font-semibold text-stone-800">
+                                    <span className="inline-flex items-center gap-1 font-bold text-[#b22830] bg-red-50 border border-red-200 px-2 py-0.5 rounded-md text-[10px]">
+                                      {ord.pickupTime || ord.estimatedReadyTime || 'Lấy ngay'}
+                                    </span>
                                   </td>
                                 </tr>
                               ))}

@@ -78,6 +78,7 @@ export interface Order {
   customerName: string;
   customerPhone: string;
   customerNote?: string;
+  pickupTime?: string;
   paymentMethod: PaymentMethodType;
   paymentStatus: 'pending' | 'paid';
   status: 'received' | 'brewing' | 'ready' | 'completed';

@@ -159,14 +159,14 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="font-bold text-sm sm:text-base font-display tracking-tight text-white">
-                  Đặt Bàn Giữ Chỗ • Go Coffee
+                  Hẹn Giờ Nhận Món • Go Coffee Takeaway
                 </h3>
                 <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-400 text-stone-950 px-2 py-0.5 rounded-full shadow-2xs">
                   Miễn phí
                 </span>
               </div>
               <p className="text-xs text-amber-200/80 line-clamp-1">
-                Giữ chỗ ưu tiên • Không gian thư thái • Chuẩn bị chu đáo trước khi bạn đến
+                Hẹn giờ nhận cà phê mang đi • Chuẩn bị chu đáo sau 5 phút • Tiết kiệm thời gian
               </p>
             </div>
           </div>
@@ -199,7 +199,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                 <div className="space-y-3 bg-stone-50/80 p-3.5 sm:p-4 rounded-2xl border border-stone-200/80">
                   <div className="text-xs font-bold uppercase tracking-wider text-amber-950 flex items-center gap-1.5 pb-1 border-b border-stone-200/80">
                     <MapPin className="w-3.5 h-3.5 text-[#b22830]" />
-                    <span>1. Địa Điểm & Thời Gian Nhận Bàn</span>
+                    <span>1. Địa Điểm & Giờ Nhận Hàng</span>
                   </div>
 
                   {/* Confirmed Single Store Location */}
@@ -222,7 +222,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-[11px] font-semibold text-stone-700 mb-1">
-                        Ngày nhận bàn
+                        Ngày nhận món
                       </label>
                       <div className="relative">
                         <Calendar className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -238,7 +238,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
 
                     <div>
                       <label className="block text-[11px] font-semibold text-stone-700 mb-1">
-                        Khung giờ đến
+                        Giờ nhận hàng (Khung giờ đến lấy)
                       </label>
                       <div className="relative">
                         <Clock className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />

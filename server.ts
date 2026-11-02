@@ -449,6 +449,7 @@ async function forwardOrderToGoogleSheets(url: string, order: any, telegramChatI
     target.searchParams.set('paymentMethod', order.paymentMethod || 'vietqr');
     target.searchParams.set('paymentStatus', order.paymentStatus || 'unpaid');
     target.searchParams.set('orderType', order.orderType || 'pickup');
+    target.searchParams.set('pickupTime', order.pickupTime || 'Lấy ngay (~5 - 8 phút)');
     target.searchParams.set('deliveryAddress', order.deliveryAddress || (order.store?.name || 'Chi nhánh'));
     target.searchParams.set('note', order.customerNote || '');
 
@@ -635,6 +636,7 @@ app.post('/api/order', async (req, res) => {
 ${itemsList}
 💰 <b>Tổng tiền:</b> <b>${Number(order.total || 0).toLocaleString('vi-VN')} đ</b>
 💳 <b>Thanh toán:</b> ${order.paymentMethod ? order.paymentMethod.toUpperCase() : 'VIETQR'} (${order.paymentStatus === 'paid' ? '✅ Đã thanh toán' : '⏳ Chưa thanh toán'})
+⏰ <b>Giờ nhận hàng:</b> <b>${order.pickupTime || 'Lấy ngay (~5 - 8 phút)'}</b>
 🛵 <b>Hình thức:</b> ${order.orderType === 'pickup' ? `Ghé lấy tại quán: Go Coffee - Quận 1 (7 Công Trường Lam Sơn, Q.1)` : `Giao tận nơi: ${order.deliveryAddress || 'Địa chỉ khách'}`}
 📝 <b>Ghi chú:</b> <i>${order.customerNote || 'Không có'}</i>`;
 

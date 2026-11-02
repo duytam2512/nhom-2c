@@ -29,10 +29,20 @@ export default function App() {
   // State
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [orderType, setOrderType] = useState<'pickup' | 'delivery'>('pickup');
+  const [pickupTime, setPickupTime] = useState<string>('Lấy ngay (~5 - 8 phút)');
   const [selectedStore, setSelectedStore] = useState<StoreLocation>(STORES[0]);
   const [deliveryAddress, setDeliveryAddress] = useState('128 Nguyễn Đình Chiểu, P. Võ Thị Sáu, Q.3');
   const [appliedVoucher, setAppliedVoucher] = useState<Voucher | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<CoffeeCategory>('all');
+
+  const handleSetOrderType = (type: 'pickup' | 'delivery') => {
+    setOrderType(type);
+    if (type === 'pickup' && pickupTime.includes('Giao ngay')) {
+      setPickupTime('Lấy ngay (~5 - 8 phút)');
+    } else if (type === 'delivery' && pickupTime.includes('Lấy ngay')) {
+      setPickupTime('Giao ngay (~15 - 20 phút)');
+    }
+  };
 
   // Admin / Store Owner state
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
@@ -318,7 +328,7 @@ export default function App() {
         onUpdateQuantity={handleUpdateQuantity}
         onRemoveItem={handleRemoveItem}
         orderType={orderType}
-        setOrderType={setOrderType}
+        setOrderType={handleSetOrderType}
         selectedStore={selectedStore}
         setSelectedStore={setSelectedStore}
         deliveryAddress={deliveryAddress}
@@ -326,6 +336,8 @@ export default function App() {
         appliedVoucher={appliedVoucher}
         setAppliedVoucher={setAppliedVoucher}
         onProceedToCheckout={handleProceedToCheckout}
+        pickupTime={pickupTime}
+        setPickupTime={setPickupTime}
       />
 
       <CheckoutModal
@@ -337,6 +349,8 @@ export default function App() {
         deliveryAddress={deliveryAddress}
         appliedVoucher={appliedVoucher}
         onOrderSuccess={handleOrderSuccess}
+        pickupTime={pickupTime}
+        setPickupTime={setPickupTime}
       />
 
       <OrderTrackerModal

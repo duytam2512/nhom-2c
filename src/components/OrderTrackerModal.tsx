@@ -99,7 +99,13 @@ export const OrderTrackerModal: React.FC<OrderTrackerModalProps> = ({
             </div>
             <div className="flex items-center justify-center gap-1.5 text-xs text-stone-600">
               <Clock className="w-3.5 h-3.5 text-amber-700" />
-              <span>Dự kiến hoàn thành: <strong className="text-stone-900">{order.estimatedReadyTime}</strong> ({order.orderType === 'pickup' ? 'Sau 5-8 phút' : 'Sau 15-20 phút'})</span>
+              <span>
+                Giờ nhận hàng dự kiến:{' '}
+                <strong className="text-stone-900 font-bold">
+                  {order.pickupTime || order.estimatedReadyTime}
+                </strong>{' '}
+                ({order.orderType === 'pickup' ? 'Ghé lấy tại quầy Q.1' : 'Giao tận nơi'})
+              </span>
             </div>
           </div>
 
