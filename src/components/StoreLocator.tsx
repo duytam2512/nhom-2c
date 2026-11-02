@@ -37,14 +37,25 @@ export const StoreLocator: React.FC<StoreLocatorProps> = ({
 
   const STORE_PHOTOS = [
     {
-      url: '/src/assets/images/gocoffee_takeaway_conn_1793543647729.jpg',
-      label: 'Quầy Go Coffee',
-      tag: 'Thiết Kế Conn Design'
+      url: '/src/assets/images/gocoffee_quan1_storefront_1793580329452.jpg',
+      label: 'Kiosk Q.1 Lam Sơn',
+      tag: '7 Công Trường Lam Sơn, Q.1',
+      title: 'Quầy Kiosk Go Coffee Lam Sơn - Quận 1',
+      desc: 'Tọa lạc vỉa hè góc phố trung tâm Q.1 bên cạnh Nhà Hát Lớn & Khách sạn Continental, tấp xe máy nhận cà phê 5 phút.'
     },
     {
-      url: '/src/assets/images/gocoffee_kiosk_conn_1793543647195.jpg',
-      label: 'Cửa Sổ Nhận Đồ Uống',
-      tag: 'Phục Vụ 5 Phút'
+      url: '/src/assets/images/gocoffee_quan1_handover_1793580330615.jpg',
+      label: 'Cửa Sổ Giao Nhanh',
+      tag: 'Nhận Món Trong 5 Phút',
+      title: 'Trao Tay Ly Cà Phê Siêu Tốc',
+      desc: 'Nhân viên barista Việt Nam thân thiện trao đồ uống nắp 2 lớp chống tràn chuyên dụng cho khách đi xe máy.'
+    },
+    {
+      url: '/src/assets/images/gocoffee_quan1_barista_1793580330531.jpg',
+      label: 'Pha Phin Thủ Công',
+      tag: '100% Cà Phê Cầu Đất',
+      title: 'Pha Phin Truyền Thống Đậm Vị',
+      desc: 'Từng giọt cà phê phin inox chảy chậm trên lớp sữa đặc béo ngậy, giữ trọn vị mộc đặc trưng của Go Coffee.'
     }
   ];
 
@@ -77,16 +88,16 @@ export const StoreLocator: React.FC<StoreLocatorProps> = ({
       <div className="bg-white rounded-3xl border border-stone-200/90 shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-12">
         
         {/* Left Col: Store Imagery & Atmosphere (5 Cols) */}
-        <div className="lg:col-span-5 relative min-h-[360px] lg:min-h-[480px] bg-stone-950 flex flex-col justify-between p-6 sm:p-8 overflow-hidden">
+        <div className="lg:col-span-5 relative min-h-[400px] lg:min-h-[520px] bg-stone-950 flex flex-col justify-between p-6 sm:p-8 overflow-hidden">
           {/* Background image - Authentic Generated Go Coffee Takeaway Kiosk */}
           <img
             key={currentPhoto.url}
             src={currentPhoto.url}
-            alt="Quầy cà phê mang đi Go Coffee Quận 1"
+            alt={currentPhoto.title}
             referrerPolicy="no-referrer"
             className="absolute inset-0 w-full h-full object-cover opacity-95 transition-all duration-700 animate-in fade-in"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/30 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/30 pointer-events-none" />
 
           {/* Top Badges */}
           <div className="relative z-10 flex items-center justify-between gap-2">
@@ -100,7 +111,7 @@ export const StoreLocator: React.FC<StoreLocatorProps> = ({
           </div>
 
           {/* Photo Switcher Selector */}
-          <div className="relative z-10 flex items-center gap-2 self-start my-auto bg-black/50 backdrop-blur-md p-1.5 rounded-2xl border border-white/20">
+          <div className="relative z-10 flex flex-wrap items-center gap-1.5 self-start my-auto bg-black/60 backdrop-blur-md p-1.5 rounded-2xl border border-white/20 shadow-lg">
             {STORE_PHOTOS.map((ph, idx) => (
               <button
                 key={idx}
@@ -118,13 +129,16 @@ export const StoreLocator: React.FC<StoreLocatorProps> = ({
 
           {/* Bottom Highlights */}
           <div className="relative z-10 space-y-2 text-white">
-            <div className="inline-block px-2 py-0.5 rounded-md bg-amber-400/90 text-stone-950 text-[10px] font-black uppercase tracking-wider">
+            <div className="inline-block px-2.5 py-1 rounded-md bg-amber-400/95 text-stone-950 text-[10px] font-black uppercase tracking-wider shadow-xs">
               {currentPhoto.tag}
             </div>
-            <h3 className="text-2xl font-black font-display tracking-tight text-amber-100">
-              Quầy Takeaway Lam Sơn - Quận 1
+            <h3 className="text-xl sm:text-2xl font-black font-display tracking-tight text-amber-100">
+              {currentPhoto.title}
             </h3>
-            <p className="text-xs text-stone-200 flex items-center gap-1.5 font-medium">
+            <p className="text-xs text-stone-200 leading-relaxed font-normal">
+              {currentPhoto.desc}
+            </p>
+            <p className="text-xs text-amber-300/90 flex items-center gap-1.5 font-medium pt-1">
               <MapPin className="w-4 h-4 text-amber-400 shrink-0" />
               7 Công Trường Lam Sơn (sát Nhà Hát Lớn TP.HCM)
             </p>

@@ -34,8 +34,8 @@ export const StorySection: React.FC = () => {
               </div>
               <div className="rounded-2xl overflow-hidden aspect-4/5 shadow-2xl ring-1 ring-amber-400/30">
                 <img
-                  src="/src/assets/images/gocoffee_kiosk_conn_1793543647195.jpg"
-                  alt="Quầy cà phê mang đi Go Coffee Quận 1"
+                  src="/src/assets/images/gocoffee_quan1_barista_1793580330531.jpg"
+                  alt="Barista Việt Nam pha phin truyền thống tại Go Coffee Quận 1"
                   referrerPolicy="no-referrer"
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                 />

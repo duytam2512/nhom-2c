@@ -96,7 +96,7 @@ export const STORES: ExtendedStoreLocation[] = [
       '100% Hạt Robusta Cầu Đất xay pha tươi tại quầy',
       'Dịch vụ giao tận nơi nội thành Quận 1 & các quận lân cận'
     ],
-    image: '/src/assets/images/gocoffee_takeaway_conn_1793543647729.jpg',
+    image: '/src/assets/images/gocoffee_quan1_storefront_1793580329452.jpg',
   },
 ];
 
