@@ -444,7 +444,7 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                     )}
                     {item.isBestSeller && !item.tags.includes('saigon-xua') && (
                       <span className="px-2 py-0.5 rounded-xs bg-[#801419] text-amber-100 text-[10px] font-serif font-bold uppercase tracking-wider shadow border border-amber-300/50 flex items-center gap-0.5">
-                        <Flame className="w-2.5 h-2.5" /> Best Seller
+                        <Flame className="w-2.5 h-2.5" /> Bán Chạy Nhất
                       </span>
                     )}
                   </div>

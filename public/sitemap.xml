@@ -1,51 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-  <!-- Trang chủ / Giới thiệu Go Coffee -->
+  <!-- Trang chủ / Giới thiệu Go Coffee Sài Gòn Xưa - 120 Pasteur -->
   <url>
     <loc>https://nhom-2c.vercel.app/</loc>
-    <lastmod>2026-10-24</lastmod>
+    <lastmod>2026-11-03</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&amp;fit=crop&amp;w=1200&amp;h=630&amp;q=85</image:loc>
-      <image:title>Go Coffee - Cà Phê Phin &amp; Đặt Món Trực Tuyến</image:title>
+      <image:loc>https://nhom-2c.vercel.app/images/gocoffee_quan1_storefront.jpg</image:loc>
+      <image:title>Quán Go Coffee 120 Pasteur Quận 1 - Cà Phê Phin Sài Gòn Xưa</image:title>
+      <image:caption>Quầy cà phê phin takeaway truyền thống tại 120 Pasteur, Phường Bến Nghé, Quận 1, TP.HCM</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://nhom-2c.vercel.app/images/banh_mi_cham_cafe_sua_da.jpg</image:loc>
+      <image:title>Bánh Mì Chấm Cà Phê Sữa Đá Sài Gòn Xưa</image:title>
+      <image:caption>Món ăn ký ức tuổi thơ: Bánh mì giòn rụm chấm cà phê phin sữa đá đậm đà</image:caption>
     </image:image>
   </url>
 
-  <!-- Thực đơn Cà phê & Đồ uống -->
+  <!-- Thực đơn Cà phê Phin & Điểm Tâm Xưa -->
   <url>
     <loc>https://nhom-2c.vercel.app/thuc-don</loc>
-    <lastmod>2026-10-24</lastmod>
+    <lastmod>2026-11-03</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <image:image>
-      <image:loc>https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&amp;fit=crop&amp;w=800&amp;q=80</image:loc>
-      <image:title>Phin Sữa Đá Cầu Đất &amp; Cà Phê Muối Cố Đô</image:title>
+      <image:loc>https://nhom-2c.vercel.app/images/combo_phin_den_banh_mi.jpg</image:loc>
+      <image:title>Combo Buổi Sáng Sài Gòn Xưa - Phin Đen Đá &amp; Bánh Mì Không</image:title>
+      <image:caption>Cà phê phin đen đá đậm vị nguyên bản kèm ổ bánh mì không nóng giòn</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://nhom-2c.vercel.app/images/banh_mi_khong_xua.jpg</image:loc>
+      <image:title>Bánh Mì Không Nóng Giòn Truyền Thống</image:title>
+      <image:caption>Bánh mì Sài Gòn vỏ giòn rụm ruột xốp thơm mới ra lò</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://nhom-2c.vercel.app/images/phindi-hanh-nhan.jpg</image:loc>
+      <image:title>Cà Phê PhinDi Hạnh Nhân</image:title>
     </image:image>
   </url>
 
-  <!-- Đặt Bàn Giữ Chỗ Trực Tuyến -->
-  <url>
-    <loc>https://nhom-2c.vercel.app/dat-ban</loc>
-    <lastmod>2026-10-24</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <!-- Quán Go Coffee - Quận 1 (Địa Điểm Duy Nhất) -->
+  <!-- Quán Go Coffee - 120 Pasteur, Quận 1 -->
   <url>
     <loc>https://nhom-2c.vercel.app/cua-hang</loc>
-    <lastmod>2026-10-24</lastmod>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://nhom-2c.vercel.app/images/gocoffee_quan1_barista.jpg</image:loc>
+      <image:title>Barista Việt Nam Pha Phin Truyền Thống</image:title>
+      <image:caption>Nghệ thuật pha phin giọt chậm giữ trọn hương vị cà phê mộc Cầu Đất</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://nhom-2c.vercel.app/images/gocoffee_quan1_handover.jpg</image:loc>
+      <image:title>Cửa Sổ Giao Nhanh 5 Phút Tại 120 Pasteur</image:title>
+      <image:caption>Nhận đồ uống mang đi nhanh chóng không cần chờ đợi</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Ký Ức Quán & Di Sản Cà Phê -->
+  <url>
+    <loc>https://nhom-2c.vercel.app/cau-chuyen</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Phiếu Giảm Giá & Combo Ưu Đãi Hôm Nay -->
+  <url>
+    <loc>https://nhom-2c.vercel.app/uu-dai</loc>
+    <lastmod>2026-11-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- Câu Chuyện Cầu Đất & Di Sản Cà Phê -->
+  <!-- Đặt Bàn Giữ Chỗ Quán -->
   <url>
-    <loc>https://nhom-2c.vercel.app/cau-chuyen</loc>
-    <lastmod>2026-10-24</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://nhom-2c.vercel.app/dat-ban</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
 </urlset>

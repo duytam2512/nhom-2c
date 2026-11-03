@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 
-# Google Search Console Sitemap & Indexing
+# Google Search Console & Search Engine Sitemaps
+Sitemap: https://nhom-2c.vercel.app/sitemap.xml
 Sitemap: https://gocoffee.vn/sitemap.xml
 Sitemap: https://ais-pre-cwfqkhy5uib56py7ujo76g-116687240277.asia-east1.run.app/sitemap.xml

@@ -120,23 +120,23 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Main navigation bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-18 flex items-center justify-between gap-2 sm:gap-4">
         {/* Left: Brand Logo */}
-        <div className="flex items-center">
+        <div className="flex items-center shrink-0 min-w-0">
           <a
             href="/"
             onClick={handleLogoClick}
-            className="flex items-center gap-2 cursor-pointer transition hover:opacity-90 active:scale-95"
+            className="flex items-center gap-2 cursor-pointer transition hover:opacity-90 active:scale-95 shrink-0"
             title="Go Coffee - Về trang bắt đầu"
           >
             <Logo size="md" />
           </a>
         </div>
 
-        {/* Center: Vintage Saigon Navigation Menu */}
+        {/* Center: Vintage Saigon Navigation Menu (Thực Đơn, Địa Chỉ, Câu Chuyện, Mã Giảm Giá) */}
         <nav
           ref={dropdownRef}
-          className="hidden md:flex items-center justify-center flex-1 max-w-3xl mx-auto gap-2 lg:gap-5 xl:gap-7 text-xs sm:text-sm font-serif font-bold text-stone-800"
+          className="hidden md:flex items-center justify-center flex-1 max-w-3xl mx-auto gap-1 sm:gap-2 lg:gap-4 xl:gap-6 text-xs sm:text-sm font-serif font-bold text-stone-800"
         >
           {/* MENU 1: THỰC ĐƠN */}
           <div 
@@ -144,16 +144,22 @@ export const Header: React.FC<HeaderProps> = ({
             onMouseEnter={() => setActiveDropdown('menu')}
           >
             <button
-              onClick={() => setActiveDropdown(activeDropdown === 'menu' ? null : 'menu')}
-              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-md transition cursor-pointer uppercase tracking-wider text-xs font-bold border ${
+              onClick={() => handleLinkClick('/thuc-don', 'menu')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition cursor-pointer uppercase tracking-wider text-xs font-bold border ${
                 activeDropdown === 'menu'
                   ? 'bg-[#ede2cb] text-[#52090c] border-[#801419]/40 shadow-xs'
                   : 'hover:bg-[#f2e7d3] hover:text-[#52090c] border-transparent text-stone-800'
               }`}
             >
               <Coffee className="w-4 h-4 text-[#801419]" />
-              <span>Thực Đơn Quán Xưa</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${activeDropdown === 'menu' ? 'rotate-180' : ''}`} />
+              <span>Thực Đơn</span>
+              <ChevronDown 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveDropdown(activeDropdown === 'menu' ? null : 'menu');
+                }}
+                className={`w-3.5 h-3.5 transition-transform duration-200 ${activeDropdown === 'menu' ? 'rotate-180' : ''}`} 
+              />
             </button>
 
             {/* Dropdown Panel: Thực Đơn */}
@@ -261,27 +267,27 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </div>
 
-          {/* MENU 2: ĐỊA CHỈ QUÁN (QUẬN 1) */}
+          {/* MENU 2: ĐỊA CHỈ */}
           <button
             onClick={() => handleLinkClick('/cua-hang', 'stores')}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-md transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-[#ede2cb] hover:text-[#52090c] text-stone-800"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-[#ede2cb] hover:text-[#52090c] text-stone-800 border border-transparent"
             title="Địa chỉ quán: 120 Pasteur, P. Bến Nghé, Quận 1, TP.HCM"
           >
             <MapPin className="w-4 h-4 text-[#801419]" />
-            <span>Ghé Quán</span>
+            <span>Địa Chỉ</span>
           </button>
 
           {/* MENU 3: CÂU CHUYỆN */}
           <button
             onClick={() => handleLinkClick('/cau-chuyen', 'story')}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-md transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-[#ede2cb] hover:text-[#52090c] text-stone-800"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-[#ede2cb] hover:text-[#52090c] text-stone-800 border border-transparent"
             title="Ký ức cà phê phin Sài Gòn xưa"
           >
             <BookOpen className="w-4 h-4 text-[#801419]" />
-            <span>Ký Ức Quán</span>
+            <span>Câu Chuyện</span>
           </button>
 
-          {/* MENU 4: ƯU ĐÃI */}
+          {/* MENU 4: MÃ GIẢM GIÁ */}
           <button
             onClick={() => {
               if (onSelectCategory) {
@@ -289,11 +295,11 @@ export const Header: React.FC<HeaderProps> = ({
               }
               handleLinkClick('/uu-dai', 'menu');
             }}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-md transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-[#ede2cb] hover:text-[#52090c] text-stone-800"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-[#ede2cb] hover:text-[#52090c] text-stone-800 border border-transparent"
             title="Xem mã giảm giá & combo ưu đãi hôm nay"
           >
             <Tag className="w-4 h-4 text-[#801419]" />
-            <span>Phiếu Giảm Giá</span>
+            <span>Mã Giảm Giá</span>
             <span className="px-1.5 py-0.2 rounded-xs text-[10px] bg-[#801419] text-amber-200 font-mono font-bold lowercase tracking-normal">
               -20%
             </span>
@@ -302,11 +308,11 @@ export const Header: React.FC<HeaderProps> = ({
         </nav>
 
         {/* Right: Action Buttons in Vintage Saigon Styling */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2 sm:gap-2.5">
           {/* Direct CTA: Đặt Món Nhanh (Vintage Ticket style) */}
           <button
             onClick={() => handleLinkClick('/thuc-don', 'menu')}
-            className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-md bg-[#801419] hover:bg-[#660e12] text-amber-100 font-serif font-bold text-xs uppercase tracking-wider transition cursor-pointer active:scale-95 shadow-sm border border-[#d4af37]"
+            className="hidden sm:flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-md bg-[#801419] hover:bg-[#660e12] text-amber-100 font-serif font-bold text-xs uppercase tracking-wider transition cursor-pointer active:scale-95 shadow-sm border border-[#d4af37]"
             title="Đặt món mang đi, nhận sau 5 phút"
           >
             <Coffee className="w-4 h-4 text-amber-300" />
@@ -316,7 +322,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Cart Button: Vintage Docket Style */}
           <button
             onClick={onOpenCart}
-            className="relative px-3.5 py-2 rounded-md bg-[#23150d] hover:bg-[#150c07] border border-amber-900/60 text-amber-100 font-mono font-bold text-xs sm:text-sm flex items-center gap-2 shadow-xs transition active:scale-95 cursor-pointer"
+            className="relative px-3 sm:px-3.5 py-2 rounded-md bg-[#23150d] hover:bg-[#150c07] border border-amber-900/60 text-amber-100 font-mono font-bold text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 shadow-xs transition active:scale-95 cursor-pointer"
           >
             <ShoppingBag className="w-4 h-4 text-amber-300" />
             <span className="hidden sm:inline font-serif text-xs font-bold uppercase tracking-wider">Phiếu Chọn</span>
@@ -330,12 +336,48 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Mobile hamburger toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-md text-stone-800 hover:bg-[#ede2cb] transition cursor-pointer"
+            className="md:hidden p-2 rounded-md text-stone-800 hover:bg-[#ede2cb] transition cursor-pointer shrink-0"
             aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
+      </div>
+
+      {/* Mobile quick-nav strip for instant one-tap access to Thực Đơn, Địa Chỉ, Câu Chuyện, Mã Giảm Giá */}
+      <div className="md:hidden flex items-center justify-around px-2 py-1.5 bg-[#ede2cb] border-t border-[#801419]/25 text-[11px] font-serif font-bold text-stone-800 overflow-x-auto whitespace-nowrap shadow-2xs">
+        <button
+          onClick={() => handleLinkClick('/thuc-don', 'menu')}
+          className="flex items-center gap-1 px-2 py-1 rounded hover:bg-[#dfc8a5] text-[#801419] cursor-pointer"
+        >
+          <Coffee className="w-3.5 h-3.5 text-[#801419]" />
+          <span>Thực Đơn</span>
+        </button>
+        <button
+          onClick={() => handleLinkClick('/cua-hang', 'stores')}
+          className="flex items-center gap-1 px-2 py-1 rounded hover:bg-[#dfc8a5] text-stone-800 cursor-pointer"
+        >
+          <MapPin className="w-3.5 h-3.5 text-[#801419]" />
+          <span>Địa Chỉ</span>
+        </button>
+        <button
+          onClick={() => handleLinkClick('/cau-chuyen', 'story')}
+          className="flex items-center gap-1 px-2 py-1 rounded hover:bg-[#dfc8a5] text-stone-800 cursor-pointer"
+        >
+          <BookOpen className="w-3.5 h-3.5 text-[#801419]" />
+          <span>Câu Chuyện</span>
+        </button>
+        <button
+          onClick={() => {
+            if (onSelectCategory) onSelectCategory('combo');
+            handleLinkClick('/uu-dai', 'menu');
+          }}
+          className="flex items-center gap-1 px-2 py-1 rounded hover:bg-[#dfc8a5] text-stone-800 cursor-pointer"
+        >
+          <Tag className="w-3.5 h-3.5 text-[#801419]" />
+          <span>Mã Giảm Giá</span>
+          <span className="px-1 py-0.2 rounded-xs bg-[#801419] text-amber-200 text-[9px] font-mono font-bold">-20%</span>
+        </button>
       </div>
 
       {/* Mobile Grouped Accordion Menu */}
@@ -404,7 +446,7 @@ export const Header: React.FC<HeaderProps> = ({
                   className="w-full text-left py-2 px-3 rounded-lg hover:bg-orange-50 text-stone-700 flex items-center gap-2"
                 >
                   <Croissant className="w-3.5 h-3.5 text-[#ea580c]" />
-                  <span>Bánh Mì Que Pate Cay Hải Phòng & Bánh Ngọt</span>
+                  <span>Bánh Mì Chấm Cà Phê, Bánh Mì Không & Điểm Tâm</span>
                 </button>
                 <button
                   onClick={() => handleCategoryClick('combo')}
@@ -442,34 +484,37 @@ export const Header: React.FC<HeaderProps> = ({
               className="w-full text-left p-2.5 rounded-xl hover:bg-amber-50 text-stone-800 font-bold text-xs flex items-center justify-between border border-stone-100 cursor-pointer"
             >
               <span className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-amber-800" />
-                <span>Địa Chỉ Quán (120 Pasteur, Quận 1)</span>
+                <MapPin className="w-4 h-4 text-[#801419]" />
+                <span>Địa Chỉ Quán: 120 Pasteur, Quận 1</span>
               </span>
               <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
             </button>
 
-            {/* Câu Chuyện Cầu Đất */}
+            {/* Câu Chuyện Quán */}
             <button
               onClick={() => handleLinkClick('/cau-chuyen', 'story')}
-              className="w-full text-left p-2.5 rounded-xl hover:bg-amber-50 text-stone-800 font-bold text-xs flex items-center justify-between border border-stone-100"
+              className="w-full text-left p-2.5 rounded-xl hover:bg-amber-50 text-stone-800 font-bold text-xs flex items-center justify-between border border-stone-100 cursor-pointer"
             >
               <span className="flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-amber-800" />
-                <span>Câu Chuyện Di Sản Cà Phê</span>
+                <BookOpen className="w-4 h-4 text-[#801419]" />
+                <span>Câu Chuyện Ký Ức Sài Gòn Xưa</span>
               </span>
               <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
             </button>
 
             {/* Mã Giảm Giá & Ưu Đãi */}
             <button
-              onClick={() => handleLinkClick('/thuc-don', 'menu')}
-              className="w-full text-left p-2.5 rounded-xl hover:bg-amber-50 text-stone-800 font-bold text-xs flex items-center justify-between border border-stone-100"
+              onClick={() => {
+                if (onSelectCategory) onSelectCategory('combo');
+                handleLinkClick('/uu-dai', 'menu');
+              }}
+              className="w-full text-left p-2.5 rounded-xl hover:bg-amber-50 text-stone-800 font-bold text-xs flex items-center justify-between border border-stone-100 cursor-pointer"
             >
               <span className="flex items-center gap-2">
-                <Tag className="w-4 h-4 text-amber-800" />
+                <Tag className="w-4 h-4 text-[#801419]" />
                 <span>Mã Giảm Giá & Ưu Đãi Hôm Nay</span>
               </span>
-              <span className="text-[10px] bg-red-100 text-[#b22830] font-black px-1.5 py-0.5 rounded">
+              <span className="text-[10px] bg-[#801419] text-amber-200 font-mono font-black px-1.5 py-0.5 rounded">
                 -20%
               </span>
             </button>

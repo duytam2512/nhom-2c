@@ -32,12 +32,13 @@ interface AdminDashboardModalProps {
 }
 
 const APPS_SCRIPT_SOURCE = `/**
- * GO COFFEE - APPS SCRIPT ĐỒNG BỘ GOOGLE SHEET & TELEGRAM BOT
+ * GO COFFEE - APPS SCRIPT ĐỒNG BỘ ĐƠN HÀNG, ĐẶT BÀN & TELEGRAM BOT
+ * Quán: Go Coffee - 120 Pasteur, P. Bến Nghé, Quận 1, TP.HCM
  * Bot Telegram: @Duyaasaa_bot
  * Email chủ quán: duykhaikhan@gmail.com
  *
  * ⚠️ HƯỚNG DẪN TRIỂN KHAI 4 BƯỚC:
- * 1. Mở sheets.new -> Tiện ích mở rộng -> Apps Script -> dán toàn bộ mã này -> Lưu (Ctrl + S)
+ * 1. Mở sheets.new -> Tiện ích mở rộng -> Apps Script -> Dán toàn bộ mã này -> Lưu (Ctrl + S)
  * 2. Triển khai (Deploy) -> Tùy chọn triển khai mới (New deployment)
  * 3. Loại: Ứng dụng web (Web app)
  * 4. BẮT BUỘC: "Ai có quyền truy cập" (Who has access) -> Chọn "Bất kỳ ai" (Anyone)
@@ -57,18 +58,7 @@ function doGet(e) {
 
 function handleIncoming(e) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheetName = "Dat_Ban_GoCoffee";
-  var sheet = ss.getSheetByName(sheetName);
-  
-  if (!sheet) {
-    sheet = ss.insertSheet(sheetName);
-    sheet.appendRow([
-      "Mã Đơn / Bàn", "Loại", "Thời Gian Gửi", "Họ Tên Khách",
-      "Số Điện Thoại", "Email", "Số Lượng / Món", "Ngày Nhận",
-      "Khung Giờ", "Chi Nhánh Quán", "Không Gian / Giao Hàng", "Ghi Chú", "Trạng Thái"
-    ]);
-    sheet.getRange(1, 1, 1, 13).setFontWeight("bold").setBackground("#B22830").setFontColor("#FFFFFF");
-  }
+  var timestamp = Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "dd/MM/yyyy HH:mm:ss");
 
   var data = {};
   if (e && e.postData && e.postData.contents) {
@@ -81,32 +71,96 @@ function handleIncoming(e) {
     data = e.parameter;
   }
 
-  var code = data.code || ("TB-" + Math.floor(1000 + Math.random() * 9000));
-  var isOrder = (data.type === "order" || Boolean(data.total));
-  var recordType = isOrder ? "Đơn Cà Phê" : "Đặt Bàn";
-  var timeNow = Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "dd/MM/yyyy HH:mm:ss");
+  var isOrder = (data.type === "order" || Boolean(data.total) || Boolean(data.itemsSummary));
+  var sheetName = isOrder ? "ĐƠN HÀNG GO COFFEE" : "ĐẶT BÀN GO COFFEE";
+  var sheet = ss.getSheetByName(sheetName);
 
-  sheet.appendRow([
-    code,
-    recordType,
-    timeNow,
-    data.customerName || data.name || "Khách",
-    data.customerPhone || data.phone || "",
-    data.customerEmail || data.email || "",
-    isOrder ? (data.itemsSummary || (data.total + " đ")) : (data.guestCount + " người"),
-    data.date || "Hôm nay",
-    data.timeSlot || "",
-    data.storeName || (data.store ? data.store.name : "Go Coffee - Quận 1"),
-    data.seatingArea || data.deliveryAddress || "Khu vực chuẩn",
-    data.note || "",
-    "Mới tiếp nhận"
-  ]);
+  if (!sheet) {
+    sheet = ss.insertSheet(sheetName);
+    if (isOrder) {
+      sheet.appendRow([
+        "Thời Gian Đặt", "Mã Đơn", "Khách Hàng", "Số Điện Thoại",
+        "Hình Thức & Địa Chỉ", "Giờ Nhận", "Món Đặt", "Tổng Tiền",
+        "Thanh Toán", "Ghi Chú", "Trạng Thái"
+      ]);
+      sheet.getRange(1, 1, 1, 11).setFontWeight("bold").setBackground("#801419").setFontColor("#FFFFFF");
+    } else {
+      sheet.appendRow([
+        "Thời Gian Đặt", "Mã Đặt Bàn", "Họ Tên Khách", "Số Điện Thoại",
+        "Email", "Số Khách", "Ngày Đến", "Khung Giờ",
+        "Chi Nhánh", "Khu Vực Bàn", "Ghi Chú", "Trạng Thái"
+      ]);
+      sheet.getRange(1, 1, 1, 12).setFontWeight("bold").setBackground("#801419").setFontColor("#FFFFFF");
+    }
+    sheet.setRowHeight(1, 35);
+    sheet.setFrozenRows(1);
+  }
+
+  var code = data.code || ((isOrder ? "GNC-" : "TB-") + Math.floor(1000 + Math.random() * 9000));
+  var name = data.customerName || data.name || "Khách Hàng";
+  var phone = "'" + (data.customerPhone || data.phone || "");
+  var note = data.note || data.customerNote || "Không có";
+
+  if (isOrder) {
+    var deliveryMethod = data.deliveryMethod || data.orderType || (data.deliveryAddress ? "Giao tận nơi" : "Tự lấy tại quầy");
+    var address = data.deliveryAddress ? (deliveryMethod + " - " + data.deliveryAddress) : (deliveryMethod + " - 120 Pasteur, Q.1");
+    var pickupTime = data.pickupTime || "Lấy ngay (~5 - 8 phút)";
+    var itemsSummary = data.itemsSummary || (data.items ? JSON.stringify(data.items) : "Đồ uống Go Coffee");
+    var totalAmount = data.total ? Number(data.total).toLocaleString("vi-VN") + " đ" : "0 đ";
+    var paymentMethod = (data.paymentMethod === "momo" ? "Ví MoMo" : data.paymentMethod === "cash" ? "Tiền mặt" : "VietQR");
+
+    sheet.appendRow([
+      timestamp, code, name, phone, address, pickupTime,
+      itemsSummary, totalAmount, paymentMethod, note, "Đã tiếp nhận"
+    ]);
+  } else {
+    var email = data.customerEmail || data.email || "";
+    var guests = data.guestCount || data.guests || 2;
+    var date = data.date || Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "yyyy-MM-dd");
+    var timeSlot = data.timeSlot || "09:00";
+    var storeName = data.storeName || "Go Coffee - 120 Pasteur, Quận 1";
+    var seatingArea = data.seatingArea || "Khu vực chuẩn";
+
+    sheet.appendRow([
+      timestamp, code, name, phone, email, guests,
+      date, timeSlot, storeName, seatingArea, note, "Đã tiếp nhận"
+    ]);
+  }
+
+  // Telegram alert
+  var chatId = data.telegramChatId || DEFAULT_TELEGRAM_CHAT_ID;
+  if (chatId && TELEGRAM_BOT_TOKEN) {
+    try {
+      var msg = isOrder
+        ? ("☕ <b>CÓ ĐƠN CÀ PHÊ MỚI - GO COFFEE 120 PASTEUR!</b>\\n"
+          + "📋 <b>Mã đơn:</b> <code>" + code + "</code>\\n"
+          + "👤 <b>Khách:</b> <b>" + name + "</b> (<code>" + (data.customerPhone || data.phone || "") + "</code>)\\n"
+          + "⏰ <b>Giờ nhận:</b> <b>" + (data.pickupTime || "Lấy ngay") + "</b>\\n"
+          + "🥤 <b>Món:</b> " + (data.itemsSummary || "Đồ uống") + "\\n"
+          + "💰 <b>Tổng tiền:</b> <b>" + (data.total ? Number(data.total).toLocaleString("vi-VN") + " đ" : "0 đ") + "</b>\\n"
+          + "📍 120 Pasteur, P. Bến Nghé, Quận 1")
+        : ("🔔 <b>CÓ KHÁCH ĐẶT BÀN - GO COFFEE!</b>\\n"
+          + "📋 <b>Mã đặt:</b> <code>" + code + "</code>\\n"
+          + "👤 <b>Khách:</b> <b>" + name + "</b> (" + (data.guestCount || 2) + " người)\\n"
+          + "📞 <code>" + (data.customerPhone || data.phone || "") + "</code>\\n"
+          + "📅 <b>Đến lúc:</b> " + (data.date || "") + " - " + (data.timeSlot || "") + "\\n"
+          + "📍 Go Coffee - 120 Pasteur, Quận 1");
+
+      UrlFetchApp.fetch("https://api.telegram.org/bot" + TELEGRAM_BOT_TOKEN + "/sendMessage", {
+        method: "post",
+        contentType: "application/json",
+        payload: JSON.stringify({ chat_id: chatId, text: msg, parse_mode: "HTML" }),
+        muteHttpExceptions: true
+      });
+    } catch (e) {}
+  }
 
   return ContentService.createTextOutput(JSON.stringify({
     ok: true,
     code: code,
-    message: "Ghi nhận thành công vào Google Sheet Go Coffee!",
-    row: sheet.getLastRow()
+    sheet: sheetName,
+    row: sheet.getLastRow(),
+    message: "Ghi nhận thành công vào Google Sheet Go Coffee!"
   })).setMimeType(ContentService.MimeType.JSON);
 }`;
 
