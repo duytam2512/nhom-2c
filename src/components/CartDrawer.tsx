@@ -291,10 +291,16 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     
                     {/* Attributes */}
                     <div className="text-[11px] text-stone-500 space-y-0.5 mt-0.5">
-                      <p>
-                        Size {item.size} • {item.temperature === 'cold' ? 'Đá mát' : 'Nóng'} • Ngọt {item.sugarLevel}
-                        {item.temperature === 'cold' ? ` • Đá ${item.iceLevel}` : ''}
-                      </p>
+                      {item.menuItemId === 'hl-banh-mi-khong' || item.menuItemId === 'hl-banh-mi-que' || item.menuItemId.includes('cheesecake') || item.menuItemId.includes('mousse') ? (
+                        <p className="text-amber-800 font-semibold flex items-center gap-1">
+                          {item.temperature === 'hot' ? '♨️ Nướng nóng giòn' : '🥖 Để nguyên bánh mộc'}
+                        </p>
+                      ) : (
+                        <p>
+                          Size {item.size} • {item.temperature === 'cold' ? 'Đá mát' : 'Nóng'} • Ngọt {item.sugarLevel}
+                          {item.temperature === 'cold' ? ` • Đá ${item.iceLevel}` : ''}
+                        </p>
+                      )}
                       {item.milkType !== 'standard' && (
                         <p className="text-amber-800 font-medium">
                           {item.milkType === 'oat' ? '+ Sữa yến mạch Oatly' : '+ Sữa hạnh nhân'}

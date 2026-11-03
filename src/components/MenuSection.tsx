@@ -87,7 +87,7 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
     },
     { 
       id: 'pastry' as CoffeeCategory, 
-      name: 'Bánh Mì Que & Ngọt', 
+      name: 'Bánh Mì & Bánh Ngọt', 
       icon: Croissant, 
       accentColor: 'text-[#ea580c]', 
       badgeColor: 'bg-orange-50 text-orange-900 border border-orange-200/50',
@@ -116,10 +116,11 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
 
   const filterTags = [
     { id: 'all', label: 'Tất cả khẩu vị' },
+    { id: 'saigon-xua', label: '🥖 Sài Gòn Xưa' },
     { id: 'best-seller', label: '🔥 Bán chạy' },
     { id: 'signature', label: '⭐ Signature' },
     { id: 'cold', label: '🧊 Đồ uống đá' },
-    { id: 'hot', label: '♨️ Đồ uống nóng' },
+    { id: 'hot', label: '♨️ Nóng / Nướng giòn' },
   ];
 
   const filteredItems = useMemo(() => {
@@ -129,6 +130,15 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
         return false;
       }
       // Tag filter
+      if (filterTag === 'saigon-xua') {
+        const isXua = item.tags.some(t => 
+          t.toLowerCase().includes('xưa') || 
+          t.toLowerCase().includes('ký ức') || 
+          t.toLowerCase().includes('tuổi thơ') || 
+          t.toLowerCase().includes('concept xưa cũ')
+        ) || item.name.toLowerCase().includes('bánh mì') || item.id === 'hl-combo-sang-phin-den';
+        if (!isXua) return false;
+      }
       if (filterTag === 'best-seller' && !item.isBestSeller) {
         return false;
       }
@@ -347,7 +357,10 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
               let activeStyle = 'bg-[#8f1920] text-white shadow-md font-bold';
               let badgeColor = 'bg-stone-100 text-stone-700 hover:bg-stone-200';
               
-              if (t.id === 'best-seller') {
+              if (t.id === 'saigon-xua') {
+                activeStyle = 'bg-gradient-to-r from-amber-700 via-amber-800 to-amber-950 text-white shadow-md ring-2 ring-amber-400 font-black';
+                badgeColor = 'bg-amber-100/80 text-amber-950 hover:bg-amber-200/80 border border-amber-300 font-bold';
+              } else if (t.id === 'best-seller') {
                 activeStyle = 'bg-gradient-to-r from-red-600 to-rose-700 text-white shadow-md ring-2 ring-amber-400/80 font-black';
                 badgeColor = 'bg-red-50 text-red-700 hover:bg-red-100 border border-red-200/60 font-semibold';
               } else if (t.id === 'signature') {

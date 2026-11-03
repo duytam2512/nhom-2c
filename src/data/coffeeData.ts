@@ -283,7 +283,34 @@ export const MENU_ITEMS: MenuItem[] = [
     tags: ['Thanh Đào', 'Ít Ngọt'],
   },
 
-  // 5. Bánh Mì & Bánh Ngọt
+  // 5. Bánh Mì & Bánh Ngọt (Concept Xưa Cũ & Truyền Thống)
+  {
+    id: 'hl-banh-mi-cham-cafe',
+    name: 'Bánh Mì Chấm Cà Phê Sữa Đá',
+    vietnameseName: 'Bánh Mì Nóng Giòn Chấm Cà Phê Phin Sữa Đá Sài Gòn Xưa',
+    category: 'pastry',
+    price: 39000,
+    originalPrice: 45000,
+    description: 'Nét ẩm thực hoài niệm của người Sài Gòn xưa: ổ bánh mì nóng giòn rụm bẻ đôi, chấm ngập vào ly cà phê phin sữa đá béo ngậy ngọt đượm hương Robusta Cầu Đất nguyên chất.',
+    image: '/images/banh_mi_cham_cafe_sua_da.jpg',
+    isSignature: true,
+    isBestSeller: true,
+    calories: 320,
+    temperature: 'both',
+    tags: ['Concept Xưa Cũ', 'Món Ký Ức Tuổi Thơ', 'Signature Go Coffee', 'Sài Gòn Xưa'],
+  },
+  {
+    id: 'hl-banh-mi-khong',
+    name: 'Bánh Mì Không Nóng Giòn',
+    vietnameseName: 'Bánh Mì Không Truyền Thống Sài Gòn Xưa',
+    category: 'pastry',
+    price: 8000,
+    description: 'Ổ bánh mì Sài Gòn truyền thống nướng nóng giòn rụm vỏ ngoài, ruột xốp mềm thơm mùi bột mì mới ra lò. Thích hợp ăn kèm cà phê sữa hoặc ăn lót dạ buổi sáng.',
+    image: '/images/banh_mi_khong_xua.jpg',
+    calories: 140,
+    temperature: 'hot',
+    tags: ['Nóng Giòn', 'Sài Gòn Xưa', 'Bình Dân'],
+  },
   {
     id: 'hl-banh-mi-que',
     name: 'Bánh Mì Que Pate Cay Hải Phòng',
@@ -324,10 +351,25 @@ export const MENU_ITEMS: MenuItem[] = [
     tags: ['Mousse', 'Cacao'],
   },
 
-  // 6. Combo Ưu Đãi Highlands Tiết Kiệm
+  // 6. Combo Ưu Đãi Tiết Kiệm (Bữa Sáng & Trà Chiều)
+  {
+    id: 'hl-combo-sang-phin-den',
+    name: 'Combo Sáng Sài Gòn Xưa (Phin Đen Đá + 1 Bánh Mì Không)',
+    vietnameseName: '01 Cà Phê Phin Đen Đá + 01 Bánh Mì Không Nóng Giòn',
+    category: 'combo',
+    price: 38000,
+    originalPrice: 43000,
+    description: 'Bữa sáng đậm chất bình dị, phong thái ung dung góc phố Sài Gòn xưa: 01 ly Cà phê Phin Đen Đá đậm đà tỉnh táo và 01 ổ Bánh Mì Không nướng nóng giòn rụm.',
+    image: '/images/combo_phin_den_banh_mi.jpg',
+    isSignature: true,
+    isBestSeller: true,
+    calories: 160,
+    temperature: 'both',
+    tags: ['Combo Sáng', 'Sài Gòn Xưa', 'Tiết Kiệm 5K', 'Thức Quà Ký Ức'],
+  },
   {
     id: 'hl-combo-sang',
-    name: 'Combo Sáng Năng Lượng (Phin + Bánh Mì)',
+    name: 'Combo Sáng Năng Lượng (Phin + Bánh Mì Que)',
     vietnameseName: '1 Phin Sữa Đá + 1 Bánh Mì Que Pate Cay',
     category: 'combo',
     price: 55000,

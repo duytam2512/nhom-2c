@@ -40,10 +40,12 @@ export const ProductModal: React.FC<ProductModalProps> = ({
 
   if (!isOpen || !item) return null;
 
+  const isPureFood = item.category === 'pastry' && item.id !== 'hl-banh-mi-cham-cafe';
+
   // Calculate pricing
-  const sizePriceAddon = size === 'S' ? 0 : size === 'M' ? 6000 : 12000;
-  const milkPriceAddon = milkType === 'oat' ? 10000 : milkType === 'almond' ? 12000 : 0;
-  const toppingsPrice = selectedToppings.reduce((sum, top) => sum + top.price, 0);
+  const sizePriceAddon = isPureFood ? 0 : size === 'S' ? 0 : size === 'M' ? 6000 : 12000;
+  const milkPriceAddon = (!isPureFood && milkType === 'oat') ? 10000 : (!isPureFood && milkType === 'almond') ? 12000 : 0;
+  const toppingsPrice = isPureFood ? 0 : selectedToppings.reduce((sum, top) => sum + top.price, 0);
   const unitPrice = item.price + sizePriceAddon + milkPriceAddon + toppingsPrice;
   const totalPrice = unitPrice * quantity;
 
@@ -157,199 +159,246 @@ export const ProductModal: React.FC<ProductModalProps> = ({
               {item.description}
             </p>
 
-          {/* Size Choice */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-wider text-stone-800 flex items-center justify-between">
-              <span>1. Chọn kích cỡ ly</span>
-              <span className="text-[11px] text-amber-700 font-normal">Bắt buộc</span>
-            </label>
-            <div className="grid grid-cols-3 gap-2.5">
-              {[
-                { key: 'S', label: 'Size Nhỏ (S)', vol: '250ml', extra: 0 },
-                { key: 'M', label: 'Size Vừa (M)', vol: '350ml', extra: 6000 },
-                { key: 'L', label: 'Size Lớn (L)', vol: '500ml', extra: 12000 },
-              ].map((s) => (
-                <button
-                  key={s.key}
-                  type="button"
-                  onClick={() => setSize(s.key as 'S' | 'M' | 'L')}
-                  className={`p-3 rounded-xl border text-center transition flex flex-col items-center justify-center ${
-                    size === s.key
-                      ? 'border-amber-700 bg-amber-50/70 text-amber-950 ring-1 ring-amber-700 font-semibold'
-                      : 'border-stone-200 bg-white hover:bg-stone-50 text-stone-700'
-                  }`}
-                >
-                  <span className="text-xs font-bold">{s.label}</span>
-                  <span className="text-[10px] text-stone-500">{s.vol}</span>
-                  <span className="text-[11px] font-semibold text-amber-800 mt-1">
-                    {s.extra === 0 ? 'Tiêu chuẩn' : `+${s.extra.toLocaleString('vi-VN')}đ`}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Temperature Choice (if item allows both) */}
-          {item.temperature === 'both' && (
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-stone-800">
-                2. Nhiệt độ thưởng thức
-              </label>
-              <div className="grid grid-cols-2 gap-2.5">
-                <button
-                  type="button"
-                  onClick={() => setTemperature('cold')}
-                  className={`p-2.5 rounded-xl border text-center text-xs font-semibold flex items-center justify-center gap-2 transition ${
-                    temperature === 'cold'
-                      ? 'border-sky-600 bg-sky-50 text-sky-950 ring-1 ring-sky-600'
-                      : 'border-stone-200 hover:bg-stone-50 text-stone-700'
-                  }`}
-                >
-                  🧊 Uống Đá Mát Lạnh
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTemperature('hot')}
-                  className={`p-2.5 rounded-xl border text-center text-xs font-semibold flex items-center justify-center gap-2 transition ${
-                    temperature === 'hot'
-                      ? 'border-orange-600 bg-orange-50 text-orange-950 ring-1 ring-orange-600'
-                      : 'border-stone-200 hover:bg-stone-50 text-stone-700'
-                  }`}
-                >
-                  ♨️ Uống Nóng Ấm
-                </button>
+          {isPureFood ? (
+            /* Pure Pastry Options (Bánh mì không, Bánh mì que, Bánh phô mai) */
+            <div className="space-y-4">
+              <div className="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200 text-xs text-stone-700 space-y-1.5">
+                <div className="font-bold text-amber-950 flex items-center gap-1.5 text-sm">
+                  <span>🥖 Bánh Mì Truyền Thống Nóng Giòn</span>
+                </div>
+                <p className="text-stone-600 leading-relaxed">
+                  Bánh mì luôn được nướng nóng giòn tan trước khi giao/trao tay để đảm bảo hương vị thơm ngon và chuẩn vị Sài Gòn xưa.
+                </p>
               </div>
-            </div>
-          )}
 
-          {/* Sugar & Ice options */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Sugar level */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-stone-800">
-                Lượng ngọt (Đường/Sữa)
-              </label>
-              <div className="grid grid-cols-2 gap-1.5">
-                {(['100%', '50%', '30%', '0%'] as const).map((lvl) => (
-                  <button
-                    key={lvl}
-                    type="button"
-                    onClick={() => setSugarLevel(lvl)}
-                    className={`py-2 px-1 text-xs rounded-lg border transition text-center ${
-                      sugarLevel === lvl
-                        ? 'border-amber-800 bg-amber-100/70 font-bold text-amber-950'
-                        : 'border-stone-200 bg-white text-stone-600 hover:bg-stone-50'
-                    }`}
-                  >
-                    {lvl === '100%'
-                      ? '100% Chuẩn'
-                      : lvl === '50%'
-                      ? '50% Ít ngọt'
-                      : lvl === '30%'
-                      ? '30% Rất ít'
-                      : '0% Không'}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Ice level (only for cold) */}
-            {temperature === 'cold' && (
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-wider text-stone-800">
-                  Lượng đá
+                  Tùy chọn nướng nóng
                 </label>
-                <div className="grid grid-cols-3 gap-1.5">
-                  {(['100%', '50%', '0%'] as const).map((lvl) => (
+                <div className="grid grid-cols-2 gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => setTemperature('hot')}
+                    className={`p-3 rounded-xl border text-center text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer ${
+                      temperature === 'hot'
+                        ? 'border-amber-800 bg-amber-100/70 text-amber-950 ring-1 ring-amber-800 font-bold'
+                        : 'border-stone-200 hover:bg-stone-50 text-stone-700'
+                    }`}
+                  >
+                    ♨️ Nướng nóng giòn (Khuyên dùng)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTemperature('cold')}
+                    className={`p-3 rounded-xl border text-center text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer ${
+                      temperature === 'cold'
+                        ? 'border-stone-700 bg-stone-100 text-stone-900 ring-1 ring-stone-700 font-bold'
+                        : 'border-stone-200 hover:bg-stone-50 text-stone-700'
+                    }`}
+                  >
+                    🥖 Để nguyên bánh mộc
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* Drink & Combo Options */
+            <>
+              {/* Size Choice */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-stone-800 flex items-center justify-between">
+                  <span>1. Chọn kích cỡ ly</span>
+                  <span className="text-[11px] text-amber-700 font-normal">Bắt buộc</span>
+                </label>
+                <div className="grid grid-cols-3 gap-2.5">
+                  {[
+                    { key: 'S', label: 'Size Nhỏ (S)', vol: '250ml', extra: 0 },
+                    { key: 'M', label: 'Size Vừa (M)', vol: '350ml', extra: 6000 },
+                    { key: 'L', label: 'Size Lớn (L)', vol: '500ml', extra: 12000 },
+                  ].map((s) => (
                     <button
-                      key={lvl}
+                      key={s.key}
                       type="button"
-                      onClick={() => setIceLevel(lvl)}
-                      className={`py-2 px-1 text-xs rounded-lg border transition text-center ${
-                        iceLevel === lvl
-                          ? 'border-cyan-700 bg-cyan-50 font-bold text-cyan-950'
-                          : 'border-stone-200 bg-white text-stone-600 hover:bg-stone-50'
+                      onClick={() => setSize(s.key as 'S' | 'M' | 'L')}
+                      className={`p-3 rounded-xl border text-center transition flex flex-col items-center justify-center cursor-pointer ${
+                        size === s.key
+                          ? 'border-amber-700 bg-amber-50/70 text-amber-950 ring-1 ring-amber-700 font-semibold'
+                          : 'border-stone-200 bg-white hover:bg-stone-50 text-stone-700'
                       }`}
                     >
-                      {lvl === '100%' ? 'Chuẩn' : lvl === '50%' ? '50% Đá' : 'Không đá'}
+                      <span className="text-xs font-bold">{s.label}</span>
+                      <span className="text-[10px] text-stone-500">{s.vol}</span>
+                      <span className="text-[11px] font-semibold text-amber-800 mt-1">
+                        {s.extra === 0 ? 'Tiêu chuẩn' : `+${s.extra.toLocaleString('vi-VN')}đ`}
+                      </span>
                     </button>
                   ))}
                 </div>
               </div>
-            )}
-          </div>
 
-          {/* Milk type upgrade if coffee (phin/phindi) */}
-          {['phin', 'phindi', 'espresso', 'traditional'].includes(item.category) && (
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-stone-800">
-                Tùy chọn loại sữa
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { key: 'standard', name: 'Sữa đặc / tươi chuẩn', extra: 0 },
-                  { key: 'oat', name: 'Sữa yến mạch Oatly', extra: 10000 },
-                  { key: 'almond', name: 'Sữa hạnh nhân Mỹ', extra: 12000 },
-                ].map((m) => (
-                  <button
-                    key={m.key}
-                    type="button"
-                    onClick={() => setMilkType(m.key as any)}
-                    className={`p-2 rounded-xl border text-left transition flex flex-col ${
-                      milkType === m.key
-                        ? 'border-amber-800 bg-amber-50 text-amber-950 font-semibold ring-1 ring-amber-800'
-                        : 'border-stone-200 text-stone-700 hover:bg-stone-50'
-                    }`}
-                  >
-                    <span className="text-[11px] font-bold">{m.name}</span>
-                    <span className="text-[10px] text-amber-800">
-                      {m.extra === 0 ? 'Mặc định' : `+${m.extra.toLocaleString('vi-VN')}đ`}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+              {/* Temperature Choice (if item allows both) */}
+              {item.temperature === 'both' && (
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-stone-800">
+                    2. Nhiệt độ thưởng thức
+                  </label>
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <button
+                      type="button"
+                      onClick={() => setTemperature('cold')}
+                      className={`p-2.5 rounded-xl border text-center text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer ${
+                        temperature === 'cold'
+                          ? 'border-sky-600 bg-sky-50 text-sky-950 ring-1 ring-sky-600'
+                          : 'border-stone-200 hover:bg-stone-50 text-stone-700'
+                      }`}
+                    >
+                      🧊 Uống Đá Mát Lạnh
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTemperature('hot')}
+                      className={`p-2.5 rounded-xl border text-center text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer ${
+                        temperature === 'hot'
+                          ? 'border-orange-600 bg-orange-50 text-orange-950 ring-1 ring-orange-600'
+                          : 'border-stone-200 hover:bg-stone-50 text-stone-700'
+                      }`}
+                    >
+                      ♨️ Uống Nóng Ấm
+                    </button>
+                  </div>
+                </div>
+              )}
 
-          {/* Toppings Checklist */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-wider text-stone-800 flex items-center justify-between">
-              <span>Topping thêm (Tùy chọn)</span>
-              <span className="text-[11px] text-stone-500">Chọn tối đa 4 loại</span>
-            </label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {AVAILABLE_TOPPINGS.map((top) => {
-                const isSelected = selectedToppings.some((t) => t.id === top.id);
-                return (
-                  <div
-                    key={top.id}
-                    onClick={() => toggleTopping(top)}
-                    className={`p-2.5 rounded-xl border cursor-pointer flex items-center justify-between transition ${
-                      isSelected
-                        ? 'border-amber-700 bg-amber-50/70 text-amber-950 font-medium'
-                        : 'border-stone-200 hover:bg-stone-50 text-stone-700'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <div
-                        className={`w-4 h-4 rounded border flex items-center justify-center transition ${
-                          isSelected
-                            ? 'bg-amber-800 border-amber-800 text-white'
-                            : 'border-stone-300'
+              {/* Sugar & Ice options */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Sugar level */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-stone-800">
+                    Lượng ngọt (Đường/Sữa)
+                  </label>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {(['100%', '50%', '30%', '0%'] as const).map((lvl) => (
+                      <button
+                        key={lvl}
+                        type="button"
+                        onClick={() => setSugarLevel(lvl)}
+                        className={`py-2 px-1 text-xs rounded-lg border transition text-center cursor-pointer ${
+                          sugarLevel === lvl
+                            ? 'border-amber-800 bg-amber-100/70 font-bold text-amber-950'
+                            : 'border-stone-200 bg-white text-stone-600 hover:bg-stone-50'
                         }`}
                       >
-                        {isSelected && <Check className="w-3 h-3" />}
-                      </div>
-                      <span className="text-xs">{top.name}</span>
-                    </div>
-                    <span className="text-xs font-semibold text-amber-800">
-                      +{top.price.toLocaleString('vi-VN')}đ
-                    </span>
+                        {lvl === '100%'
+                          ? '100% Chuẩn'
+                          : lvl === '50%'
+                          ? '50% Ít ngọt'
+                          : lvl === '30%'
+                          ? '30% Rất ít'
+                          : '0% Không'}
+                      </button>
+                    ))}
                   </div>
-                );
-              })}
-            </div>
-          </div>
+                </div>
+
+                {/* Ice level (only for cold) */}
+                {temperature === 'cold' && (
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-wider text-stone-800">
+                      Lượng đá
+                    </label>
+                    <div className="grid grid-cols-3 gap-1.5">
+                      {(['100%', '50%', '0%'] as const).map((lvl) => (
+                        <button
+                          key={lvl}
+                          type="button"
+                          onClick={() => setIceLevel(lvl)}
+                          className={`py-2 px-1 text-xs rounded-lg border transition text-center cursor-pointer ${
+                            iceLevel === lvl
+                              ? 'border-cyan-700 bg-cyan-50 font-bold text-cyan-950'
+                              : 'border-stone-200 bg-white text-stone-600 hover:bg-stone-50'
+                          }`}
+                        >
+                          {lvl === '100%' ? 'Chuẩn' : lvl === '50%' ? '50% Đá' : 'Không đá'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Milk type upgrade if coffee (phin/phindi/traditional/banh mi cham) */}
+              {(['phin', 'phindi', 'espresso', 'traditional'].includes(item.category) || item.id === 'hl-banh-mi-cham-cafe') && (
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-stone-800">
+                    Tùy chọn loại sữa
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { key: 'standard', name: 'Sữa đặc / tươi chuẩn', extra: 0 },
+                      { key: 'oat', name: 'Sữa yến mạch Oatly', extra: 10000 },
+                      { key: 'almond', name: 'Sữa hạnh nhân Mỹ', extra: 12000 },
+                    ].map((m) => (
+                      <button
+                        key={m.key}
+                        type="button"
+                        onClick={() => setMilkType(m.key as any)}
+                        className={`p-2 rounded-xl border text-left transition flex flex-col cursor-pointer ${
+                          milkType === m.key
+                            ? 'border-amber-800 bg-amber-50 text-amber-950 font-semibold ring-1 ring-amber-800'
+                            : 'border-stone-200 text-stone-700 hover:bg-stone-50'
+                        }`}
+                      >
+                        <span className="text-[11px] font-bold">{m.name}</span>
+                        <span className="text-[10px] text-amber-800">
+                          {m.extra === 0 ? 'Mặc định' : `+${m.extra.toLocaleString('vi-VN')}đ`}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Toppings Checklist */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-stone-800 flex items-center justify-between">
+                  <span>Topping thêm (Tùy chọn)</span>
+                  <span className="text-[11px] text-stone-500">Chọn tối đa 4 loại</span>
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {AVAILABLE_TOPPINGS.map((top) => {
+                    const isSelected = selectedToppings.some((t) => t.id === top.id);
+                    return (
+                      <div
+                        key={top.id}
+                        onClick={() => toggleTopping(top)}
+                        className={`p-2.5 rounded-xl border cursor-pointer flex items-center justify-between transition ${
+                          isSelected
+                            ? 'border-amber-700 bg-amber-50/70 text-amber-950 font-medium'
+                            : 'border-stone-200 hover:bg-stone-50 text-stone-700'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={`w-4 h-4 rounded border flex items-center justify-center transition ${
+                              isSelected
+                                ? 'bg-amber-800 border-amber-800 text-white'
+                                : 'border-stone-300'
+                            }`}
+                          >
+                            {isSelected && <Check className="w-3 h-3" />}
+                          </div>
+                          <span className="text-xs">{top.name}</span>
+                        </div>
+                        <span className="text-xs font-semibold text-amber-800">
+                          +{top.price.toLocaleString('vi-VN')}đ
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          )}
 
           {/* Notes for Barista */}
           <div className="space-y-1.5">
