@@ -2,8 +2,9 @@
 
 @theme {
   --font-sans: 'Be Vietnam Pro', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-display: 'Be Vietnam Pro', 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-serif: 'Playfair Display', 'Be Vietnam Pro', Georgia, Cambria, serif;
+  --font-display: 'Playfair Display', 'Be Vietnam Pro', Georgia, serif;
+  --font-serif: 'Playfair Display', Georgia, Cambria, serif;
+  --font-mono: 'Courier Prime', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 :root {
@@ -12,10 +13,13 @@
 
 body {
   font-family: var(--font-sans);
-  background-color: #faf7f2;
+  background-color: #f7f2e7;
+  color: #2b1d14;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-image: radial-gradient(#d6c7b2 0.75px, transparent 0.75px);
+  background-size: 24px 24px;
 }
 
 .font-display {
@@ -26,31 +30,54 @@ body {
   font-family: var(--font-serif);
 }
 
-/* Custom scrollbar */
+.font-docket {
+  font-family: var(--font-mono);
+}
+
+/* Vintage Paper & Retro Borders */
+.vintage-frame {
+  border: 1px solid rgba(139, 69, 19, 0.25);
+  box-shadow: 0 4px 20px -2px rgba(43, 29, 20, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+
+.vintage-stamp {
+  border: 2px dashed rgba(140, 27, 31, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.vintage-ticket {
+  position: relative;
+  background-image: radial-gradient(circle at 0 50%, transparent 8px, #ffffff 8.5px),
+                    radial-gradient(circle at 100% 50%, transparent 8px, #ffffff 8.5px);
+}
+
+/* Custom scrollbar in antique brass */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1ebd8;
+  background: #ede3cc;
 }
 ::-webkit-scrollbar-thumb {
-  background: #c29b7f;
-  border-radius: 9999px;
+  background: #9c6f44;
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #996846;
+  background: #7a4f27;
 }
 
 @keyframes pulseGlow {
   0%, 100% {
-    box-shadow: 0 0 15px rgba(217, 119, 6, 0.4);
+    box-shadow: 0 0 15px rgba(201, 134, 28, 0.35);
   }
   50% {
-    box-shadow: 0 0 25px rgba(217, 119, 6, 0.7);
+    box-shadow: 0 0 25px rgba(201, 134, 28, 0.65);
   }
 }
 
 .glow-amber {
   animation: pulseGlow 2s infinite ease-in-out;
 }
+

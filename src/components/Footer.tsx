@@ -21,7 +21,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare, onResetHome, onO
   };
 
   return (
-    <footer className="bg-stone-950 text-stone-300 pt-16 pb-12 border-t border-stone-800">
+    <footer className="bg-[#140c07] text-stone-300 pt-16 pb-12 border-t-2 border-[#801419]/40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           
@@ -37,33 +37,35 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare, onResetHome, onO
                 <Logo size="md" className="[&_span]:text-white" />
               </a>
             </div>
-            <p className="text-xs sm:text-sm text-stone-400 max-w-sm leading-relaxed">
-              Quầy cà phê chuyên Takeaway chất lượng cao tại trung tâm Quận 1, TP.HCM từ hạt Cầu Đất nguyên chất. Đặt món trước qua website, tới quầy nhận đồ sau 5 phút không cần xếp hàng, thanh toán tự động qua VietQR & MoMo.
+            <p className="text-xs sm:text-sm text-stone-400 max-w-sm leading-relaxed font-sans">
+              Gìn giữ phong vị cà phê phin mộc Sài Gòn xưa tại góc đường 120 Pasteur, Quận 1 (đối diện Saigon Centre). Thưởng thức bánh mì giòn rụm chấm cà phê phin sánh đậm, đặt món trước nhận ngay sau 5 phút, quét mã VietQR tự động tiện lợi.
             </p>
-            
+            <div className="pt-1 flex items-center gap-2 text-xs text-amber-200/90 font-serif">
+              <span>❖ Hương vị mộc mạc lưu truyền từ 1986 ❖</span>
+            </div>
           </div>
 
           {/* Quick Menu Col */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Menu Đặc Sắc</h4>
-            <ul className="space-y-2 text-xs text-stone-400">
-              <li><a href="#menu" className="hover:text-amber-400 transition">Phin Sữa Đá Go Coffee</a></li>
-              <li><a href="#menu" className="hover:text-amber-400 transition">Cà Phê Muối Cố Đô</a></li>
-              <li><a href="#menu" className="hover:text-amber-400 transition">PhinDi Hạnh Nhân Bùi Béo</a></li>
-              <li><a href="#menu" className="hover:text-amber-400 transition">Freeze Trà Xanh Thạch Giòn</a></li>
-              <li><a href="#menu" className="hover:text-amber-400 transition">Trà Sen Vàng Hạt Sen Huế</a></li>
-              <li><a href="#menu" className="hover:text-amber-400 transition">Bánh Mì Que Pate Cay Hải Phòng</a></li>
+          <div className="space-y-3 font-serif">
+            <h4 className="text-xs font-bold uppercase tracking-widest text-amber-200">Món Xưa Đặc Sắc</h4>
+            <ul className="space-y-2 text-xs text-stone-400 font-sans">
+              <li><a href="#menu" className="hover:text-amber-300 transition">Bánh Mì Chấm Cà Phê Sữa Đá</a></li>
+              <li><a href="#menu" className="hover:text-amber-300 transition">Combo Phin Đen Đá & Bánh Mì</a></li>
+              <li><a href="#menu" className="hover:text-amber-300 transition">Phin Sữa Đá Cầu Đất Đậm Vị</a></li>
+              <li><a href="#menu" className="hover:text-amber-300 transition">Cà Phê Muối Cố Đô Xưa</a></li>
+              <li><a href="#menu" className="hover:text-amber-300 transition">Trà Sen Vàng Hạt Sen Huế</a></li>
+              <li><a href="#menu" className="hover:text-amber-300 transition">Bánh Mì Không Nóng Giòn</a></li>
             </ul>
           </div>
 
           {/* Store Address Col */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Địa Chỉ Quán (Quận 1)</h4>
-            <div className="space-y-2 text-xs text-stone-400">
-              <p className="font-bold text-stone-200">Go Coffee - Quận 1</p>
+          <div className="space-y-3 font-serif">
+            <h4 className="text-xs font-bold uppercase tracking-widest text-amber-200">Góc Quán Sài Gòn</h4>
+            <div className="space-y-2 text-xs text-stone-400 font-sans">
+              <p className="font-bold text-amber-100 font-serif">Go Coffee - 120 Pasteur</p>
               <p>120 Pasteur, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh</p>
-              <p className="text-[11px] text-stone-500">(Góc Pasteur & Lê Lợi, đối diện Saigon Centre - Takashimaya)</p>
-              <div className="pt-1 text-emerald-400 font-semibold flex items-center gap-1.5">
+              <p className="text-[11px] text-stone-500 font-serif italic">(Góc Pasteur & Lê Lợi, đối diện Saigon Centre - Takashimaya)</p>
+              <div className="pt-1 text-emerald-400 font-semibold flex items-center gap-1.5 font-serif">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 <span>Mở cửa: 06:30 - 23:00 hàng ngày</span>
               </div>
@@ -71,24 +73,23 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare, onResetHome, onO
           </div>
 
           {/* Contact & Legal Col */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white">Hỗ Trợ & Liên Hệ</h4>
-            <ul className="space-y-2 text-xs text-stone-400">
+          <div className="space-y-3 font-serif">
+            <h4 className="text-xs font-bold uppercase tracking-widest text-amber-200">Liên Hệ & Đặt Trước</h4>
+            <ul className="space-y-2 text-xs text-stone-400 font-sans">
               <li className="flex items-center gap-2">
-                <Phone className="w-3.5 h-3.5 text-amber-500" />
-                <a href="tel:0909123456" className="hover:underline">0909 123 456</a>
+                <Phone className="w-3.5 h-3.5 text-amber-400" />
+                <a href="tel:0909123456" className="hover:underline font-mono text-amber-100">0909 123 456</a>
               </li>
               <li className="flex items-center gap-2">
-                <Mail className="w-3.5 h-3.5 text-amber-500" />
+                <Mail className="w-3.5 h-3.5 text-amber-400" />
                 <span>contact@gocoffee.vn</span>
               </li>
               <li className="pt-2">
-                <span className="text-[10px] text-stone-500 block uppercase">Phương thức thanh toán</span>
-                <div className="flex items-center gap-2 pt-1 flex-wrap text-[11px] font-mono text-stone-300">
-                  <span className="px-2 py-0.5 rounded bg-stone-900 border border-stone-800">VietQR</span>
-                  <span className="px-2 py-0.5 rounded bg-stone-900 border border-stone-800">MoMo</span>
-                  <span className="px-2 py-0.5 rounded bg-stone-900 border border-stone-800">Apple Pay</span>
-                  <span className="px-2 py-0.5 rounded bg-stone-900 border border-stone-800">Tiền mặt</span>
+                <span className="text-[10px] text-amber-200/80 block uppercase font-serif tracking-wider">Thanh toán không tiền mặt</span>
+                <div className="flex items-center gap-2 pt-1 flex-wrap text-[11px] font-mono text-amber-100">
+                  <span className="px-2 py-0.5 rounded-xs bg-[#23150d] border border-amber-900/60">VietQR</span>
+                  <span className="px-2 py-0.5 rounded-xs bg-[#23150d] border border-amber-900/60">MoMo</span>
+                  <span className="px-2 py-0.5 rounded-xs bg-[#23150d] border border-amber-900/60">Tiền mặt</span>
                 </div>
               </li>
             </ul>
@@ -97,20 +98,20 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare, onResetHome, onO
         </div>
 
         {/* Bottom bar with clean customer copyright and discreet owner portal link */}
-        <div className="pt-8 border-t border-stone-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
+        <div className="pt-8 border-t border-stone-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500 font-serif">
           <p>
-            © 2026 <strong>Go Coffee</strong>. Tự hào cà phê Việt - Đậm đà bản sắc.
+            © 2026 <strong>Go Coffee</strong>. Tự hào cà phê phin mộc Sài Gòn xưa.
           </p>
           <div className="flex items-center gap-3 text-[11px]">
             <span className="flex items-center gap-1 text-stone-400">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> Thanh toán an toàn VietQR & MoMo
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Thanh toán tự động VietQR NAPAS 24/7
             </span>
             {onOpenAdmin && (
               <>
                 <span className="text-stone-700">•</span>
                 <button
                   onClick={onOpenAdmin}
-                  className="text-stone-600 hover:text-amber-400 transition cursor-pointer text-[11px] flex items-center gap-1"
+                  className="text-stone-600 hover:text-amber-400 transition cursor-pointer text-[11px] flex items-center gap-1 font-sans"
                   title="Dành riêng cho chủ quán Go Coffee (Quản lý Sheet, Bot & Đơn hàng)"
                 >
                   <span>🔒 Chủ Quán</span>
@@ -123,3 +124,4 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare, onResetHome, onO
     </footer>
   );
 };
+

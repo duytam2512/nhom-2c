@@ -28,52 +28,52 @@ interface HeroProps {
 }
 
 const SLIDE_ITEM_MAP: Record<string, string> = {
+  'banh-mi-cham': 'hl-banh-mi-cham-cafe',
+  combo: 'hl-combo-sang-saigon',
   phin: 'hl-phin-sua-da',
-  freeze: 'hl-freeze-tra-xanh',
   'tra-sen': 'hl-tra-sen-vang',
-  'banh-mi': 'hl-banh-mi-que',
 };
 
 const HERO_FEATURED_SLIDES = [
   {
-    id: 'phin',
-    tag: 'TỰ HÀO CÀ PHÊ VIỆT',
-    title: 'Phin Sữa Đá Đậm Vị',
-    subtitle: 'Hạt Robusta & Arabica rang xay theo bí quyết Go Coffee, chiết xuất từng giọt phin chậm rãi kết hợp sữa đặc béo ngậy.',
+    id: 'banh-mi-cham',
+    tag: 'MÓN XƯA TRUYỀN THỐNG SÀI GÒN',
+    title: 'Bánh Mì Chấm Cà Phê Sữa Đá',
+    subtitle: 'Ký ức Sài Gòn xưa mộc mạc: Ổ bánh mì nóng giòn rụm xé chấm ngập trong ly phin sữa đá béo ngọt đậm đà khó quên.',
     price: '39.000đ',
-    badge: 'Best Seller #1',
-    image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1000&q=85',
-    color: 'from-[#8c141c] to-[#b22830]',
+    badge: 'Món Xưa Độc Đáo',
+    image: '/images/banh_mi_cham_cafe_sua_da.jpg',
+    color: 'from-[#801419] to-[#4a080c]',
   },
   {
-    id: 'freeze',
-    tag: 'ĐÁ XAY SẢNG KHOÁI',
-    title: 'Freeze Trà Xanh Thạch Giòn',
-    subtitle: 'Matcha Nhật Bản xay tuyết mát lạnh cùng sữa tươi, lót lớp thạch trà xanh giòn dai sần sật và phủ bông kem whipped cream béo ngậy.',
-    price: '55.000đ',
-    badge: 'Biểu Tượng Go Coffee',
-    image: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&w=1000&q=85',
-    color: 'from-[#065f46] to-[#047857]',
+    id: 'combo',
+    tag: 'BỮA SÁNG SÀI GÒN XƯA',
+    title: 'Combo Phin Đen Đá & Bánh Mì',
+    subtitle: 'Một ly phin đen đá đậm đà rang mộc thơm lừng kèm một ổ bánh mì không nóng giòn - khởi đầu ngày mới chuẩn phong vị phố thị xưa.',
+    price: '38.000đ',
+    badge: 'Combo Buổi Sáng',
+    image: '/images/combo_phin_den_banh_mi.jpg',
+    color: 'from-[#3b1e10] to-[#1c0d06]',
+  },
+  {
+    id: 'phin',
+    tag: 'TỰ HÀO CÀ PHÊ PHIN VIỆT',
+    title: 'Phin Sữa Đá Cầu Đất Đậm Vị',
+    subtitle: 'Robusta & Arabica rang mộc theo bí quyết thủ công gia truyền, chiết xuất từng giọt phin chậm rãi kết hợp sữa đặc ngọt béo.',
+    price: '39.000đ',
+    badge: 'Gia Truyền #1',
+    image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1000&q=85',
+    color: 'from-[#801419] to-[#9b1c24]',
   },
   {
     id: 'tra-sen',
-    tag: 'TINH HOA TRÀ VIỆT',
+    tag: 'TINH HOA TRÀ CỐ ĐÔ',
     title: 'Trà Sen Vàng Hạt Sen Huế',
-    subtitle: 'Trà Oolong thượng hạng ngát hương sen, hạt sen tươi hầm mềm bùi dẻo, củ năng giòn rụm và lớp kem phô mai Macchiato béo mịn.',
+    subtitle: 'Trà Oolong thượng hạng ngát hương sen hồ Tịnh Tâm, hạt sen tươi hầm mềm bùi dẻo, củ năng giòn rụm và lớp kem phô mai béo ngậy.',
     price: '52.000đ',
-    badge: 'Món Yêu Thích',
+    badge: 'Thanh Mát Thư Thái',
     image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=1000&q=85',
-    color: 'from-[#b45309] to-[#d97706]',
-  },
-  {
-    id: 'banh-mi',
-    tag: 'BỮA PHỤ GIÒN RỤM',
-    title: 'Bánh Mì Que Pate Cay Hải Phòng',
-    subtitle: 'Bánh mì nướng nóng hổi giòn tan, pate gan béo đậm đà kết hợp chí chương ớt cay nồng đúng điệu ăn kèm cà phê phin.',
-    price: '25.000đ',
-    badge: 'Combo Tiết Kiệm',
-    image: 'https://images.unsplash.com/photo-1509722747041-616f39b57569?auto=format&fit=crop&w=1000&q=85',
-    color: 'from-[#7c2d12] to-[#c2410c]',
+    color: 'from-[#b45309] to-[#78350f]',
   },
 ];
 
@@ -106,51 +106,51 @@ export const Hero: React.FC<HeroProps> = ({
   };
 
   return (
-    <section className="relative overflow-hidden pt-4 pb-14 lg:py-16 bg-[#faf7f2] border-b border-amber-950/10">
-      {/* Decorative background Highlands glow */}
-      <div className="absolute top-0 right-1/4 w-[700px] h-[400px] bg-gradient-to-br from-red-600/10 via-amber-300/10 to-transparent blur-3xl pointer-events-none rounded-full" />
+    <section className="relative overflow-hidden pt-4 pb-14 lg:py-16 bg-[#faf5ec] border-b-2 border-[#801419]/20">
+      {/* Subtle warm nostalgic background glow */}
+      <div className="absolute top-0 right-1/4 w-[700px] h-[400px] bg-gradient-to-br from-[#d4af37]/15 via-[#801419]/10 to-transparent blur-3xl pointer-events-none rounded-full" />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        {/* Top Highlands Promos & Interactive Vouchers Bar */}
-        <div className="mb-6 p-2.5 sm:p-3 rounded-2xl bg-gradient-to-r from-[#8c141c] via-[#b22830] to-[#8c141c] text-white shadow-lg flex flex-col sm:flex-row items-center justify-between gap-3 border border-amber-400/40">
-          <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-amber-100 text-center sm:text-left">
+        {/* Top Retro Vouchers Docket Bar */}
+        <div className="mb-6 p-3 rounded-lg bg-[#801419] text-amber-100 shadow-md flex flex-col sm:flex-row items-center justify-between gap-3 border-2 border-[#d4af37]/70">
+          <div className="flex items-center gap-2 text-xs sm:text-sm font-serif font-bold text-amber-200 text-center sm:text-left">
             <Tag className="w-4 h-4 text-amber-300 shrink-0" />
-            <span>Mã giảm giá độc quyền hôm nay:</span>
+            <span>Phiếu quà tặng ưu đãi quán xưa hôm nay:</span>
           </div>
 
-          <div className="flex items-center gap-2 flex-wrap justify-center">
+          <div className="flex items-center gap-2.5 flex-wrap justify-center">
             {/* Voucher 1 */}
             <button
               onClick={() => handleCopyCode('GOCOFFEE20')}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/25 hover:bg-black/40 border border-amber-300/50 text-[11px] font-mono font-bold text-amber-200 transition cursor-pointer active:scale-95"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-[#52090c] hover:bg-[#3d0608] border border-dashed border-[#d4af37] text-xs font-mono font-bold text-amber-200 transition cursor-pointer active:scale-95 shadow-inner"
               title="Bấm để sao chép mã giảm 20%"
             >
               <span>GOCOFFEE20</span>
-              <span className="text-[10px] bg-amber-400 text-stone-950 px-1 py-0.2 rounded font-black">-20%</span>
-              {copiedCode === 'GOCOFFEE20' ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3 text-amber-300/70" />}
+              <span className="text-[10px] bg-[#d4af37] text-[#52090c] px-1 py-0.2 rounded font-black">-20%</span>
+              {copiedCode === 'GOCOFFEE20' ? <Check className="w-3.5 h-3.5 text-emerald-300" /> : <Copy className="w-3.5 h-3.5 text-amber-300/70" />}
             </button>
 
             {/* Voucher 2 */}
             <button
               onClick={() => handleCopyCode('FREESHIP')}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/25 hover:bg-black/40 border border-amber-300/50 text-[11px] font-mono font-bold text-amber-200 transition cursor-pointer active:scale-95"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-[#52090c] hover:bg-[#3d0608] border border-dashed border-[#d4af37] text-xs font-mono font-bold text-amber-200 transition cursor-pointer active:scale-95 shadow-inner"
               title="Bấm để sao chép mã freeship"
             >
               <span>FREESHIP</span>
-              <span className="text-[10px] bg-amber-400 text-stone-950 px-1 py-0.2 rounded font-black">Free</span>
-              {copiedCode === 'FREESHIP' ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3 text-amber-300/70" />}
+              <span className="text-[10px] bg-[#d4af37] text-[#52090c] px-1 py-0.2 rounded font-black">Miễn Phí</span>
+              {copiedCode === 'FREESHIP' ? <Check className="w-3.5 h-3.5 text-emerald-300" /> : <Copy className="w-3.5 h-3.5 text-amber-300/70" />}
             </button>
 
             {/* Voucher 3 */}
             <button
               onClick={() => handleCopyCode('GOCOFFEE30')}
-              className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/25 hover:bg-black/40 border border-amber-300/50 text-[11px] font-mono font-bold text-amber-200 transition cursor-pointer active:scale-95"
+              className="hidden md:inline-flex items-center gap-1.5 px-3 py-1 rounded bg-[#52090c] hover:bg-[#3d0608] border border-dashed border-[#d4af37] text-xs font-mono font-bold text-amber-200 transition cursor-pointer active:scale-95 shadow-inner"
               title="Bấm để sao chép mã tri ân 30k"
             >
               <span>GOCOFFEE30</span>
-              <span className="text-[10px] bg-amber-400 text-stone-950 px-1 py-0.2 rounded font-black">-30K</span>
-              {copiedCode === 'GOCOFFEE30' ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3 text-amber-300/70" />}
+              <span className="text-[10px] bg-[#d4af37] text-[#52090c] px-1 py-0.2 rounded font-black">-30K</span>
+              {copiedCode === 'GOCOFFEE30' ? <Check className="w-3.5 h-3.5 text-emerald-300" /> : <Copy className="w-3.5 h-3.5 text-amber-300/70" />}
             </button>
           </div>
         </div>
@@ -158,53 +158,54 @@ export const Hero: React.FC<HeroProps> = ({
         {/* Main Hero Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
           
-          {/* Left Column: Highlands-style Typography & High-converting CTAs */}
+          {/* Left Column: Vintage Saigon Typography & Stories */}
           <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
             
-            {/* Go Coffee Heritage Tag */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-100/80 border border-red-300 text-[#8c141c] text-xs font-black shadow-2xs uppercase tracking-wider">
-              <span className="w-2 h-2 rounded-full bg-[#b22830] animate-ping" />
-              <span>Go Coffee • Tinh Hoa Cà Phê Việt</span>
+            {/* Vintage Saigon Heritage Stamp */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-[#ede2cb] border-2 border-[#801419]/40 text-[#801419] text-xs font-serif font-black uppercase tracking-widest shadow-2xs">
+              <span className="text-amber-700">❖</span>
+              <span>Quán Cà Phê Sài Gòn Xưa • 120 Pasteur Quận 1</span>
+              <span className="text-amber-700">❖</span>
             </div>
 
-            {/* Main Headline */}
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-display text-stone-900 tracking-tight leading-[1.12]">
-              Hương Vị Go Coffee <br />
-              <span className="text-[#b22830]">
-                Đậm Đà Bản Sắc
+            {/* Main Headline with Old Saigon Bill-board Lettering */}
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-serif text-[#23150d] tracking-tight leading-[1.15]">
+              Hương Vị Sài Gòn Xưa <br />
+              <span className="text-[#801419] italic font-serif">
+                Đậm Đà Từng Giọt Phin
               </span> <br />
-              Tiện Lợi Mọi Nơi
+              Mộc Mạc & Nóng Giòn
             </h1>
 
             {/* Description */}
-            <p className="text-stone-600 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
-              Thưởng thức tinh hoa Cà phê Phin Sữa Đá truyền thống, Freeze Trà Xanh mát lạnh, Trà Sen Vàng dẻo bùi và Bánh mì que giòn rụm. Đặt trước qua web nhận nước sau 5 phút, mô hình Takeaway tinh gọn mang đi tiện lợi tại trung tâm Quận 1.
+            <p className="text-stone-700 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
+              Gìn giữ thói quen bình dị của người Sài Gòn: Ngồi nhâm nhi ly Phin Sữa Đá tí tách rơi, chấm miếng bánh mì nóng hổi giòn rụm vào cà phê sánh đậm. Đặt món trước qua web, ghé lấy sau 5 phút tại góc phố 120 Pasteur (đối diện Saigon Centre).
             </p>
 
-            {/* Interactive Slide Selector Tabs (like Highlands Website) */}
+            {/* Interactive Slide Selector Tabs in Retro Style */}
             <div className="pt-1 flex items-center justify-center lg:justify-start gap-2 overflow-x-auto pb-1">
               {HERO_FEATURED_SLIDES.map((slide, index) => (
                 <button
                   key={slide.id}
                   onClick={() => setActiveSlideIndex(index)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                  className={`px-3.5 py-1.5 rounded-sm text-xs font-serif font-bold transition-all cursor-pointer whitespace-nowrap border ${
                     activeSlideIndex === index
-                      ? 'bg-[#b22830] text-white shadow-md shadow-red-950/20 scale-105'
-                      : 'bg-white hover:bg-stone-100 text-stone-600 border border-stone-200'
+                      ? 'bg-[#801419] text-amber-200 border-[#d4af37] shadow-sm'
+                      : 'bg-[#fffdfa] hover:bg-[#ede2cb] text-stone-800 border-[#d6c7b2]'
                   }`}
                 >
-                  {slide.title.split(' ')[0]} {slide.title.split(' ')[1]}
+                  {slide.title}
                 </button>
               ))}
             </div>
 
-            {/* Context-aware Featured Product Action */}
+            {/* Action Buttons in Classic Lacquer & Brass Palette */}
             <div className="pt-2">
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
                 {/* 1. Direct Customize & Add Current Featured Item */}
                 <button
                   onClick={() => {
-                    const slideId = currentSlide?.id || 'phin';
+                    const slideId = currentSlide?.id || 'banh-mi-cham';
                     const targetItem =
                       MENU_ITEMS.find((m) => m.id === SLIDE_ITEM_MAP[slideId]) || MENU_ITEMS[0];
                     if (onCustomizeItem) {
@@ -213,87 +214,92 @@ export const Hero: React.FC<HeroProps> = ({
                       onOrderNow();
                     }
                   }}
-                  className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-gradient-to-r from-[#b22830] via-[#c41e27] to-[#8f1920] hover:from-[#c41e27] hover:to-[#9b1c24] text-white font-black text-sm shadow-xl shadow-red-950/25 ring-2 ring-amber-400/50 flex items-center justify-center gap-2.5 transition active:scale-95 group cursor-pointer"
-                  title={`Bấm để chọn size, đá, đường cho ${currentSlide?.title || 'món'}`}
+                  className="w-full sm:w-auto px-7 py-3.5 rounded-md bg-[#801419] hover:bg-[#630f14] text-amber-100 font-serif font-bold text-sm shadow-md border-2 border-[#d4af37] flex items-center justify-center gap-2.5 transition active:scale-95 group cursor-pointer"
+                  title={`Bấm để chọn món: ${currentSlide?.title || 'món'}`}
                 >
                   <Coffee className="w-4 h-4 text-amber-300" />
-                  <span>Thưởng Thức {(currentSlide?.title || 'Cà Phê').split(' ').slice(0, 2).join(' ')} ({currentSlide?.price || '39.000đ'})</span>
-                  <ArrowRight className="w-4 h-4 text-amber-200 group-hover:translate-x-1 transition-transform" />
+                  <span>Thưởng Thức: {currentSlide?.title} ({currentSlide?.price})</span>
+                  <ArrowRight className="w-4 h-4 text-amber-300 group-hover:translate-x-1 transition-transform" />
                 </button>
 
                 {/* 2. Direct Link to Full Menu */}
                 <button
                   onClick={onOrderNow}
-                  className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-white hover:bg-stone-50 border border-stone-200 text-stone-800 font-bold text-sm flex items-center justify-center gap-2 shadow-2xs transition active:scale-95 cursor-pointer"
-                  title="Xem toàn bộ thực đơn 18 món Go Coffee"
+                  className="w-full sm:w-auto px-6 py-3.5 rounded-md bg-[#fffdfa] hover:bg-[#ede2cb] border-2 border-[#801419]/30 text-stone-900 font-serif font-bold text-sm flex items-center justify-center gap-2 shadow-xs transition active:scale-95 cursor-pointer"
+                  title="Xem toàn bộ thực đơn quán xưa"
                 >
-                  <span>Xem Toàn Bộ Thực Đơn</span>
+                  <span>Xem Bảng Giá Thực Đơn</span>
                 </button>
               </div>
             </div>
 
-            {/* Highlands Trust Indicators */}
-            <div className="grid grid-cols-3 gap-3 pt-4 border-t border-stone-200/80 max-w-lg mx-auto lg:mx-0 text-left">
+            {/* Old Saigon Trust Indicators */}
+            <div className="grid grid-cols-3 gap-3 pt-4 border-t border-[#801419]/15 max-w-lg mx-auto lg:mx-0 text-left">
               <div className="space-y-0.5">
-                <div className="flex items-center gap-1 text-[#b22830] font-bold text-sm sm:text-base">
-                  <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
+                <div className="flex items-center gap-1 text-[#801419] font-serif font-bold text-sm sm:text-base">
+                  <Star className="w-4 h-4 fill-amber-600 text-amber-600" />
                   <span>4.9 / 5</span>
                 </div>
-                <p className="text-[11px] text-stone-500 font-medium">Quầy Takeaway tại Quận 1</p>
+                <p className="text-[11px] text-stone-600 font-serif">Khách quen Sài Gòn</p>
               </div>
 
               <div className="space-y-0.5">
-                <div className="flex items-center gap-1 text-stone-900 font-bold text-sm sm:text-base">
+                <div className="flex items-center gap-1 text-stone-900 font-serif font-bold text-sm sm:text-base">
                   <Clock className="w-4 h-4 text-amber-800" />
                   <span>5 Phút</span>
                 </div>
-                <p className="text-[11px] text-stone-500 font-medium">Lấy đồ nhanh không chờ</p>
+                <p className="text-[11px] text-stone-600 font-serif">Lấy ngay không đợi</p>
               </div>
 
               <div className="space-y-0.5">
-                <div className="flex items-center gap-1 text-emerald-700 font-bold text-sm sm:text-base">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                  <span>100%</span>
+                <div className="flex items-center gap-1 text-emerald-800 font-serif font-bold text-sm sm:text-base">
+                  <ShieldCheck className="w-4 h-4 text-emerald-700" />
+                  <span>100% Mộc</span>
                 </div>
-                <p className="text-[11px] text-stone-500 font-medium">Cà phê rang mộc Tây Nguyên</p>
+                <p className="text-[11px] text-stone-600 font-serif">Rang củi Tây Nguyên</p>
               </div>
             </div>
           </div>
 
-          {/* Right Column: Interactive Featured Product Hero Card */}
+          {/* Right Column: Vintage Framed Photo Card */}
           <div className="lg:col-span-5 relative">
             <div className="relative mx-auto max-w-md lg:max-w-none">
               
-              {/* Main Product Card */}
-              <div className="rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-stone-900 aspect-4/5 relative group transition-all duration-500">
+              {/* Main Vintage Framed Card */}
+              <div className="rounded-lg overflow-hidden shadow-2xl border-4 border-[#fffdfa] bg-stone-950 aspect-4/5 relative group transition-all duration-500 ring-2 ring-[#801419]/30">
                 <img
                   src={currentSlide.image}
                   alt={currentSlide.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  onError={(e) => {
+                    const target = e.currentTarget as HTMLImageElement;
+                    target.onerror = null;
+                    target.src = '/images/banh_mi_cham_cafe_sua_da.jpg';
+                  }}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 filter contrast-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent" />
 
-                {/* Top Badge */}
+                {/* Top Stamp Badge */}
                 <div className="absolute top-4 left-4 flex items-center gap-2">
-                  <span className="px-3 py-1 rounded-full bg-[#b22830] text-amber-200 text-xs font-black uppercase tracking-wider shadow-md">
+                  <span className="px-3 py-1 rounded-sm bg-[#801419] text-amber-200 text-xs font-serif font-black uppercase tracking-wider shadow-md border border-[#d4af37]">
                     {currentSlide.badge}
                   </span>
                 </div>
 
-                {/* Hero Card Bottom Overlay */}
+                {/* Hero Card Bottom Overlay in Vintage Typography */}
                 <div className="absolute bottom-5 left-5 right-5 text-white">
-                  <div className="text-[11px] uppercase tracking-wider text-amber-300 font-bold mb-1">
+                  <div className="text-[11px] uppercase tracking-widest text-amber-300 font-serif font-bold mb-1">
                     {currentSlide.tag}
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-black font-serif leading-tight">
+                  <h3 className="text-xl sm:text-2xl font-black font-serif leading-tight text-[#fffdfa]">
                     {currentSlide.title}
                   </h3>
-                  <p className="text-xs text-stone-300 mt-1 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-stone-200 mt-1 line-clamp-2 leading-relaxed font-sans">
                     {currentSlide.subtitle}
                   </p>
                   
-                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/20">
-                    <span className="text-xl font-black text-amber-300">
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-amber-200/20">
+                    <span className="text-xl font-mono font-bold text-amber-300">
                       {currentSlide.price}
                     </span>
                     <button
@@ -303,33 +309,33 @@ export const Hero: React.FC<HeroProps> = ({
                         }
                         onOrderNow();
                       }}
-                      className="text-xs bg-gradient-to-r from-[#b22830] to-[#8c141c] hover:from-[#c41e27] hover:to-[#9b1c24] text-white font-bold px-4 py-2 rounded-xl transition cursor-pointer shadow-md active:scale-95"
+                      className="text-xs bg-[#801419] hover:bg-[#660e12] border border-[#d4af37] text-amber-100 font-serif font-bold px-4 py-2 rounded-sm transition cursor-pointer shadow-md active:scale-95"
                     >
-                      Tùy Biến & Đặt Ngay →
+                      Đặt Món Ngay →
                     </button>
                   </div>
                 </div>
               </div>
 
-              {/* Floating Badge 1: 5-minute Grab-and-go */}
-              <div className="absolute -top-3 -left-3 sm:-left-5 bg-white/95 backdrop-blur-md p-3 rounded-2xl shadow-xl border border-stone-200/80 flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-red-100 text-[#b22830] flex items-center justify-center font-bold text-base">
+              {/* Floating Badge 1: 5-minute Grab-and-go Vintage Stamp */}
+              <div className="absolute -top-3 -left-3 sm:-left-5 bg-[#fffdfa] p-2.5 sm:p-3 rounded-md shadow-xl border-2 border-[#801419]/30 flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded bg-[#801419] text-amber-200 flex items-center justify-center font-bold text-base shadow-inner">
                   ⚡
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-stone-900">Go Coffee Quick Pickup</div>
-                  <div className="text-[11px] text-stone-500">Chuẩn bị sau 5 phút</div>
+                  <div className="text-xs font-serif font-bold text-stone-900">Giao Lấy Sau 5 Phút</div>
+                  <div className="text-[11px] text-stone-500 font-mono">120 Pasteur, Q.1</div>
                 </div>
               </div>
 
-              {/* Floating Badge 2: VietQR Fast Pay */}
-              <div className="absolute -bottom-3 -right-3 sm:-right-5 bg-white/95 backdrop-blur-md p-3 rounded-2xl shadow-xl border border-stone-200/80 flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+              {/* Floating Badge 2: VietQR Fast Pay Vintage Stamp */}
+              <div className="absolute -bottom-3 -right-3 sm:-right-5 bg-[#fffdfa] p-2.5 sm:p-3 rounded-md shadow-xl border-2 border-[#801419]/30 flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded bg-emerald-800 text-emerald-100 flex items-center justify-center font-bold">
                   <QrCode className="w-4 h-4" />
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-stone-900">VietQR NAPAS 24/7</div>
-                  <div className="text-[11px] text-emerald-600 font-semibold">Tự động nhận đơn trong 1s</div>
+                  <div className="text-xs font-serif font-bold text-stone-900">Quét VietQR 24/7</div>
+                  <div className="text-[11px] text-emerald-700 font-medium">Nhận đơn tức thì</div>
                 </div>
               </div>
 
@@ -341,3 +347,4 @@ export const Hero: React.FC<HeroProps> = ({
     </section>
   );
 };
+

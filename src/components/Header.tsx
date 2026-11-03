@@ -109,12 +109,13 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#faf7f2]/95 backdrop-blur-md border-b border-amber-950/10 transition-all">
-      {/* Top micro banner in Highlands Signature Crimson Red */}
-      <div className="bg-gradient-to-r from-[#7f131a] via-[#9e1c24] to-[#7f131a] text-amber-200 text-[11px] py-1.5 px-4 text-center font-medium flex items-center justify-center gap-2 overflow-x-auto whitespace-nowrap border-b border-[#630f14] shadow-xs">
+    <header className="sticky top-0 z-40 bg-[#faf5ec]/95 backdrop-blur-md border-b-2 border-[#801419]/30 transition-all shadow-xs">
+      {/* Top retro bulletin banner */}
+      <div className="bg-[#781318] text-amber-200 text-[11px] py-1.5 px-4 text-center font-serif tracking-wider flex items-center justify-center gap-2 overflow-x-auto whitespace-nowrap border-b border-[#4d0c10] shadow-inner">
         <span className="flex items-center gap-1.5">
-          <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-          <span>⚡ Cà phê mang đi Takeaway • Lấy sau 5 phút • Giảm 20% đơn đầu tiên: <strong className="text-white underline decoration-amber-400">GOCOFFEE20</strong></span>
+          <span className="text-amber-400">❖</span>
+          <span>QUÁN CÀ PHÊ PHIN SÀI GÒN XƯA • 120 PASTEUR • GIAO HOẢ TỐC 5 PHÚT • MÃ ƯU ĐÃI: <strong className="text-white underline decoration-amber-300 font-mono">GOCOFFEE20</strong> (-20%)</span>
+          <span className="text-amber-400">❖</span>
         </span>
       </div>
 
@@ -132,12 +133,11 @@ export const Header: React.FC<HeaderProps> = ({
           </a>
         </div>
 
-        {/* Center: Clean Grouped Dropdown Navigation evenly spaced */}
+        {/* Center: Vintage Saigon Navigation Menu */}
         <nav
           ref={dropdownRef}
-          className="hidden md:flex items-center justify-center flex-1 max-w-3xl mx-auto gap-2 lg:gap-6 xl:gap-8 text-xs sm:text-sm font-bold text-stone-700"
+          className="hidden md:flex items-center justify-center flex-1 max-w-3xl mx-auto gap-2 lg:gap-5 xl:gap-7 text-xs sm:text-sm font-serif font-bold text-stone-800"
         >
-          
           {/* MENU 1: THỰC ĐƠN */}
           <div 
             className="relative"
@@ -145,14 +145,14 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <button
               onClick={() => setActiveDropdown(activeDropdown === 'menu' ? null : 'menu')}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition cursor-pointer uppercase tracking-wider text-xs font-bold ${
+              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-md transition cursor-pointer uppercase tracking-wider text-xs font-bold border ${
                 activeDropdown === 'menu'
-                  ? 'bg-amber-100/90 text-amber-950 shadow-2xs'
-                  : 'hover:bg-amber-100/60 hover:text-amber-950 text-stone-800'
+                  ? 'bg-[#ede2cb] text-[#52090c] border-[#801419]/40 shadow-xs'
+                  : 'hover:bg-[#f2e7d3] hover:text-[#52090c] border-transparent text-stone-800'
               }`}
             >
-              <Coffee className="w-4 h-4 text-amber-800" />
-              <span>Thực Đơn</span>
+              <Coffee className="w-4 h-4 text-[#801419]" />
+              <span>Thực Đơn Quán Xưa</span>
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${activeDropdown === 'menu' ? 'rotate-180' : ''}`} />
             </button>
 
@@ -160,13 +160,13 @@ export const Header: React.FC<HeaderProps> = ({
             {activeDropdown === 'menu' && (
               <div 
                 onMouseLeave={() => setActiveDropdown(null)}
-                className="absolute top-full left-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-stone-200/80 p-3 animate-in fade-in zoom-in-95 duration-150 z-50"
+                className="absolute top-full left-0 mt-2 w-80 bg-[#fffdfa] rounded-lg shadow-xl border-2 border-[#801419]/30 p-3 animate-in fade-in zoom-in-95 duration-150 z-50 font-sans"
               >
-                <div className="px-3 py-2 border-b border-stone-100 flex items-center justify-between mb-1.5">
-                  <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider">Danh Mục Cà Phê & Đồ Uống</span>
+                <div className="px-3 py-2 border-b border-[#e8dac1] flex items-center justify-between mb-1.5">
+                  <span className="text-[11px] font-serif font-bold text-[#801419] uppercase tracking-wider">Danh Mục Cà Phê & Điểm Tâm</span>
                   <button
                     onClick={() => handleCategoryClick('all')}
-                    className="text-[11px] font-bold text-amber-800 hover:underline cursor-pointer"
+                    className="text-[11px] font-serif font-bold text-[#801419] hover:underline cursor-pointer"
                   >
                     Xem tất cả món →
                   </button>
@@ -176,84 +176,84 @@ export const Header: React.FC<HeaderProps> = ({
                   {/* 1. Cà Phê Phin Việt */}
                   <button
                     onClick={() => handleCategoryClick('phin')}
-                    className="w-full flex items-start gap-3 p-2.5 rounded-xl hover:bg-red-50 text-left transition group cursor-pointer"
+                    className="w-full flex items-start gap-3 p-2.5 rounded-md hover:bg-[#faf2e3] text-left transition group cursor-pointer border border-transparent hover:border-[#dfc8a5]"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-red-100 text-[#8c141c] flex items-center justify-center shrink-0 group-hover:bg-red-200">
-                      <Flame className="w-4 h-4 text-[#8c141c]" />
+                    <div className="w-8 h-8 rounded-md bg-[#801419]/10 text-[#801419] flex items-center justify-center shrink-0 group-hover:bg-[#801419] group-hover:text-amber-200 transition">
+                      <Flame className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-stone-900 group-hover:text-amber-900">Cà Phê Phin Việt</div>
-                      <div className="text-[11px] text-stone-500">Phin Sữa Đá, Phin Đen Đá, Bạc Xỉu, Cà Phê Muối Cố Đô</div>
+                      <div className="text-xs font-serif font-bold text-stone-900 group-hover:text-[#801419]">Cà Phê Phin Sài Gòn</div>
+                      <div className="text-[11px] text-stone-500">Phin Sữa Đá, Phin Đen Đá, Bạc Xỉu Xưa, Cà Phê Muối Cố Đô</div>
                     </div>
                   </button>
 
-                  {/* 2. PhinDi Thế Hệ Mới */}
+                  {/* 2. Bánh Mì & Điểm Tâm */}
+                  <button
+                    onClick={() => handleCategoryClick('pastry')}
+                    className="w-full flex items-start gap-3 p-2.5 rounded-md hover:bg-[#faf2e3] text-left transition group cursor-pointer border border-transparent hover:border-[#dfc8a5]"
+                  >
+                    <div className="w-8 h-8 rounded-md bg-amber-100 text-amber-900 flex items-center justify-center shrink-0 group-hover:bg-amber-800 group-hover:text-amber-100 transition">
+                      <Croissant className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-serif font-bold text-stone-900 group-hover:text-[#801419]">Bánh Mì Chấm Cà Phê & Điểm Tâm</div>
+                      <div className="text-[11px] text-stone-500">Bánh mì chấm sữa đá, bánh mì không nóng giòn, pate que cay</div>
+                    </div>
+                  </button>
+
+                  {/* 3. PhinDi Thế Hệ Mới */}
                   <button
                     onClick={() => handleCategoryClick('phindi')}
-                    className="w-full flex items-start gap-3 p-2.5 rounded-xl hover:bg-amber-50 text-left transition group cursor-pointer"
+                    className="w-full flex items-start gap-3 p-2.5 rounded-md hover:bg-[#faf2e3] text-left transition group cursor-pointer border border-transparent hover:border-[#dfc8a5]"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-900 flex items-center justify-center shrink-0 group-hover:bg-amber-200">
+                    <div className="w-8 h-8 rounded-md bg-[#ede2cb] text-[#52090c] flex items-center justify-center shrink-0 group-hover:bg-[#801419] group-hover:text-amber-200 transition">
                       <Sparkles className="w-4 h-4 text-[#b45309]" />
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-stone-900 group-hover:text-amber-900">PhinDi Thế Hệ Mới</div>
+                      <div className="text-xs font-serif font-bold text-stone-900 group-hover:text-[#801419]">PhinDi Sáng Tạo</div>
                       <div className="text-[11px] text-stone-500">PhinDi Hạnh Nhân bùi béo, PhinDi Kem Sữa, PhinDi Choco</div>
                     </div>
                   </button>
 
-                  {/* 3. Freeze Đá Xay & Thạch Giòn */}
+                  {/* 4. Freeze Đá Xay & Thạch Giòn */}
                   <button
                     onClick={() => handleCategoryClick('freeze')}
-                    className="w-full flex items-start gap-3 p-2.5 rounded-xl hover:bg-emerald-50 text-left transition group cursor-pointer"
+                    className="w-full flex items-start gap-3 p-2.5 rounded-md hover:bg-[#faf2e3] text-left transition group cursor-pointer border border-transparent hover:border-[#dfc8a5]"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-900 flex items-center justify-center shrink-0 group-hover:bg-emerald-200">
+                    <div className="w-8 h-8 rounded-md bg-emerald-100 text-emerald-900 flex items-center justify-center shrink-0 group-hover:bg-emerald-800 group-hover:text-emerald-100 transition">
                       <CupSoda className="w-4 h-4 text-[#047857]" />
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-stone-900 group-hover:text-emerald-900">Freeze Đá Xay & Thạch Giòn</div>
-                      <div className="text-[11px] text-stone-500">Freeze Trà Xanh Thạch Giòn, Caramel Phin, Cookies & Cream</div>
+                      <div className="text-xs font-serif font-bold text-stone-900 group-hover:text-emerald-900">Freeze Đá Xay & Thạch</div>
+                      <div className="text-[11px] text-stone-500">Freeze Trà Xanh Thạch Giòn, Freeze Cà Phê Phin</div>
                     </div>
                   </button>
 
-                  {/* 4. Trà Sen Vàng & Trà Đào */}
+                  {/* 5. Trà Sen Vàng & Trà Đào */}
                   <button
                     onClick={() => handleCategoryClick('tea')}
-                    className="w-full flex items-start gap-3 p-2.5 rounded-xl hover:bg-amber-50 text-left transition group cursor-pointer"
+                    className="w-full flex items-start gap-3 p-2.5 rounded-md hover:bg-[#faf2e3] text-left transition group cursor-pointer border border-transparent hover:border-[#dfc8a5]"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-900 flex items-center justify-center shrink-0 group-hover:bg-amber-200">
+                    <div className="w-8 h-8 rounded-md bg-amber-100 text-amber-900 flex items-center justify-center shrink-0 group-hover:bg-amber-800 group-hover:text-amber-100 transition">
                       <Leaf className="w-4 h-4 text-[#d97706]" />
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-stone-900 group-hover:text-amber-900">Trà Sen Vàng & Trà Đào</div>
-                      <div className="text-[11px] text-stone-500">Trà Sen Vàng Hạt Sen Huế, Trà Thạch Đào, Trà Thanh Đào</div>
-                    </div>
-                  </button>
-
-                  {/* 5. Bánh Mì Que & Bánh Ngọt */}
-                  <button
-                    onClick={() => handleCategoryClick('pastry')}
-                    className="w-full flex items-start gap-3 p-2.5 rounded-xl hover:bg-orange-50 text-left transition group cursor-pointer"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-orange-100 text-orange-900 flex items-center justify-center shrink-0 group-hover:bg-orange-200">
-                      <Croissant className="w-4 h-4 text-[#ea580c]" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-stone-900 group-hover:text-amber-900">Bánh Mì Que & Bánh Ngọt</div>
-                      <div className="text-[11px] text-stone-500">Bánh Mì Que Pate Cay Hải Phòng, Cheesecake Cà Phê, Mousse Cacao</div>
+                      <div className="text-xs font-serif font-bold text-stone-900 group-hover:text-[#801419]">Trà Sen Vàng & Đào Xưa</div>
+                      <div className="text-[11px] text-stone-500">Trà Sen Vàng Hạt Sen Huế, Trà Thạch Đào thanh mát</div>
                     </div>
                   </button>
 
                   {/* 6. Combo Ưu Đãi Tiết Kiệm */}
                   <button
                     onClick={() => handleCategoryClick('combo')}
-                    className="w-full flex items-start gap-3 p-2.5 rounded-xl hover:bg-red-50 text-left transition group cursor-pointer"
+                    className="w-full flex items-start gap-3 p-2.5 rounded-md hover:bg-[#faf2e3] text-left transition group cursor-pointer border border-transparent hover:border-[#dfc8a5]"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-red-100 text-[#b22830] flex items-center justify-center shrink-0 group-hover:bg-red-200">
-                      <Zap className="w-4 h-4 text-[#b22830]" />
+                    <div className="w-8 h-8 rounded-md bg-red-100 text-[#801419] flex items-center justify-center shrink-0 group-hover:bg-[#801419] group-hover:text-amber-200 transition">
+                      <Zap className="w-4 h-4 text-[#801419]" />
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-stone-900 group-hover:text-red-900">Combo Tiết Kiệm</div>
-                      <div className="text-[11px] text-stone-500">Combo Sáng (Phin + Bánh Mì Que), Combo Trà Chiều Thư Thái</div>
+                      <div className="text-xs font-serif font-bold text-stone-900 group-hover:text-[#801419]">Combo Sáng Sài Gòn</div>
+                      <div className="text-[11px] text-stone-500">Phin Đen Đá + Bánh Mì Không, Combo Trà Chiều Thư Thái</div>
                     </div>
                   </button>
                 </div>
@@ -264,21 +264,21 @@ export const Header: React.FC<HeaderProps> = ({
           {/* MENU 2: ĐỊA CHỈ QUÁN (QUẬN 1) */}
           <button
             onClick={() => handleLinkClick('/cua-hang', 'stores')}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-amber-100/60 hover:text-amber-950 text-stone-800"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-md transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-[#ede2cb] hover:text-[#52090c] text-stone-800"
             title="Địa chỉ quán: 120 Pasteur, P. Bến Nghé, Quận 1, TP.HCM"
           >
-            <MapPin className="w-4 h-4 text-amber-800" />
-            <span>Địa Chỉ Quán</span>
+            <MapPin className="w-4 h-4 text-[#801419]" />
+            <span>Ghé Quán</span>
           </button>
 
           {/* MENU 3: CÂU CHUYỆN */}
           <button
             onClick={() => handleLinkClick('/cau-chuyen', 'story')}
-            className="flex items-center gap-2 px-3.5 lg:px-4 py-2.5 rounded-xl transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-amber-100/60 hover:text-amber-950 text-stone-800"
-            title="Câu chuyện di sản hạt cà phê Cầu Đất"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-md transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-[#ede2cb] hover:text-[#52090c] text-stone-800"
+            title="Ký ức cà phê phin Sài Gòn xưa"
           >
-            <BookOpen className="w-4 h-4 text-amber-800" />
-            <span>Câu Chuyện</span>
+            <BookOpen className="w-4 h-4 text-[#801419]" />
+            <span>Ký Ức Quán</span>
           </button>
 
           {/* MENU 4: ƯU ĐÃI */}
@@ -289,39 +289,39 @@ export const Header: React.FC<HeaderProps> = ({
               }
               handleLinkClick('/uu-dai', 'menu');
             }}
-            className="flex items-center gap-1.5 px-3.5 lg:px-4 py-2.5 rounded-xl transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-amber-100/60 hover:text-amber-950 text-stone-800"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-md transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-[#ede2cb] hover:text-[#52090c] text-stone-800"
             title="Xem mã giảm giá & combo ưu đãi hôm nay"
           >
-            <Tag className="w-4 h-4 text-amber-800" />
-            <span>Ưu Đãi</span>
-            <span className="px-1.5 py-0.5 rounded text-[10px] bg-red-100 text-[#b22830] font-black lowercase tracking-normal">
+            <Tag className="w-4 h-4 text-[#801419]" />
+            <span>Phiếu Giảm Giá</span>
+            <span className="px-1.5 py-0.2 rounded-xs text-[10px] bg-[#801419] text-amber-200 font-mono font-bold lowercase tracking-normal">
               -20%
             </span>
           </button>
 
         </nav>
 
-        {/* Right: Action Buttons */}
+        {/* Right: Action Buttons in Vintage Saigon Styling */}
         <div className="flex items-center gap-2.5">
-          {/* Direct CTA: Đặt Món Nhanh */}
+          {/* Direct CTA: Đặt Món Nhanh (Vintage Ticket style) */}
           <button
             onClick={() => handleLinkClick('/thuc-don', 'menu')}
-            className="hidden sm:flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#b22830] via-[#c41e27] to-[#8f1920] hover:from-[#c41e27] hover:to-[#9b1c24] text-white font-black text-xs transition cursor-pointer active:scale-95 shadow-md shadow-red-950/20 ring-2 ring-amber-400/50"
+            className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-md bg-[#801419] hover:bg-[#660e12] text-amber-100 font-serif font-bold text-xs uppercase tracking-wider transition cursor-pointer active:scale-95 shadow-sm border border-[#d4af37]"
             title="Đặt món mang đi, nhận sau 5 phút"
           >
             <Coffee className="w-4 h-4 text-amber-300" />
-            <span>Đặt Món</span>
+            <span>Đặt Món Ngay</span>
           </button>
 
-          {/* Cart Button */}
+          {/* Cart Button: Vintage Docket Style */}
           <button
             onClick={onOpenCart}
-            className="relative px-3.5 py-2.5 rounded-xl bg-[#2a170d] hover:bg-stone-900 border border-amber-900/40 text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-sm transition active:scale-95 cursor-pointer"
+            className="relative px-3.5 py-2 rounded-md bg-[#23150d] hover:bg-[#150c07] border border-amber-900/60 text-amber-100 font-mono font-bold text-xs sm:text-sm flex items-center gap-2 shadow-xs transition active:scale-95 cursor-pointer"
           >
             <ShoppingBag className="w-4 h-4 text-amber-300" />
-            <span className="hidden sm:inline">Giỏ hàng</span>
+            <span className="hidden sm:inline font-serif text-xs font-bold uppercase tracking-wider">Phiếu Chọn</span>
             {cartCount > 0 && (
-              <span className="px-1.5 py-0.5 rounded-full bg-amber-400 text-[#701217] text-[10px] font-black min-w-5 text-center shadow-xs">
+              <span className="px-1.5 py-0.2 rounded-xs bg-[#d4af37] text-[#52090c] text-[10px] font-mono font-black min-w-5 text-center shadow-xs">
                 {cartCount}
               </span>
             )}
@@ -330,7 +330,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Mobile hamburger toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-xl text-stone-700 hover:bg-stone-200/60 transition cursor-pointer"
+            className="md:hidden p-2 rounded-md text-stone-800 hover:bg-[#ede2cb] transition cursor-pointer"
             aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}

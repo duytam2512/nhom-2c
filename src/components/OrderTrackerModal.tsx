@@ -51,28 +51,28 @@ export const OrderTrackerModal: React.FC<OrderTrackerModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white w-full sm:max-w-2xl md:max-w-3xl rounded-t-3xl sm:rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[90vh] pb-[env(safe-area-inset-bottom,8px)] sm:pb-0">
-        {/* Header - Highlands Crimson Red Styling */}
-        <div className="p-4 sm:p-5 border-b border-[#630f14] flex items-center justify-between bg-gradient-to-r from-[#7a1218] via-[#9e1c24] to-[#7a1218] text-white">
+      <div className="bg-[#fffdfa] w-full sm:max-w-2xl md:max-w-3xl rounded-t-xl sm:rounded-lg shadow-2xl border-2 border-[#801419]/40 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[90vh] pb-[env(safe-area-inset-bottom,8px)] sm:pb-0">
+        {/* Header - Vintage Saigon Style */}
+        <div className="p-4 sm:p-5 border-b-2 border-[#d4af37] flex items-center justify-between bg-[#801419] text-amber-100">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-stone-950 border border-amber-300/60 flex items-center justify-center shadow-md">
-              <Coffee className="w-5 h-5 text-stone-900 animate-bounce" />
+            <div className="w-10 h-10 rounded-sm bg-[#d4af37] text-[#52090c] flex items-center justify-center shadow-xs">
+              <Coffee className="w-5 h-5 animate-bounce" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-bold text-base sm:text-lg">Theo Dõi Đơn Hàng Live</h3>
-                <span className="text-[10px] font-bold uppercase bg-amber-400 text-stone-950 px-2 py-0.5 rounded-full shadow-2xs">
+                <h3 className="font-serif font-bold text-amber-100 text-base sm:text-lg">Tiến Độ Pha Chế Quán Xưa</h3>
+                <span className="text-[10px] font-mono font-bold uppercase bg-[#d4af37] text-[#52090c] px-2 py-0.5 rounded-xs shadow-2xs">
                   Trực tiếp
                 </span>
               </div>
-              <p className="text-xs text-amber-200/90">
-                Go Coffee Barista đang chuẩn bị đồ uống cho bạn
+              <p className="text-xs text-amber-200/90 font-sans">
+                Barista Go Coffee đang chưng cất từng giọt phin cho bạn
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-amber-200 hover:text-white hover:bg-amber-800 transition"
+            className="w-8 h-8 rounded-sm flex items-center justify-center text-amber-200 hover:text-white hover:bg-black/20 transition cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>

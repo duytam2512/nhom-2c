@@ -207,10 +207,10 @@ export default function App() {
   };
 
   return (
-    <div id="top" className="min-h-screen bg-[#faf7f2] flex flex-col relative selection:bg-amber-800 selection:text-white pb-16 md:pb-0">
-      {/* Toast Notification */}
+    <div id="top" className="min-h-screen bg-[#f7f2e7] text-[#2b1d14] flex flex-col relative selection:bg-[#801419] selection:text-amber-100 pb-16 md:pb-0">
+      {/* Toast Notification in Vintage Seal Style */}
       {toastMessage && (
-        <div className="fixed top-20 right-4 z-50 bg-stone-900/95 text-white px-4 py-3 rounded-2xl shadow-xl border border-amber-600/40 text-xs sm:text-sm font-semibold flex items-center gap-2.5 animate-in slide-in-from-top-4 duration-300">
+        <div className="fixed top-20 right-4 z-50 bg-[#23150d] text-amber-100 px-4 py-3 rounded-sm shadow-xl border-2 border-[#d4af37] text-xs sm:text-sm font-serif font-bold flex items-center gap-2.5 animate-in slide-in-from-top-4 duration-300">
           <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{toastMessage}</span>
         </div>

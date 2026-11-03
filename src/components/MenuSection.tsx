@@ -178,47 +178,48 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
 
   return (
     <section id="menu" className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto scroll-mt-24">
-      {/* Section Header */}
+      {/* Section Header: Vintage Saigon Bill-board style */}
       <div className="text-center space-y-3 mb-8">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-100 text-[#b22830] text-xs font-bold uppercase tracking-wider border border-red-200">
-          <Sparkles className="w-3.5 h-3.5 text-[#b22830]" />
-          <span>Thực Đơn Đậm Đà Go Coffee</span>
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-sm bg-[#ede2cb] text-[#801419] text-xs font-serif font-bold uppercase tracking-widest border border-[#801419]/40 shadow-2xs">
+          <span>❖</span>
+          <span>Thực Đơn Quán Xưa • Đậm Vị Truyền Thống</span>
+          <span>❖</span>
         </div>
-        <h2 className="text-2xl sm:text-4xl font-extrabold font-display text-stone-900 tracking-tight">
-          Chọn Ly Cà Phê Của Bạn
+        <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black font-serif text-[#23150d] tracking-tight">
+          Bảng Giá & Món Ngon Sài Gòn Xưa
         </h2>
-        <p className="text-xs sm:text-base text-stone-600 max-w-xl mx-auto">
-          Tất cả đồ uống đều được pha chế tươi mới theo yêu cầu, hạt Cầu Đất 100% mộc nguyên chất.
+        <p className="text-xs sm:text-base text-stone-700 max-w-xl mx-auto font-serif italic">
+          Chiết xuất từng giọt phin mộc chậm rãi • Bánh mì nướng giòn rụm mỗi sớm mai • Pha chế tươi mới tức thì
         </p>
       </div>
 
-      {/* Unified Menu Control Bar: Signature Red & Gold Palette */}
-      <div className="bg-white rounded-3xl border-2 border-stone-200/90 shadow-lg p-3.5 sm:p-5 mb-8 space-y-4 overflow-hidden">
+      {/* Unified Menu Control Bar: Vintage Saigon Wooden Frame Style */}
+      <div className="bg-[#fffdfa] rounded-lg border-2 border-[#801419]/30 shadow-md p-3.5 sm:p-5 mb-8 space-y-4 overflow-hidden">
         
         {/* Header Announcement Strip */}
-        <div className="bg-gradient-to-r from-[#8f1920] via-[#b22830] to-[#701217] text-white p-3 sm:px-5 sm:py-3 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-2 shadow-md border-b-2 border-amber-400">
+        <div className="bg-[#801419] text-amber-100 p-3 sm:px-5 sm:py-3 rounded-md flex flex-col sm:flex-row items-center justify-between gap-2 shadow-sm border-b-2 border-[#d4af37]">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-amber-400 text-[#701217] flex items-center justify-center font-black shadow-xs shrink-0">
+            <div className="w-8 h-8 rounded bg-[#d4af37] text-[#52090c] flex items-center justify-center font-black shadow-xs shrink-0 font-serif">
               <Coffee className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-xs sm:text-sm font-black tracking-wide uppercase flex items-center gap-1.5 text-white">
-                <span>Thực Đơn Đặc Sắc Go Coffee • Hương Vị Di Sản</span>
+              <h3 className="text-xs sm:text-sm font-serif font-bold tracking-wide uppercase flex items-center gap-1.5 text-amber-100">
+                <span>Thực Đơn Cà Phê & Điểm Tâm Quán Xưa</span>
               </h3>
-              <p className="text-[11px] text-amber-200 hidden sm:block">
-                Pha chế thủ công 100% hạt rang mộc • Chuẩn bị nhanh trong 5 phút • Giữ chỗ bàn miễn phí
+              <p className="text-[11px] text-amber-200/90 hidden sm:block font-sans">
+                Pha phin mộc 100% Cầu Đất • Chuẩn bị nhanh trong 5 phút • Giữ chỗ bàn không phụ thu
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 text-[11px] font-bold text-amber-300 shrink-0">
+          <div className="flex items-center gap-2 text-[11px] font-serif font-bold text-amber-300 shrink-0">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Phục vụ tươi mới mỗi ngày</span>
+            <span>Phục vụ từ 06:30 sáng</span>
           </div>
         </div>
 
-        {/* Row 1: Category Navigation - Responsive Desktop & Tablet Grid */}
-        <div className="hidden md:grid md:grid-cols-4 xl:grid-cols-7 gap-1.5 xl:gap-2 p-2 bg-gradient-to-b from-[#faf5ee] to-[#f4ebe0] rounded-2xl border border-amber-900/10 shadow-inner">
+        {/* Row 1: Category Navigation - Vintage Wooden Tabs */}
+        <div className="hidden md:grid md:grid-cols-4 xl:grid-cols-7 gap-1.5 xl:gap-2 p-2 bg-[#f4ebe0] rounded-md border border-[#801419]/15 shadow-inner">
           {categories.map((cat) => {
             const Icon = cat.icon;
             const isSelected = selectedCategory === cat.id;
@@ -228,16 +229,16 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
                 title={cat.name}
-                className={`w-full min-w-0 py-2.5 px-2 xl:px-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 xl:gap-2 cursor-pointer ${
+                className={`w-full min-w-0 py-2.5 px-2 xl:px-2.5 rounded-sm text-xs font-serif font-bold transition-all duration-200 flex items-center justify-center gap-1.5 xl:gap-2 cursor-pointer border ${
                   isSelected
-                    ? 'bg-gradient-to-r from-[#b22830] via-[#c41e27] to-[#8f1920] text-white shadow-lg shadow-red-950/25 ring-2 ring-amber-400 scale-[1.01]'
-                    : `bg-white/90 text-stone-800 border border-stone-200/80 ${cat.bgHover} shadow-2xs`
+                    ? 'bg-[#801419] text-amber-200 border-[#d4af37] shadow-sm scale-[1.01]'
+                    : 'bg-[#fffdfa] text-stone-800 border-[#d6c7b2] hover:bg-[#ede2cb] hover:text-[#52090c]'
                 }`}
               >
-                <Icon className={`w-4 h-4 shrink-0 ${isSelected ? 'text-amber-300' : cat.accentColor}`} />
+                <Icon className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-amber-300' : 'text-[#801419]'}`} />
                 <span className="truncate">{cat.name}</span>
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-black shrink-0 ${
-                  isSelected ? 'bg-amber-400 text-[#701217] shadow-xs' : cat.badgeColor
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-xs font-mono font-bold shrink-0 ${
+                  isSelected ? 'bg-[#d4af37] text-[#52090c]' : 'bg-[#ede2cb] text-stone-700'
                 }`}>
                   {count}
                 </span>
@@ -246,9 +247,8 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
           })}
         </div>
 
-        {/* Mobile Category Selector: Dropdown + Swipeable Pill Strip */}
+        {/* Mobile Category Selector */}
         <div className="md:hidden space-y-2.5">
-          {/* Quick Swipeable Category Pill Strip */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none -mx-1 px-1">
             {categories.map((cat) => {
               const Icon = cat.icon;
@@ -258,16 +258,16 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                  className={`shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-sm text-xs font-serif font-bold transition-all whitespace-nowrap cursor-pointer border ${
                     isSelected
-                      ? 'bg-gradient-to-r from-[#b22830] to-[#8f1920] text-white shadow-md ring-2 ring-amber-400'
-                      : 'bg-stone-50 text-stone-700 border border-stone-200/90 hover:bg-stone-100'
+                      ? 'bg-[#801419] text-amber-200 border-[#d4af37] shadow-sm'
+                      : 'bg-[#fffdfa] text-stone-800 border-[#d6c7b2] hover:bg-[#ede2cb]'
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-amber-300' : cat.accentColor}`} />
+                  <Icon className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-amber-300' : 'text-[#801419]'}`} />
                   <span>{cat.name}</span>
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-black shrink-0 ${
-                    isSelected ? 'bg-amber-400 text-[#701217]' : cat.badgeColor
+                  <span className={`text-[10px] px-1.5 py-0.2 rounded-xs font-mono font-bold shrink-0 ${
+                    isSelected ? 'bg-[#d4af37] text-[#52090c]' : 'bg-[#ede2cb] text-stone-700'
                   }`}>
                     {count}
                   </span>
@@ -280,12 +280,12 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
           <div className="relative">
             <button
               onClick={() => setIsMobileCategoryOpen(!isMobileCategoryOpen)}
-              className="w-full flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-[#8f1920] to-[#b22830] text-white font-bold text-xs shadow-sm border border-amber-400/50 cursor-pointer"
+              className="w-full flex items-center justify-between p-3 rounded-sm bg-[#801419] text-amber-100 font-serif font-bold text-xs shadow-sm border border-[#d4af37] cursor-pointer"
             >
               <span className="flex items-center gap-2">
                 <currentCategoryObj.icon className="w-4 h-4 text-amber-300 shrink-0" />
                 <span className="truncate">Đang xem: {currentCategoryObj.name}</span>
-                <span className="text-[10px] bg-amber-400 text-[#701217] font-black px-2 py-0.5 rounded-full shadow-xs shrink-0">
+                <span className="text-[10px] bg-[#d4af37] text-[#52090c] font-mono font-black px-1.5 py-0.5 rounded-xs shrink-0">
                   {categoryCounts[currentCategoryObj.id]} món
                 </span>
               </span>
@@ -293,7 +293,7 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
             </button>
 
             {isMobileCategoryOpen && (
-              <div className="absolute top-full left-0 right-0 mt-1.5 bg-white rounded-2xl shadow-2xl border-2 border-[#b22830]/30 p-2 z-30 space-y-1">
+              <div className="absolute top-full left-0 right-0 mt-1.5 bg-[#fffdfa] rounded-md shadow-2xl border-2 border-[#801419]/30 p-2 z-30 space-y-1 font-serif">
                 {categories.map((cat) => {
                   const Icon = cat.icon;
                   const isSelected = selectedCategory === cat.id;
@@ -304,21 +304,17 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                         setSelectedCategory(cat.id);
                         setIsMobileCategoryOpen(false);
                       }}
-                      className={`w-full flex items-center justify-between p-2.5 rounded-xl text-xs font-bold text-left transition ${
+                      className={`w-full flex items-center justify-between p-2.5 rounded-sm text-xs font-bold transition cursor-pointer ${
                         isSelected
-                          ? 'bg-gradient-to-r from-[#b22830] to-[#8f1920] text-white font-black'
-                          : 'text-stone-800 hover:bg-red-50'
+                          ? 'bg-[#801419] text-amber-200 font-black'
+                          : 'hover:bg-[#ede2cb] text-stone-800'
                       }`}
                     >
                       <span className="flex items-center gap-2">
-                        <Icon className={`w-4 h-4 shrink-0 ${isSelected ? 'text-amber-300' : cat.accentColor}`} />
+                        <Icon className={`w-4 h-4 ${isSelected ? 'text-amber-300' : 'text-[#801419]'}`} />
                         <span>{cat.name}</span>
                       </span>
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0 ${
-                        isSelected ? 'bg-amber-400 text-[#701217]' : cat.badgeColor
-                      }`}>
-                        {categoryCounts[cat.id]} món
-                      </span>
+                      <span className="font-mono text-[10px]">{categoryCounts[cat.id]} món</span>
                     </button>
                   );
                 })}
@@ -327,17 +323,17 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
           </div>
         </div>
 
-        {/* Row 2: Search input + Compact Taste & Temperature Filter Menu */}
-        <div className="flex flex-col md:flex-row items-center gap-3 pt-1">
-          {/* Search Input */}
-          <div className="relative flex-1 w-full">
-            <Search className="w-4 h-4 text-[#b22830] absolute left-3.5 top-1/2 -translate-y-1/2" />
+        {/* Search & Tag Filter Bar */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-3 pt-2">
+          {/* Search Input in Vintage Style */}
+          <div className="relative w-full md:w-72">
+            <Search className="w-4 h-4 text-stone-500 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Tìm món ngon: cà phê muối, bạc xỉu, oatly latte, freeze trà sen, croissant..."
+              placeholder="Tìm món: bánh mì, phin, muối, trà..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-9 py-2.5 rounded-xl bg-stone-50/80 border border-stone-200 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#b22830]/30 focus:border-[#b22830] transition font-medium"
+              className="w-full pl-9 pr-3 py-2 rounded-sm bg-[#faf5ec] border border-[#d6c7b2] text-xs font-serif text-stone-900 placeholder-stone-500 focus:outline-none focus:border-[#801419]"
             />
             {searchQuery && (
               <button
@@ -350,37 +346,25 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
             )}
           </div>
 
-          {/* Grouped Taste/Tag Filters with Highlands Inspired Colors */}
+          {/* Grouped Taste/Tag Filters styled as vintage stamps */}
           <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0 scrollbar-none">
             {filterTags.map((t) => {
               const isTagActive = filterTag === t.id;
-              let activeStyle = 'bg-[#8f1920] text-white shadow-md font-bold';
-              let badgeColor = 'bg-stone-100 text-stone-700 hover:bg-stone-200';
+              let style = 'bg-[#fffdfa] text-stone-800 border-[#d6c7b2] hover:bg-[#ede2cb]';
               
               if (t.id === 'saigon-xua') {
-                activeStyle = 'bg-gradient-to-r from-amber-700 via-amber-800 to-amber-950 text-white shadow-md ring-2 ring-amber-400 font-black';
-                badgeColor = 'bg-amber-100/80 text-amber-950 hover:bg-amber-200/80 border border-amber-300 font-bold';
-              } else if (t.id === 'best-seller') {
-                activeStyle = 'bg-gradient-to-r from-red-600 to-rose-700 text-white shadow-md ring-2 ring-amber-400/80 font-black';
-                badgeColor = 'bg-red-50 text-red-700 hover:bg-red-100 border border-red-200/60 font-semibold';
-              } else if (t.id === 'signature') {
-                activeStyle = 'bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 text-stone-950 shadow-md ring-2 ring-amber-300 font-black';
-                badgeColor = 'bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200/60 font-semibold';
-              } else if (t.id === 'cold') {
-                activeStyle = 'bg-gradient-to-r from-sky-600 to-blue-700 text-white shadow-md ring-2 ring-sky-300 font-bold';
-                badgeColor = 'bg-sky-50 text-sky-800 hover:bg-sky-100 border border-sky-200/60 font-semibold';
-              } else if (t.id === 'hot') {
-                activeStyle = 'bg-gradient-to-r from-orange-600 to-amber-700 text-white shadow-md ring-2 ring-orange-300 font-bold';
-                badgeColor = 'bg-orange-50 text-orange-800 hover:bg-orange-100 border border-orange-200/60 font-semibold';
+                style = isTagActive 
+                  ? 'bg-[#801419] text-amber-200 border-[#d4af37] font-black shadow-sm'
+                  : 'bg-[#ede2cb] text-[#801419] border-[#801419]/40 font-bold';
+              } else if (isTagActive) {
+                style = 'bg-[#801419] text-amber-100 border-[#d4af37] font-bold shadow-sm';
               }
 
               return (
                 <button
                   key={t.id}
                   onClick={() => setFilterTag(t.id)}
-                  className={`px-3 py-2 rounded-xl text-xs whitespace-nowrap transition cursor-pointer active:scale-95 ${
-                    isTagActive ? activeStyle : badgeColor
-                  }`}
+                  className={`px-3 py-1.5 rounded-sm text-xs font-serif whitespace-nowrap transition cursor-pointer active:scale-95 border ${style}`}
                 >
                   {t.label}
                 </button>
@@ -391,7 +375,7 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
 
         {/* Status bar if filter or search active */}
         {hasActiveFilters && (
-          <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-600">
+          <div className="flex items-center justify-between pt-2 border-t border-[#801419]/15 text-xs font-serif text-stone-700">
             <span>
               Tìm thấy <strong className="text-[#b22830]">{filteredItems.length}</strong> món phù hợp
             </span>
@@ -409,17 +393,17 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
 
       {/* Grid of Menu Items */}
       {filteredItems.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-3xl border border-stone-200 p-8 space-y-3">
-          <Coffee className="w-12 h-12 text-stone-300 mx-auto" />
-          <h3 className="text-base font-bold text-stone-700">Không tìm thấy món phù hợp</h3>
-          <p className="text-xs text-stone-500">
-            Thử tìm từ khóa khác như "cà phê", "muối", "trà" hoặc chọn danh mục khác nhé!
+        <div className="text-center py-16 bg-[#fffdfa] rounded-md border-2 border-dashed border-[#801419]/30 p-8 space-y-3 font-serif">
+          <Coffee className="w-12 h-12 text-[#801419]/40 mx-auto" />
+          <h3 className="text-base font-bold text-stone-800">Không tìm thấy món phù hợp</h3>
+          <p className="text-xs text-stone-600">
+            Thử tìm từ khóa khác như "bánh mì", "phin", "cà phê" hoặc chọn danh mục khác nhé!
           </p>
           <button
             onClick={handleResetFilters}
-            className="text-xs font-bold text-amber-800 underline cursor-pointer"
+            className="text-xs font-bold text-[#801419] underline cursor-pointer"
           >
-            Xem toàn bộ menu
+            Xem toàn bộ bảng giá quán
           </button>
         </div>
       ) : (
@@ -428,11 +412,11 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
             <div
               key={item.id}
               onClick={() => onSelectItem(item)}
-              className="bg-white rounded-2xl border border-stone-200/80 overflow-hidden shadow-2xs hover:shadow-xl hover:border-amber-300/80 transition-all duration-300 group flex flex-col justify-between cursor-pointer"
+              className="bg-[#fffdfa] rounded-md border-2 border-[#801419]/20 hover:border-[#801419] overflow-hidden shadow-xs hover:shadow-lg transition-all duration-300 group flex flex-col justify-between cursor-pointer"
             >
               <div>
                 {/* Image Container with Badges */}
-                <div className="relative h-48 bg-stone-100 overflow-hidden">
+                <div className="relative h-48 bg-[#f5eedc] overflow-hidden border-b border-[#801419]/15">
                   <img
                     src={item.image}
                     alt={item.name}
@@ -440,33 +424,33 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                     onError={(e) => {
                       const target = e.currentTarget as HTMLImageElement;
                       target.onerror = null;
-                      target.src = '/images/phindi-hanh-nhan.jpg';
+                      target.src = '/images/banh_mi_cham_cafe_sua_da.jpg';
                     }}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 filter contrast-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                  {/* Badges */}
-                  <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 items-start">
-                    {item.category === 'combo' && (
-                      <span className="px-2 py-0.5 rounded-md bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 text-white text-[10px] font-black uppercase tracking-wider shadow flex items-center gap-1">
-                        <Zap className="w-2.5 h-2.5 text-yellow-300" /> Combo Tiết Kiệm
+                  {/* Stamp Badges */}
+                  <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 items-start">
+                    {item.tags.includes('saigon-xua') && (
+                      <span className="px-2 py-0.5 rounded-xs bg-[#801419] text-amber-200 text-[10px] font-serif font-black uppercase tracking-wider shadow border border-[#d4af37]">
+                        Món Xưa Gia Truyền
                       </span>
                     )}
-                    {item.isSignature && (
-                      <span className="px-2 py-0.5 rounded-md bg-amber-500 text-stone-950 text-[10px] font-black uppercase tracking-wider shadow">
-                        Signature
+                    {item.category === 'combo' && !item.tags.includes('saigon-xua') && (
+                      <span className="px-2 py-0.5 rounded-xs bg-[#2e1d13] text-amber-200 text-[10px] font-serif font-black uppercase tracking-wider shadow border border-amber-400/50 flex items-center gap-1">
+                        <Zap className="w-2.5 h-2.5 text-yellow-400" /> Combo Tiết Kiệm
                       </span>
                     )}
-                    {item.isBestSeller && (
-                      <span className="px-2 py-0.5 rounded-md bg-rose-600 text-white text-[10px] font-bold uppercase tracking-wider shadow flex items-center gap-0.5">
+                    {item.isBestSeller && !item.tags.includes('saigon-xua') && (
+                      <span className="px-2 py-0.5 rounded-xs bg-[#801419] text-amber-100 text-[10px] font-serif font-bold uppercase tracking-wider shadow border border-amber-300/50 flex items-center gap-0.5">
                         <Flame className="w-2.5 h-2.5" /> Best Seller
                       </span>
                     )}
                   </div>
 
-                  {/* Temperature Pill */}
-                  <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-md bg-stone-900/70 backdrop-blur text-stone-200 text-[10px] font-medium">
+                  {/* Temperature Stamp */}
+                  <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-xs bg-[#23150d]/85 text-amber-200 text-[10px] font-serif font-medium border border-amber-800/40">
                     {item.temperature === 'both' ? 'Đá / Nóng' : item.temperature === 'hot' ? 'Nóng' : 'Đá'}
                   </div>
                 </div>
@@ -474,17 +458,17 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                 {/* Content */}
                 <div className="p-4 space-y-2">
                   <div className="space-y-0.5">
-                    <h3 className="font-bold text-stone-900 text-sm sm:text-base group-hover:text-amber-800 transition line-clamp-1">
+                    <h3 className="font-serif font-bold text-stone-900 text-sm sm:text-base group-hover:text-[#801419] transition line-clamp-1">
                       {item.name}
                     </h3>
                     {item.vietnameseName && (
-                      <p className="text-[11px] text-stone-400 truncate font-medium">
+                      <p className="text-[11px] font-serif italic text-stone-500 truncate">
                         {item.vietnameseName}
                       </p>
                     )}
                   </div>
 
-                  <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">
                     {item.description}
                   </p>
 
@@ -493,7 +477,7 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                     {item.tags.slice(0, 3).map((tag, idx) => (
                       <span
                         key={idx}
-                        className="text-[10px] px-2 py-0.5 rounded bg-stone-100 text-stone-600 font-medium"
+                        className="text-[10px] px-1.5 py-0.2 rounded-xs bg-[#ede2cb] text-stone-700 font-serif font-medium"
                       >
                         {tag}
                       </span>
@@ -503,19 +487,21 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
               </div>
 
               {/* Price & CTA Button */}
-              <div className="p-4 pt-0 flex items-center justify-between border-t border-stone-100 mt-2">
+              <div className="p-4 pt-0 flex items-center justify-between border-t border-[#801419]/10 mt-2">
                 <div>
                   <div className="flex items-baseline gap-1.5">
-                    <span className="text-base font-extrabold text-amber-900">
+                    <span className="text-base font-mono font-bold text-[#801419]">
                       {item.price.toLocaleString('vi-VN')}đ
                     </span>
                     {item.originalPrice && (
-                      <span className="text-xs text-stone-400 line-through">
+                      <span className="text-xs font-mono text-stone-400 line-through">
                         {item.originalPrice.toLocaleString('vi-VN')}đ
                       </span>
                     )}
                   </div>
-                  <span className="text-[10px] text-stone-400 block">Ly Size M (350ml)</span>
+                  <span className="text-[10px] font-serif text-stone-500 block">
+                    {item.category === 'pastry' ? 'Phần ăn kèm' : 'Ly Size M (350ml)'}
+                  </span>
                 </div>
 
                 <button
@@ -524,7 +510,7 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                     e.stopPropagation();
                     onSelectItem(item);
                   }}
-                  className="w-9 h-9 rounded-xl bg-amber-100 hover:bg-amber-800 text-amber-900 hover:text-white flex items-center justify-center transition shadow-2xs group-hover:bg-amber-800 group-hover:text-white cursor-pointer"
+                  className="w-8 h-8 rounded-sm bg-[#801419] hover:bg-[#630f14] text-amber-200 border border-[#d4af37] flex items-center justify-center transition shadow-xs cursor-pointer active:scale-95"
                   title="Chọn tùy chỉnh và đặt món"
                 >
                   <Plus className="w-4 h-4" />

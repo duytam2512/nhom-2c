@@ -80,57 +80,57 @@ export const ProductModal: React.FC<ProductModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white w-full sm:max-w-xl md:max-w-3xl lg:max-w-4xl rounded-t-3xl sm:rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col md:flex-row max-h-[92dvh] sm:max-h-[88vh]">
+      <div className="bg-[#fffdfa] w-full sm:max-w-xl md:max-w-3xl lg:max-w-4xl rounded-t-xl sm:rounded-lg shadow-2xl border-2 border-[#801419]/40 overflow-hidden flex flex-col md:flex-row max-h-[92dvh] sm:max-h-[88vh]">
         {/* Left Side (Desktop): Product Image & Heritage Story */}
-        <div className="relative h-56 sm:h-64 md:h-auto md:w-5/12 bg-stone-900 shrink-0 flex flex-col justify-end p-5 text-white overflow-hidden">
+        <div className="relative h-56 sm:h-64 md:h-auto md:w-5/12 bg-stone-950 shrink-0 flex flex-col justify-end p-5 text-white overflow-hidden border-b md:border-b-0 md:border-r border-[#801419]/25">
           <img
             src={item.image}
             alt={item.name}
             onError={(e) => {
               const target = e.currentTarget as HTMLImageElement;
               target.onerror = null;
-              target.src = '/images/phindi-hanh-nhan.jpg';
+              target.src = '/images/banh_mi_cham_cafe_sua_da.jpg';
             }}
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover filter contrast-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/45 to-transparent" />
           
           {/* Close button (Mobile only) */}
           <button
             onClick={onClose}
-            className="md:hidden absolute top-3.5 right-3.5 w-9 h-9 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur text-white flex items-center justify-center transition cursor-pointer"
+            className="md:hidden absolute top-3.5 right-3.5 w-9 h-9 rounded-sm bg-black/60 hover:bg-black/80 backdrop-blur text-white flex items-center justify-center transition cursor-pointer border border-white/20"
           >
             <X className="w-5 h-5" />
           </button>
 
           {/* Item details overlay */}
           <div className="relative z-10 space-y-1.5">
-            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-              {item.isSignature && (
-                <span className="px-2.5 py-0.5 rounded-full bg-amber-500 text-stone-950 text-[11px] font-bold flex items-center gap-1 shadow">
-                  <Sparkles className="w-3 h-3" /> Chữ ký quán
+            <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
+              {item.tags.includes('saigon-xua') && (
+                <span className="px-2 py-0.5 rounded-xs bg-[#801419] text-amber-200 text-[10px] font-serif font-black uppercase tracking-wider shadow border border-[#d4af37]">
+                  Món Xưa Gia Truyền
                 </span>
               )}
-              {item.isBestSeller && (
-                <span className="px-2.5 py-0.5 rounded-full bg-rose-600 text-white text-[11px] font-bold flex items-center gap-1 shadow">
-                  <Flame className="w-3 h-3" /> Bán chạy nhất
+              {item.isSignature && !item.tags.includes('saigon-xua') && (
+                <span className="px-2 py-0.5 rounded-xs bg-[#d4af37] text-[#52090c] text-[10px] font-serif font-black uppercase tracking-wider shadow">
+                  Chữ Ký Quán
                 </span>
               )}
-              {item.calories && (
-                <span className="px-2 py-0.5 rounded-full bg-stone-800/80 backdrop-blur text-stone-300 text-[11px]">
-                  {item.calories} kcal
+              {item.isBestSeller && !item.tags.includes('saigon-xua') && (
+                <span className="px-2 py-0.5 rounded-xs bg-[#801419] text-amber-100 text-[10px] font-serif font-bold uppercase tracking-wider shadow border border-amber-300/40">
+                  Bán Chạy Nhất
                 </span>
               )}
             </div>
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-black font-display leading-tight">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-black font-serif leading-tight text-[#fffdfa]">
               {item.name}
             </h2>
             {item.vietnameseName && (
-              <p className="text-xs text-amber-200/90 font-medium">
+              <p className="text-xs text-amber-200/90 font-serif italic">
                 {item.vietnameseName}
               </p>
             )}
-            <p className="text-xs text-stone-200/90 line-clamp-3 hidden md:block pt-1">
+            <p className="text-xs text-stone-200/90 line-clamp-3 hidden md:block pt-1 font-sans">
               {item.description}
             </p>
           </div>
@@ -416,24 +416,24 @@ export const ProductModal: React.FC<ProductModalProps> = ({
         </div>
 
         {/* Footer with Quantity & Add Button */}
-        <div className="p-4 bg-stone-50 border-t border-stone-200 flex items-center justify-between gap-4">
+        <div className="p-4 bg-[#faf5ec] border-t border-[#801419]/15 flex items-center justify-between gap-4">
           {/* Quantity Selector */}
-          <div className="flex items-center gap-2 bg-white px-2 py-1.5 rounded-xl border border-stone-200 shadow-sm">
+          <div className="flex items-center gap-2 bg-[#fffdfa] px-2 py-1.5 rounded-sm border border-[#d6c7b2] shadow-xs">
             <button
               type="button"
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
               disabled={quantity <= 1}
-              className="w-7 h-7 rounded-lg flex items-center justify-center text-stone-600 hover:bg-stone-100 disabled:opacity-40 transition"
+              className="w-7 h-7 rounded-xs flex items-center justify-center text-stone-700 hover:bg-[#ede2cb] disabled:opacity-40 transition cursor-pointer"
             >
               <Minus className="w-3.5 h-3.5" />
             </button>
-            <span className="text-sm font-bold text-stone-900 w-6 text-center">
+            <span className="text-sm font-mono font-bold text-stone-900 w-6 text-center">
               {quantity}
             </span>
             <button
               type="button"
               onClick={() => setQuantity(quantity + 1)}
-              className="w-7 h-7 rounded-lg flex items-center justify-center text-stone-600 hover:bg-stone-100 transition"
+              className="w-7 h-7 rounded-xs flex items-center justify-center text-stone-700 hover:bg-[#ede2cb] transition cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
             </button>
@@ -443,10 +443,10 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           <button
             type="button"
             onClick={handleAdd}
-            className="flex-1 py-3 px-5 rounded-xl bg-gradient-to-r from-amber-800 to-amber-900 hover:from-amber-700 hover:to-amber-800 text-white font-bold text-sm shadow-md shadow-amber-900/20 flex items-center justify-between transition group"
+            className="flex-1 py-3 px-5 rounded-sm bg-[#801419] hover:bg-[#630f14] text-amber-100 font-serif font-bold text-sm shadow-sm border border-[#d4af37] flex items-center justify-between transition group cursor-pointer uppercase tracking-wider"
           >
-            <span>Thêm vào giỏ</span>
-            <span className="text-amber-200 font-extrabold group-hover:translate-x-0.5 transition-transform">
+            <span>Thêm Vào Phiếu Đặt Món</span>
+            <span className="text-amber-300 font-mono font-bold group-hover:translate-x-0.5 transition-transform">
               {totalPrice.toLocaleString('vi-VN')}đ
             </span>
           </button>

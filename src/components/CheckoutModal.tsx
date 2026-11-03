@@ -164,21 +164,21 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl rounded-t-3xl sm:rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[90vh] pb-[env(safe-area-inset-bottom,8px)] sm:pb-0">
-        {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-stone-100 flex items-center justify-between bg-stone-50/80">
+      <div className="bg-[#fffdfa] w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl rounded-t-xl sm:rounded-lg shadow-2xl border-2 border-[#801419]/40 overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[90vh] pb-[env(safe-area-inset-bottom,8px)] sm:pb-0">
+        {/* Header: Vintage Saigon Cafe Receipt Style */}
+        <div className="p-4 sm:p-5 border-b-2 border-[#d4af37] flex items-center justify-between bg-[#801419] text-amber-100">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-800 text-white flex items-center justify-center shadow-sm">
-              <ShieldCheck className="w-5 h-5 text-amber-200" />
+            <div className="w-10 h-10 rounded-sm bg-[#d4af37] text-[#52090c] flex items-center justify-center shadow-xs">
+              <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-stone-900 text-base sm:text-lg">Thanh Toán Đặt Cà Phê Siêu Tốc</h3>
-              <p className="text-xs text-stone-500">Mã đơn: <span className="font-mono font-bold text-amber-800">{orderCode}</span> • Bảo mật giao dịch SSL 256-bit</p>
+              <h3 className="font-serif font-bold text-amber-100 text-base sm:text-lg">Phiếu Thanh Toán Đặt Món Quán Xưa</h3>
+              <p className="text-xs text-amber-200/90 font-mono">Mã đơn: <span className="font-bold text-amber-300 bg-black/25 px-1.5 py-0.5 rounded-xs">{orderCode}</span> • 120 Pasteur, Q.1</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-9 h-9 rounded-full flex items-center justify-center text-stone-400 hover:text-stone-700 hover:bg-stone-200/60 transition"
+            className="w-8 h-8 rounded-sm flex items-center justify-center text-amber-200 hover:text-white hover:bg-black/20 transition cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -513,10 +513,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         </div>
 
         {/* Modal Footer with Fast Checkout Action Button */}
-        <div className="p-4 bg-stone-50 border-t border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="p-4 bg-[#faf5ec] border-t border-[#801419]/15 flex flex-col sm:flex-row items-center justify-between gap-3 font-serif">
           <div className="text-left w-full sm:w-auto">
-            <span className="text-[11px] text-stone-500 block">Tổng cần thanh toán:</span>
-            <span className="text-lg font-black text-amber-900">
+            <span className="text-[11px] text-stone-600 block">Tổng thanh toán:</span>
+            <span className="text-xl font-mono font-bold text-[#801419]">
               {total.toLocaleString('vi-VN')} đ
             </span>
           </div>
@@ -525,22 +525,22 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             type="button"
             disabled={isProcessing}
             onClick={handleFinishPayment}
-            className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-700 to-teal-800 hover:from-emerald-700 hover:to-teal-900 text-white font-bold text-sm shadow-md flex items-center justify-center gap-2 transition disabled:opacity-50"
+            className="w-full sm:w-auto px-6 py-3 rounded-sm bg-[#801419] hover:bg-[#630f14] text-amber-100 font-serif font-bold text-sm shadow-md border-2 border-[#d4af37] flex items-center justify-center gap-2 transition disabled:opacity-50 cursor-pointer uppercase tracking-wider"
           >
             {isProcessing ? (
               <>
-                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                <span>Đang xác nhận đơn hàng...</span>
+                <span className="w-4 h-4 border-2 border-amber-200/30 border-t-amber-200 rounded-full animate-spin" />
+                <span>Đang in phiếu & báo quầy...</span>
               </>
             ) : (
               <>
-                <CheckCircle2 className="w-4 h-4 text-emerald-200" />
+                <CheckCircle2 className="w-4 h-4 text-amber-300" />
                 <span>
                   {paymentMethod === 'vietqr'
-                    ? 'Tôi Đã Chuyển Khoản • Xác Nhận Ngay'
-                    : 'Hoàn Tất Đặt Hàng Siêu Tốc'}
+                    ? 'Đã Chuyển Khoản • Hoàn Tất Đặt Món'
+                    : 'Xác Nhận Đặt Món Quán Xưa'}
                 </span>
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-4 h-4 text-amber-300" />
               </>
             )}
           </button>

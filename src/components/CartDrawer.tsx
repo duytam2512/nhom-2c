@@ -102,53 +102,53 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
       {/* Drawer */}
       <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
-        <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col">
-          {/* Header */}
-          <div className="p-4 sm:p-5 border-b border-stone-100 flex items-center justify-between bg-stone-50/70">
+        <div className="w-screen max-w-md bg-[#fffdfa] shadow-2xl flex flex-col border-l-2 border-[#801419]/30">
+          {/* Header: Vintage Saigon Cafe Docket Style */}
+          <div className="p-4 sm:p-5 border-b-2 border-[#d4af37] flex items-center justify-between bg-[#801419] text-amber-100 shadow-xs">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-900 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-sm bg-[#d4af37] text-[#52090c] flex items-center justify-center font-bold shadow-xs">
                 <ShoppingBag className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-bold text-stone-900 text-base">Giỏ Hàng Cà Phê</h3>
-                <p className="text-xs text-stone-500">
-                  {items.length === 0 ? 'Chưa có sản phẩm' : `${items.reduce((s, i) => s + i.quantity, 0)} món đã chọn`}
+                <h3 className="font-serif font-bold text-amber-100 text-base">Phiếu Đặt Món Quán Xưa</h3>
+                <p className="text-xs text-amber-200/90 font-mono">
+                  {items.length === 0 ? 'Chưa chọn món nào' : `${items.reduce((s, i) => s + i.quantity, 0)} phần đã chọn`}
                 </p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-stone-400 hover:text-stone-700 hover:bg-stone-200/60 transition"
+              className="w-8 h-8 rounded-sm flex items-center justify-center text-amber-200 hover:text-white hover:bg-black/20 transition cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
-          {/* Delivery or Pickup Segmented Control */}
-          <div className="p-3 bg-stone-100/70 border-b border-stone-200/60">
-            <div className="grid grid-cols-2 p-1 bg-stone-200/70 rounded-xl text-xs font-semibold">
+          {/* Delivery or Pickup Segmented Control in Vintage Style */}
+          <div className="p-3 bg-[#faf5ec] border-b border-[#801419]/15">
+            <div className="grid grid-cols-2 p-1 bg-[#ede2cb] rounded-sm text-xs font-serif font-bold border border-[#d6c7b2]">
               <button
                 type="button"
                 onClick={() => setOrderType('pickup')}
-                className={`py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 transition ${
+                className={`py-2 px-3 rounded-xs flex items-center justify-center gap-1.5 transition cursor-pointer ${
                   orderType === 'pickup'
-                    ? 'bg-white text-amber-950 shadow-sm font-bold'
-                    : 'text-stone-600 hover:text-stone-900'
+                    ? 'bg-[#801419] text-amber-200 shadow-xs font-bold border border-[#d4af37]'
+                    : 'text-stone-700 hover:text-stone-900'
                 }`}
               >
-                <Store className="w-4 h-4 text-amber-700" />
-                Ghé Lấy (5 phút)
+                <Store className="w-4 h-4 text-amber-400" />
+                Ghé Quán Lấy (5p)
               </button>
               <button
                 type="button"
                 onClick={() => setOrderType('delivery')}
-                className={`py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 transition ${
+                className={`py-2 px-3 rounded-xs flex items-center justify-center gap-1.5 transition cursor-pointer ${
                   orderType === 'delivery'
-                    ? 'bg-white text-amber-950 shadow-sm font-bold'
-                    : 'text-stone-600 hover:text-stone-900'
+                    ? 'bg-[#801419] text-amber-200 shadow-xs font-bold border border-[#d4af37]'
+                    : 'text-stone-700 hover:text-stone-900'
                 }`}
               >
-                <Truck className="w-4 h-4 text-amber-700" />
+                <Truck className="w-4 h-4 text-amber-400" />
                 Giao Tận Nơi (15p)
               </button>
             </div>
@@ -456,13 +456,13 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               <button
                 type="button"
                 onClick={onProceedToCheckout}
-                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-800 via-amber-900 to-stone-900 hover:opacity-95 text-white font-bold text-xs sm:text-sm flex items-center justify-between shadow-lg shadow-amber-950/20 transition group"
+                className="w-full py-3.5 px-4 rounded-sm bg-[#801419] hover:bg-[#630f14] text-amber-100 font-serif font-bold text-xs sm:text-sm flex items-center justify-between shadow-md border-2 border-[#d4af37] transition group cursor-pointer uppercase tracking-wider"
               >
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>Tiến Hành Thanh Toán Nhanh</span>
+                  <span>Xác Nhận & Lấy Mã VietQR</span>
                 </div>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 text-amber-300 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
           )}
