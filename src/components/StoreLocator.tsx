@@ -31,22 +31,22 @@ export const StoreLocator: React.FC<StoreLocatorProps> = ({
   onOpenTableBooking,
 }) => {
   const store = STORES[0] || selectedStore;
-  const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('7 Công Trường Lam Sơn, Bến Nghé, Quận 1, Hồ Chí Minh')}`;
+  const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('120 Pasteur, Bến Nghé, Quận 1, Hồ Chí Minh')}`;
   
   const [activePhotoIndex, setActivePhotoIndex] = React.useState<number>(0);
 
   const STORE_PHOTOS = [
     {
       url: '/images/gocoffee_quan1_storefront.jpg',
-      fallbackUrl: '/images/gocoffee_quan1_storefront_1793580329452.jpg',
-      label: 'Kiosk Q.1 Lam Sơn',
-      tag: '7 Công Trường Lam Sơn, Q.1',
-      title: 'Quầy Kiosk Go Coffee Lam Sơn - Quận 1',
-      desc: 'Tọa lạc vỉa hè góc phố trung tâm Q.1 bên cạnh Nhà Hát Lớn & Khách sạn Continental, tấp xe máy nhận cà phê 5 phút.'
+      fallbackUrl: '/images/gocoffee_pasteur_storefront.jpg',
+      label: 'Kiosk Q.1 Pasteur',
+      tag: '120 Pasteur, Q.1',
+      title: 'Quầy Kiosk Go Coffee Pasteur - Quận 1',
+      desc: 'Tọa lạc vỉa hè góc phố Pasteur & Lê Lợi trung tâm Q.1 đối diện Saigon Centre, tấp xe máy nhận cà phê 5 phút.'
     },
     {
       url: '/images/gocoffee_quan1_handover.jpg',
-      fallbackUrl: '/images/gocoffee_quan1_handover_1793580330615.jpg',
+      fallbackUrl: '/images/gocoffee_pasteur_handover.jpg',
       label: 'Cửa Sổ Giao Nhanh',
       tag: 'Nhận Món Trong 5 Phút',
       title: 'Trao Tay Ly Cà Phê Siêu Tốc',
@@ -54,7 +54,7 @@ export const StoreLocator: React.FC<StoreLocatorProps> = ({
     },
     {
       url: '/images/gocoffee_quan1_barista.jpg',
-      fallbackUrl: '/images/gocoffee_quan1_barista_1793580330531.jpg',
+      fallbackUrl: '/images/gocoffee_pasteur_barista.jpg',
       label: 'Pha Phin Thủ Công',
       tag: '100% Cà Phê Cầu Đất',
       title: 'Pha Phin Truyền Thống Đậm Vị',
@@ -75,7 +75,7 @@ export const StoreLocator: React.FC<StoreLocatorProps> = ({
       <div className="text-center space-y-3 mb-12">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-100 border border-red-300 text-[#8c141c] text-xs font-black uppercase tracking-wider shadow-2xs">
           <Store className="w-3.5 h-3.5 text-[#b22830]" />
-          <span>Quầy Cà Phê Takeaway • 7 Công Trường Lam Sơn, Quận 1</span>
+          <span>Quầy Cà Phê Takeaway • 120 Pasteur, Quận 1</span>
         </div>
         
         <h2 className="text-2xl sm:text-4xl font-black font-display text-stone-900 tracking-tight">
@@ -150,7 +150,7 @@ export const StoreLocator: React.FC<StoreLocatorProps> = ({
             </p>
             <p className="text-xs text-amber-300/90 flex items-center gap-1.5 font-medium pt-1">
               <MapPin className="w-4 h-4 text-amber-400 shrink-0" />
-              7 Công Trường Lam Sơn (sát Nhà Hát Lớn TP.HCM)
+              120 Pasteur (Góc Pasteur & Lê Lợi, đối diện Saigon Centre)
             </p>
           </div>
         </div>
@@ -166,7 +166,7 @@ export const StoreLocator: React.FC<StoreLocatorProps> = ({
                   Địa Chỉ Quán (Chuyên Mang Đi)
                 </span>
                 <h4 className="text-lg sm:text-xl font-black text-stone-900 font-display">
-                  7 Công Trường Lam Sơn, Phường Bến Nghé, Quận 1
+                  120 Pasteur, Phường Bến Nghé, Quận 1
                 </h4>
               </div>
               <span className="px-3 py-1 rounded-xl bg-amber-100 text-amber-950 text-xs font-bold border border-amber-300">

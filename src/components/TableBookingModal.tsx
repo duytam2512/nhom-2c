@@ -213,7 +213,7 @@ export const TableBookingModal: React.FC<TableBookingModalProps> = ({
                       </div>
                       <div className="text-xs">
                         <div className="font-bold text-stone-900">Go Coffee - Quận 1</div>
-                        <div className="text-[11px] text-stone-600">7 Công Trường Lam Sơn, P. Bến Nghé, Quận 1, TP.HCM</div>
+                        <div className="text-[11px] text-stone-600">120 Pasteur, P. Bến Nghé, Quận 1, TP.HCM (Đối diện Saigon Centre)</div>
                       </div>
                     </div>
                   </div>

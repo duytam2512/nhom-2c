@@ -161,7 +161,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     <MapPin className="w-3.5 h-3.5 text-amber-700 shrink-0" />
                     <span>Go Coffee - Quận 1</span>
                   </div>
-                  <p className="text-[11px] text-stone-600 pl-5">7 Công Trường Lam Sơn, P. Bến Nghé, Quận 1 (Cạnh Nhà Hát)</p>
+                  <p className="text-[11px] text-stone-600 pl-5">120 Pasteur, P. Bến Nghé, Quận 1 (Đối diện Saigon Centre)</p>
                 </div>
                 <span className="text-[11px] bg-amber-100 text-amber-950 font-bold px-2 py-1 rounded-lg shrink-0">
                   Quận 1

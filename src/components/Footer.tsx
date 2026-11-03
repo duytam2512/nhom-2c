@@ -61,8 +61,8 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare, onResetHome, onO
             <h4 className="text-xs font-bold uppercase tracking-wider text-white">Địa Chỉ Quán (Quận 1)</h4>
             <div className="space-y-2 text-xs text-stone-400">
               <p className="font-bold text-stone-200">Go Coffee - Quận 1</p>
-              <p>7 Công Trường Lam Sơn, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh</p>
-              <p className="text-[11px] text-stone-500">(Cạnh Nhà Hát Lớn TP.HCM, đối diện Phố Đi Bộ Nguyễn Huệ)</p>
+              <p>120 Pasteur, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh</p>
+              <p className="text-[11px] text-stone-500">(Góc Pasteur & Lê Lợi, đối diện Saigon Centre - Takashimaya)</p>
               <div className="pt-1 text-emerald-400 font-semibold flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 <span>Mở cửa: 06:30 - 23:00 hàng ngày</span>

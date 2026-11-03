@@ -191,7 +191,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             <h4 className="text-xs font-bold uppercase tracking-wider text-stone-800 flex items-center justify-between">
               <span>Thông tin khách nhận</span>
               <span className="text-[11px] text-amber-700 font-normal">
-                {orderType === 'pickup' ? `Lấy tại: Go Coffee - 7 Lam Sơn, Quận 1` : `Giao đến: ${deliveryAddress || 'Chưa nhập địa chỉ'}`}
+                {orderType === 'pickup' ? `Lấy tại: Go Coffee - 120 Pasteur, Quận 1` : `Giao đến: ${deliveryAddress || 'Chưa nhập địa chỉ'}`}
               </span>
             </h4>
             
@@ -331,7 +331,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             )}
 
             <p className="text-[11px] text-stone-500 italic">
-              * Quầy Go Coffee tại 7 Công Trường Lam Sơn sẽ bắt đầu pha chế tươi đúng khung giờ bạn chọn để đảm bảo hương vị cà phê và độ lạnh chuẩn nhất.
+              * Quầy Go Coffee tại 120 Pasteur, Quận 1 sẽ bắt đầu pha chế tươi đúng khung giờ bạn chọn để đảm bảo hương vị cà phê và độ lạnh chuẩn nhất.
             </p>
           </div>
 

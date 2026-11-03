@@ -32,7 +32,7 @@ if (apiKey) {
 
 // System prompt for Chat với Barista . Go Coffee
 const SYSTEM_INSTRUCTION = `Bạn là Barista thông minh, am hiểu và tận tâm trong tính năng "Chat với Barista . Go Coffee" của thương hiệu cà phê "Go Coffee" (chuyên cà phê hạt nguyên chất Tây Nguyên & Cầu Đất, menu phong phú, mô hình mang đi Takeaway tiện lợi lấy sau 5 phút).
-Quán tọa lạc tại: Số 7 Công Trường Lam Sơn, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh (ngay cạnh Nhà Hát Thành Phố). 
+Quán tọa lạc tại: Số 120 Pasteur, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh (Góc Pasteur & Lê Lợi, đối diện Saigon Centre). 
 LƯU Ý QUAN TRỌNG VỀ KHÔNG GIAN: Quán hoạt động theo mô hình TAKEAWAY (mang đi) và Giao hàng tận nơi, hoàn toàn KHÔNG CÓ DIỆN TÍCH KÊ BÀN GHẾ ngồi lại. Khách hàng đặt món trước qua website để tới quầy lấy nhanh sau 5 phút hoặc chọn giao tận nơi. Giờ mở cửa: 06:30 - 23:00 hàng ngày. Hotline: 1900 1755 / 0909 123 456.
 Nhiệm vụ của bạn:
 1. Tư vấn đồ uống và món ăn phù hợp với khẩu vị, tâm trạng, thời điểm (buổi sáng tỉnh táo làm việc, buổi chiều giải nhiệt thanh mát, không say caffein, ít ngọt, ăn chay):
@@ -66,7 +66,7 @@ Nhiệm vụ của bạn:
    - GOCOFFEE30: Giảm 30.000đ cho đơn từ 99.000đ.
    - BANMOI15: Giảm 15.000đ cho thành viên mới.
 3. Hướng dẫn các tiện ích của Go Coffee:
-   - Vị trí quầy Takeaway: Số 7 Công Trường Lam Sơn, Bến Nghé, Quận 1 (có chỗ tấp lề xe máy và ô tô nhận đồ uống nhanh).
+   - Vị trí quầy Takeaway: Số 120 Pasteur, Phường Bến Nghé, Quận 1 (Góc Pasteur & Lê Lợi, đối diện Saigon Centre, có chỗ tấp lề xe máy và ô tô nhận đồ uống nhanh).
    - Đặt món mang đi (Quick Pickup): Chuẩn bị sẵn sau 5 phút không cần xếp hàng, ly 2 lớp chống đổ xe máy an toàn.
    - Thanh toán VietQR NAPAS 24/7 tự động xác nhận trong 1s, ví MoMo, thẻ ngân hàng, tiền mặt.
 4. Phong cách giao tiếp: Lịch sự, ấm áp, đậm bản sắc người Việt, xưng "mình" hoặc "Barista Go Coffee" và gọi khách là "bạn" hoặc "quý khách". Khuyến khích gợi ý món kèm lời mời bấm xem menu hoặc đặt món ngay.`;
@@ -541,7 +541,7 @@ app.post('/api/booking', async (req, res) => {
 👥 <b>Số lượng:</b> <b>${reservationData.guestCount || 1} người</b>
 📅 <b>Ngày đến:</b> ${reservationData.date || 'Hôm nay'}
 ⏰ <b>Khung giờ:</b> ${reservationData.timeSlot || '09:00'}
-📍 <b>Địa điểm:</b> ${reservationData.storeName || (reservationData.store?.name || 'Go Coffee - Quận 1 (7 Công Trường Lam Sơn)')}
+📍 <b>Địa điểm:</b> ${reservationData.storeName || (reservationData.store?.name || 'Go Coffee - Quận 1 (120 Pasteur)')}
 🪑 <b>Khu vực bàn:</b> ${reservationData.seatingArea || 'Khu vực chuẩn'}
 📝 <b>Yêu cầu đặc biệt:</b> <i>${reservationData.note || 'Không có'}</i>
 ⏰ <b>Thời gian gửi:</b> ${new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}
@@ -637,7 +637,7 @@ ${itemsList}
 💰 <b>Tổng tiền:</b> <b>${Number(order.total || 0).toLocaleString('vi-VN')} đ</b>
 💳 <b>Thanh toán:</b> ${order.paymentMethod ? order.paymentMethod.toUpperCase() : 'VIETQR'} (${order.paymentStatus === 'paid' ? '✅ Đã thanh toán' : '⏳ Chưa thanh toán'})
 ⏰ <b>Giờ nhận hàng:</b> <b>${order.pickupTime || 'Lấy ngay (~5 - 8 phút)'}</b>
-🛵 <b>Hình thức:</b> ${order.orderType === 'pickup' ? `Ghé lấy tại quán: Go Coffee - Quận 1 (7 Công Trường Lam Sơn, Q.1)` : `Giao tận nơi: ${order.deliveryAddress || 'Địa chỉ khách'}`}
+🛵 <b>Hình thức:</b> ${order.orderType === 'pickup' ? `Ghé lấy tại quán: Go Coffee - Quận 1 (120 Pasteur, Q.1)` : `Giao tận nơi: ${order.deliveryAddress || 'Địa chỉ khách'}`}
 📝 <b>Ghi chú:</b> <i>${order.customerNote || 'Không có'}</i>`;
 
   const tgResult = await sendTelegramNotification(orderMessage, targetTelegramChatId);

@@ -265,7 +265,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={() => handleLinkClick('/cua-hang', 'stores')}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl transition cursor-pointer uppercase tracking-wider text-xs font-bold hover:bg-amber-100/60 hover:text-amber-950 text-stone-800"
-            title="Địa chỉ quán: 7 Công Trường Lam Sơn, P. Bến Nghé, Quận 1, TP.HCM"
+            title="Địa chỉ quán: 120 Pasteur, P. Bến Nghé, Quận 1, TP.HCM"
           >
             <MapPin className="w-4 h-4 text-amber-800" />
             <span>Địa Chỉ Quán</span>
@@ -346,7 +346,7 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="text-xs font-semibold text-stone-600 flex items-center gap-1">
               <MapPin className="w-3.5 h-3.5 text-amber-800" /> Quán tại Quận 1:
             </span>
-            <span className="text-xs font-bold text-stone-900 truncate max-w-[200px]">7 Công Trường Lam Sơn, Q.1</span>
+            <span className="text-xs font-bold text-stone-900 truncate max-w-[200px]">120 Pasteur, Q.1</span>
           </div>
 
           {/* GROUP 1: THỰC ĐƠN ACCORDION */}
@@ -443,7 +443,7 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <span className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-amber-800" />
-                <span>Địa Chỉ Quán (7 Lam Sơn, Quận 1)</span>
+                <span>Địa Chỉ Quán (120 Pasteur, Quận 1)</span>
               </span>
               <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
             </button>

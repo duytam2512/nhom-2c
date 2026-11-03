@@ -79,7 +79,7 @@ export const STORES: ExtendedStoreLocation[] = [
   {
     id: 'go-coffee-quan-1',
     name: 'Go Coffee - Quận 1 (Takeaway & Giao Nhanh)',
-    address: '7 Công Trường Lam Sơn, Phường Bến Nghé, Quận 1',
+    address: '120 Pasteur, Phường Bến Nghé, Quận 1',
     district: 'Quận 1',
     city: 'Hồ Chí Minh',
     distance: 'Trung tâm Quận 1',
@@ -87,7 +87,7 @@ export const STORES: ExtendedStoreLocation[] = [
     phone: '1900 1755',
     hours: '06:30 - 23:00 (Hàng ngày)',
     isOpen: true,
-    landmark: 'Cạnh Nhà Hát Lớn TP.HCM, đối diện Phố Đi Bộ Nguyễn Huệ',
+    landmark: 'Góc ngã tư Pasteur & Lê Lợi, đối diện Saigon Centre (Takashimaya)',
     amenities: [
       'Quầy pha chế & lấy nước Grab & Go trong 5 phút',
       'Đóng gói ly 2 lớp chuyên dụng chống đổ cho xe máy',

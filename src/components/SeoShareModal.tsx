@@ -53,7 +53,7 @@ export const SeoShareModal: React.FC<SeoShareModalProps> = ({ isOpen, onClose })
   const robotsUrl = `${currentOrigin}/robots.txt`;
 
   const displayTitle = "Go Coffee | Cà Phê Phin Takeaway & Đặt Món Trực Tuyến";
-  const displayDesc = "Go Coffee - Quán cà phê Takeaway tại số 7 Công Trường Lam Sơn, Quận 1. Đặt cà phê Phin Sữa Đá Cầu Đất, Cà Phê Muối Cố Đô, Freeze Trà Xanh mang đi sau 5 phút, thanh toán VietQR & MoMo.";
+  const displayDesc = "Go Coffee - Quán cà phê Takeaway tại số 120 Pasteur, Quận 1 (đối diện Saigon Centre). Đặt cà phê Phin Sữa Đá Cầu Đất, Cà Phê Muối Cố Đô, Freeze Trà Xanh mang đi sau 5 phút, thanh toán VietQR & MoMo.";
   const previewImg = "/images/gocoffee_quan1_storefront.jpg";
 
   const copyWithFeedback = (text: string, type: string) => {
@@ -527,7 +527,7 @@ export const SeoShareModal: React.FC<SeoShareModalProps> = ({ isOpen, onClose })
   "openingHours": "Mo-Su 06:30-23:00",
   "address": {
     "@type": "PostalAddress",
-    "streetAddress": "7 Công Trường Lam Sơn",
+    "streetAddress": "120 Pasteur",
     "addressLocality": "Hồ Chí Minh",
     "addressCountry": "VN"
   }
