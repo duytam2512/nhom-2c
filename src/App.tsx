@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
+import { PackagingGuide } from './components/PackagingGuide';
 import { MenuSection } from './components/MenuSection';
 import { StorySection } from './components/StorySection';
 import { StoreLocator } from './components/StoreLocator';
@@ -19,11 +20,14 @@ import { TableBookingModal } from './components/TableBookingModal';
 import { AdminDashboardModal } from './components/AdminDashboardModal';
 import { ChatbotWidget } from './components/ChatbotWidget';
 import { MobileBottomNav } from './components/MobileBottomNav';
+import { SignatureComboModal } from './components/SignatureComboModal';
+import { PackagingFeedbackModal } from './components/PackagingFeedbackModal';
 import { STORES } from './data/coffeeData';
-import { CartItem, MenuItem, Order, StoreLocation, Voucher, TableReservation, CoffeeCategory } from './types/coffee';
-import { ShoppingBag, CheckCircle, Sparkles, ArrowUp } from 'lucide-react';
+import { CartItem, MenuItem, Order, StoreLocation, Voucher, CoffeeCategory } from './types/coffee';
+import { CheckCircle } from 'lucide-react';
 import { getStoreSyncConfig } from './services/bookingSync';
 import { safeStorage } from './utils/safeStorage';
+import { getCreatorRefFromUrl, trackConversion } from './services/conversionTracker';
 
 export default function App() {
   // State
@@ -34,6 +38,7 @@ export default function App() {
   const [deliveryAddress, setDeliveryAddress] = useState('128 Nguyễn Đình Chiểu, P. Võ Thị Sáu, Q.3');
   const [appliedVoucher, setAppliedVoucher] = useState<Voucher | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<CoffeeCategory>('all');
+  const [creatorRef, setCreatorRef] = useState<string | null>(null);
 
   const handleSetOrderType = (type: 'pickup' | 'delivery') => {
     setOrderType(type);
@@ -61,6 +66,8 @@ export default function App() {
   const [isSeoShareOpen, setIsSeoShareOpen] = useState(false);
   const [isTableBookingOpen, setIsTableBookingOpen] = useState(false);
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+  const [isComboModalOpen, setIsComboModalOpen] = useState(false);
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [currentOrder, setCurrentOrder] = useState<Order | null>(null);
 
   const openBookingModal = () => {
@@ -78,7 +85,6 @@ export default function App() {
   // Cart operations
   const handleAddToCart = (newItem: CartItem) => {
     setCartItems((prev) => {
-      // Check if identical item (same id, size, temp, sugar, ice, milk, toppings) exists
       const existingIdx = prev.findIndex(
         (it) =>
           it.menuItemId === newItem.menuItemId &&
@@ -142,11 +148,19 @@ export default function App() {
 
   const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
-  // Check admin session on mount & Sync scroll & state with URL pathname
-  React.useEffect(() => {
+  // Check admin session on mount & Sync scroll & state with URL pathname & Creator query param
+  useEffect(() => {
     const savedAuth = safeStorage.getItem('go_coffee_admin_session');
     if (savedAuth === 'active') {
       setIsAdminLoggedIn(true);
+    }
+
+    // Creator / Referral tracking from URL (?ref=... / ?creator=...)
+    const ref = getCreatorRefFromUrl();
+    if (ref) {
+      setCreatorRef(ref);
+      setIsComboModalOpen(true);
+      trackConversion('view_combo_page', { creatorRef: ref, source: 'creator_url_param' }, ref);
     }
 
     const handleUrlRoute = () => {
@@ -163,11 +177,15 @@ export default function App() {
           const el = document.getElementById('story');
           if (el) el.scrollIntoView({ behavior: 'smooth' });
         }, 100);
-      } else if (path === '/cua-hang') {
+      } else if (path === '/cua-hang' || path === '/diem-ban') {
         setTimeout(() => {
           const el = document.getElementById('stores');
           if (el) el.scrollIntoView({ behavior: 'smooth' });
         }, 100);
+      } else if (path === '/bo-ca-phe-banh' || path === '/combo' || path === '/signature') {
+        setIsComboModalOpen(true);
+      } else if (path === '/gop-y-bao-bi' || path === '/feedback') {
+        setIsFeedbackModalOpen(true);
       } else if (path === '/uu-dai' || path === '/khuyen-mai') {
         setSelectedCategory('combo');
         setTimeout(() => {
@@ -209,6 +227,14 @@ export default function App() {
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const scrollToStores = () => {
+    if (typeof window !== 'undefined') {
+      window.history.pushState(null, '', '/cua-hang');
+    }
+    const el = document.getElementById('stores');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
   const handleResetHome = () => {
     setSelectedCategory('all');
     setIsCartOpen(false);
@@ -217,6 +243,8 @@ export default function App() {
     setIsOrderTrackerOpen(false);
     setIsSeoShareOpen(false);
     setIsChatbotOpen(false);
+    setIsComboModalOpen(false);
+    setIsFeedbackModalOpen(false);
     setCustomizingItem(null);
     if (typeof window !== 'undefined') {
       window.history.pushState(null, '', '/');
@@ -241,8 +269,8 @@ export default function App() {
         <div className="bg-stone-900 border-b border-amber-500/40 text-stone-200 px-4 py-2 flex items-center justify-between text-xs sticky top-0 z-50 shadow-md">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="font-bold text-amber-300">👑 Chế Độ Chủ Quán</span>
-            <span className="hidden md:inline text-stone-400">• Đang hoạt động riêng tư (Khách hàng không nhìn thấy dữ liệu kỹ thuật)</span>
+            <span className="font-bold text-amber-300">👑 Chế Độ Chủ Quán GO.COFFEE</span>
+            <span className="hidden md:inline text-stone-400">• Đang hoạt động riêng tư</span>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -280,28 +308,53 @@ export default function App() {
         onOpenOrderTracker={() => setIsOrderTrackerOpen(true)}
       />
 
-      {/* Hero Section */}
+      {/* Main flow: Hero -> PackagingGuide -> MenuSection -> StoreLocator -> StorySection */}
       <main className="flex-1">
+        {/* 1. Màn hình đầu trang: Big Idea "Chấm một miếng bánh, nhớ một thời" + Sản phẩm chủ lực nắp ly */}
         <Hero
           onOrderNow={scrollToMenu}
+          onOpenComboModal={() => setIsComboModalOpen(true)}
+          onOpenStoreLocator={scrollToStores}
           onCustomizeItem={(item) => setCustomizingItem(item)}
           onOpenSeoShare={() => setIsSeoShareOpen(true)}
           onOpenTableBooking={() => setIsTableBookingOpen(true)}
           onOpenChatbot={() => setIsChatbotOpen(true)}
         />
 
-        {/* Menu Section */}
+        {/* 2. Hướng dẫn tháo hộp & thưởng thức bánh chấm cà phê trong 3 bước */}
+        <PackagingGuide
+          onOpenComboModal={() => setIsComboModalOpen(true)}
+          onOpenFeedbackModal={() => setIsFeedbackModalOpen(true)}
+        />
+
+        {/* 3. Menu & Bảng giá sản phẩm */}
         <MenuSection
           onSelectItem={(item) => setCustomizingItem(item)}
-          onBuyNowItem={(item) => setCustomizingItem(item)}
+          onBuyNowItem={(item) => {
+            // Instant purchase from Menu card
+            const cartItem: CartItem = {
+              id: `cart-${item.id}-${Date.now()}`,
+              menuItemId: item.id,
+              name: item.name,
+              size: 'M',
+              temperature: item.temperature === 'hot' ? 'hot' : 'cold',
+              sugarLevel: '70%',
+              iceLevel: item.temperature === 'hot' ? '0%' : '70%',
+              milkType: 'standard',
+              toppings: [],
+              quantity: 1,
+              unitPrice: item.price,
+              totalPrice: item.price,
+              specialInstructions: '',
+              image: item.image,
+            };
+            handleBuyNow(cartItem);
+          }}
           selectedCategory={selectedCategory}
           onSelectCategory={setSelectedCategory}
         />
 
-        {/* Story Section */}
-        <StorySection />
-
-        {/* Store Locator */}
+        {/* 4. Thông tin điểm bán: Takeaway Booth 120 Pasteur (Dự kiến) */}
         <StoreLocator
           selectedStore={selectedStore}
           onSelectStore={(store) => {
@@ -312,7 +365,11 @@ export default function App() {
             if (store) setSelectedStore(store);
             setIsTableBookingOpen(true);
           }}
+          onOrderNow={scrollToMenu}
         />
+
+        {/* 5. Câu chuyện thương hiệu: Một chút Sài Gòn xưa */}
+        <StorySection />
       </main>
 
       {/* Footer */}
@@ -328,14 +385,11 @@ export default function App() {
         onOpenCart={() => setIsCartOpen(true)}
         onOpenTableBooking={openBookingModal}
         onScrollToMenu={scrollToMenu}
-        onScrollToStores={() => {
-          const el = document.getElementById('stores');
-          if (el) el.scrollIntoView({ behavior: 'smooth' });
-        }}
+        onScrollToStores={scrollToStores}
         onGoHome={handleResetHome}
       />
 
-      {/* Modals */}
+      {/* Product Customization Modal */}
       <ProductModal
         item={customizingItem}
         isOpen={!!customizingItem}
@@ -344,6 +398,7 @@ export default function App() {
         onBuyNow={handleBuyNow}
       />
 
+      {/* Cart Drawer */}
       <CartDrawer
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
@@ -363,6 +418,7 @@ export default function App() {
         setPickupTime={setPickupTime}
       />
 
+      {/* Checkout Modal */}
       <CheckoutModal
         isOpen={isCheckoutOpen}
         onClose={() => setIsCheckoutOpen(false)}
@@ -376,6 +432,7 @@ export default function App() {
         setPickupTime={setPickupTime}
       />
 
+      {/* Order Tracker Modal */}
       <OrderTrackerModal
         order={currentOrder}
         isOpen={isOrderTrackerOpen}
@@ -383,9 +440,25 @@ export default function App() {
         onOrderUpdated={(updated) => setCurrentOrder(updated)}
       />
 
+      {/* Social Share & SEO Modal */}
       <SeoShareModal
         isOpen={isSeoShareOpen}
         onClose={() => setIsSeoShareOpen(false)}
+      />
+
+      {/* Campaign Dedicated Modal for Ads & Creators */}
+      <SignatureComboModal
+        isOpen={isComboModalOpen}
+        onClose={() => setIsComboModalOpen(false)}
+        onAddToCart={handleAddToCart}
+        onBuyNow={handleBuyNow}
+        creatorRef={creatorRef}
+      />
+
+      {/* Packaging & Firmness Feedback Modal */}
+      <PackagingFeedbackModal
+        isOpen={isFeedbackModalOpen}
+        onClose={() => setIsFeedbackModalOpen(false)}
       />
 
       {/* Table Reservation Customer Modal */}
@@ -402,7 +475,7 @@ export default function App() {
         onGoToMenu={scrollToMenu}
       />
 
-      {/* Barista AI Chatbot Widget (Gemini 3.8 Flash) */}
+      {/* Barista AI Chatbot Widget */}
       <ChatbotWidget
         isOpen={isChatbotOpen}
         onToggle={() => setIsChatbotOpen((prev) => !prev)}
@@ -410,7 +483,7 @@ export default function App() {
         onScrollToMenu={scrollToMenu}
       />
 
-      {/* Store Owner / Admin Dedicated Portal (PIN-protected, completely hidden from customers) */}
+      {/* Store Owner / Admin Dedicated Portal */}
       <AdminDashboardModal
         isOpen={isAdminModalOpen}
         onClose={() => {

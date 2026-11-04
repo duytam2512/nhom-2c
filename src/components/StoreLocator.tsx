@@ -1,3 +1,8 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React from 'react';
 import { 
   MapPin, 
@@ -9,26 +14,29 @@ import {
   Sparkles, 
   Armchair, 
   Car, 
-  Wifi, 
-  Wind, 
   Coffee,
   CheckCircle2,
   ExternalLink,
-  ShieldCheck
+  ShieldCheck,
+  Truck,
+  Layers
 } from 'lucide-react';
 import { StoreLocation } from '../types/coffee';
 import { STORES } from '../data/coffeeData';
+import { trackConversion } from '../services/conversionTracker';
 
 interface StoreLocatorProps {
   selectedStore: StoreLocation;
   onSelectStore: (store: StoreLocation) => void;
   onOpenTableBooking?: (store?: StoreLocation) => void;
+  onOrderNow?: () => void;
 }
 
 export const StoreLocator: React.FC<StoreLocatorProps> = ({
   selectedStore,
   onSelectStore,
   onOpenTableBooking,
+  onOrderNow,
 }) => {
   const store = STORES[0] || selectedStore;
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('120 Pasteur, Bến Nghé, Quận 1, Hồ Chí Minh')}`;
@@ -37,54 +45,66 @@ export const StoreLocator: React.FC<StoreLocatorProps> = ({
 
   const STORE_PHOTOS = [
     {
-      url: '/images/gocoffee_quan1_storefront.jpg',
-      fallbackUrl: '/images/gocoffee_pasteur_storefront.jpg',
-      label: 'Kiosk Q.1 Pasteur',
-      tag: '120 Pasteur, Q.1',
-      title: 'Quầy Kiosk Go Coffee Pasteur - Quận 1',
-      desc: 'Tọa lạc vỉa hè góc phố Pasteur & Lê Lợi trung tâm Q.1 đối diện Saigon Centre, tấp xe máy nhận cà phê 5 phút.'
+      url: '/images/gocoffee_booth_120_pasteur.jpg',
+      fallbackUrl: '/images/gocoffee_quan1_storefront.jpg',
+      label: 'Takeaway Booth 120 Pasteur',
+      tag: '120 Pasteur, Q.1 (Dự kiến)',
+      title: 'Quầy Kiosk Takeaway GO.COFFEE Pasteur',
+      desc: 'Thiết kế booth hiện đại pha nét Sài Gòn xưa ngay góc phố Pasteur & Lê Lợi (đối diện Saigon Centre). Tấp xe máy lấy nhanh trong 5 phút mà không cần tìm chỗ gửi xe.'
     },
     {
-      url: '/images/gocoffee_quan1_handover.jpg',
+      url: '/images/gocoffee_lid_pastry_combo.jpg',
       fallbackUrl: '/images/gocoffee_pasteur_handover.jpg',
-      label: 'Cửa Sổ Giao Nhanh',
-      tag: 'Nhận Món Trong 5 Phút',
-      title: 'Trao Tay Ly Cà Phê Siêu Tốc',
-      desc: 'Nhân viên barista Việt Nam thân thiện trao đồ uống nắp 2 lớp chống tràn chuyên dụng cho khách đi xe máy.'
+      label: 'Ly Cà Phê Nắp Hộp Bánh',
+      tag: 'Độc Quyền 2-in-1',
+      title: 'Trao Tay Bộ Ly & Bánh Cầm Gọn 1 Tay',
+      desc: 'Hộp bánh giòn rụm gắn liền trên nắp ly kèm đai giấy kraft sang trọng, thuận tiện mang đi làm hoặc đi dạo phố.'
     },
     {
-      url: '/images/gocoffee_quan1_barista.jpg',
+      url: '/images/gocoffee_cham_banh_mi.jpg',
       fallbackUrl: '/images/gocoffee_pasteur_barista.jpg',
-      label: 'Pha Phin Thủ Công',
-      tag: '100% Cà Phê Cầu Đất',
-      title: 'Pha Phin Truyền Thống Đậm Vị',
-      desc: 'Từng giọt cà phê phin inox chảy chậm trên lớp sữa đặc béo ngậy, giữ trọn vị mộc đặc trưng của Go Coffee.'
+      label: 'Pha Phin Cầu Đất',
+      tag: 'Chấm một miếng bánh, nhớ một thời',
+      title: 'Hương Vị Phin Cà Phê Sữa Đá Đậm Đà',
+      desc: 'Chiết xuất từ hạt Robusta & Arabica Cầu Đất nguyên chất, hòa quyện cùng sữa đặc béo ngậy để chấm miếng bánh nướng nóng rụm.'
     }
   ];
 
   const currentPhoto = STORE_PHOTOS[activePhotoIndex] || STORE_PHOTOS[0];
 
+  const handleDirectionsClick = () => {
+    trackConversion('click_directions', { store: '120_pasteur' });
+  };
+
   const scrollToMenu = () => {
-    const el = document.getElementById('menu');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    trackConversion('start_order', { source: 'store_locator_order_button' });
+    if (onOrderNow) {
+      onOrderNow();
+    } else {
+      const el = document.getElementById('menu');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   return (
     <section id="stores" className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto scroll-mt-24">
       {/* Header */}
       <div className="text-center space-y-3 mb-10">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-sm bg-[#ede2cb] text-[#801419] text-xs font-serif font-bold uppercase tracking-widest border border-[#801419]/40 shadow-2xs">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-sm bg-[#ede2cb] text-[#801419] text-xs font-serif font-black uppercase tracking-widest border border-[#801419]/40 shadow-2xs">
           <span>❖</span>
-          <span>Điểm Hẹn Sài Gòn Xưa • 120 Pasteur</span>
+          <span>Điểm Hẹn Sài Gòn Xưa • 120 Pasteur (Dự kiến)</span>
           <span>❖</span>
         </div>
         
         <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black font-serif text-[#23150d] tracking-tight">
-          Quầy Cà Phê Góc Phố Pasteur - Quận 1
+          Quầy Takeaway Booth GO.COFFEE Pasteur - Quận 1
         </h2>
         
-        <p className="text-xs sm:text-base text-stone-700 max-w-2xl mx-auto leading-relaxed font-serif italic">
-          Ghé tấp xe máy bên góc đường Pasteur & Lê Lợi, thưởng thức ly phin đậm đà thơm ngát và ổ bánh mì nóng giòn. Đặt trước qua website, ghé lấy sau 5 phút không đợi chờ.
+        <p className="text-xs sm:text-base text-stone-700 max-w-2xl mx-auto leading-relaxed font-serif">
+          Mô hình quầy mang đi nhỏ gọn tối ưu thời gian: <strong>Chuẩn bị ghé lấy sau ~5 phút</strong> hoặc <strong>Giao hỏa tốc ~15 - 20 phút</strong>.
+          <span className="block text-[11px] text-amber-800 font-mono mt-1 font-bold">
+            * Địa điểm dự kiến trong bản demo: Số 120 Pasteur, Phường Bến Nghé, Quận 1 (đối diện Takashimaya / Saigon Centre).
+          </span>
         </p>
       </div>
 
@@ -112,11 +132,11 @@ export const StoreLocator: React.FC<StoreLocatorProps> = ({
           {/* Top Badges */}
           <div className="relative z-10 flex items-center justify-between gap-2">
             <span className="px-3 py-1 rounded-sm bg-[#801419] text-amber-200 text-xs font-serif font-black uppercase tracking-wider shadow-md border border-[#d4af37]">
-              Chuyên Takeaway • 5 Phút Có Ngay
+              Chuyên Takeaway • Lấy Sau ~5 Phút
             </span>
             <span className="px-2.5 py-1 rounded-sm bg-[#23150d]/90 text-amber-300 text-xs font-mono font-bold flex items-center gap-1.5 shadow-md border border-[#d4af37]/60">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              Đang Mở Cửa
+              Sẵn Sàng Nhận Đơn
             </span>
           </div>
 
@@ -163,18 +183,41 @@ export const StoreLocator: React.FC<StoreLocatorProps> = ({
             <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#801419]/15">
               <div>
                 <span className="text-xs font-serif font-bold text-[#801419] uppercase tracking-wider block">
-                  Địa Chỉ Quán Xưa (Chuyên Mang Đi)
+                  Điểm Bán Takeaway (Dự Kiến Trong Bản Demo)
                 </span>
                 <h4 className="text-lg sm:text-xl font-black text-stone-900 font-serif">
                   120 Pasteur, Phường Bến Nghé, Quận 1
                 </h4>
               </div>
               <span className="px-3 py-1 rounded-sm bg-[#ede2cb] text-[#801419] text-xs font-serif font-bold border border-[#801419]/30">
-                Sài Gòn • TP. Hồ Chí Minh
+                Đối diện Saigon Centre
               </span>
             </div>
 
-            {/* Quick Contact & Info Grid */}
+            {/* Clear Separation: Preparation for Pickup vs Delivery Time */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
+              {/* Pickup Time */}
+              <div className="p-3.5 rounded-sm bg-[#faf5ec] border-2 border-[#801419]/30 space-y-1">
+                <div className="flex items-center gap-1.5 text-[#801419] font-serif font-bold">
+                  <Clock className="w-4 h-4 text-[#801419]" />
+                  <span>Chuẩn Bị Ghé Nhận (Pickup)</span>
+                </div>
+                <p className="font-mono font-bold text-stone-900 text-base">~5 Phút Sau Khi Đặt</p>
+                <p className="text-[11px] text-stone-600 font-serif">Tấp xe máy nhận ngay ly 2-in-1, không cần gửi xe.</p>
+              </div>
+
+              {/* Delivery Time */}
+              <div className="p-3.5 rounded-sm bg-[#faf5ec] border border-[#d6c7b2] space-y-1">
+                <div className="flex items-center gap-1.5 text-stone-600 font-serif font-bold">
+                  <Truck className="w-4 h-4 text-amber-800" />
+                  <span>Thời Gian Giao Hàng (Delivery)</span>
+                </div>
+                <p className="font-mono font-bold text-stone-900 text-base">~15 - 20 Phút Hỏa Tốc</p>
+                <p className="text-[11px] text-stone-600 font-serif">Đóng đai giấy chống tràn an toàn đến tận tay.</p>
+              </div>
+            </div>
+
+            {/* Contact & Hours */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
               <div className="p-3.5 rounded-sm bg-[#faf5ec] border border-[#d6c7b2] space-y-1">
                 <div className="flex items-center gap-1.5 text-stone-600 font-serif font-bold">
@@ -188,28 +231,28 @@ export const StoreLocator: React.FC<StoreLocatorProps> = ({
               <div className="p-3.5 rounded-sm bg-[#faf5ec] border border-[#d6c7b2] space-y-1">
                 <div className="flex items-center gap-1.5 text-stone-600 font-serif font-bold">
                   <Phone className="w-4 h-4 text-[#801419]" />
-                  <span>Đường Dây Nóng Đặt Trước</span>
+                  <span>Đường Dây Nóng Tiếp Nhận</span>
                 </div>
                 <a href="tel:0909123456" className="font-mono font-bold text-[#801419] text-sm hover:underline block">
-                  0909 123 456 / 1900 1755
+                  1900 1755 / 0909 123 456
                 </a>
-                <p className="text-[11px] text-emerald-800 font-medium font-serif">Báo giờ nhận để pha nóng giòn</p>
+                <p className="text-[11px] text-emerald-800 font-medium font-serif">Báo giờ ghé để pha nóng giòn</p>
               </div>
             </div>
 
-            {/* Amenities Included */}
+            {/* Key Advantages */}
             <div className="space-y-2">
               <span className="text-xs font-serif font-bold text-stone-700 uppercase tracking-wider block">
-                Nét Đặc Trưng Dịch Vụ Quán:
+                Nét Đặc Trưng Tại Booth GO.COFFEE Pasteur:
               </span>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                 {[
-                  { icon: Coffee, label: 'Lấy đồ sau 5 phút' },
-                  { icon: ShieldCheck, label: 'Ly 2 lớp chống đổ xe máy' },
+                  { icon: Coffee, label: 'Lấy đồ sau ~5 phút' },
+                  { icon: Layers, label: 'Nắp ly kèm hộp bánh 2-in-1' },
                   { icon: Car, label: 'Tấp lề dừng xe lấy nhanh' },
-                  { icon: Sparkles, label: 'Phin mộc rang củi 100%' },
-                  { icon: Navigation, label: 'Bánh mì nướng nóng giòn' },
-                  { icon: ShieldCheck, label: 'VietQR & MoMo tiện lợi' },
+                  { icon: Sparkles, label: 'Phin Cầu Đất rang mộc' },
+                  { icon: ShieldCheck, label: 'Đai giấy giữ chắc 1 tay' },
+                  { icon: CheckCircle2, label: 'Quét VietQR 24/7' },
                 ].map((item, idx) => (
                   <div 
                     key={idx}
@@ -223,30 +266,47 @@ export const StoreLocator: React.FC<StoreLocatorProps> = ({
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="pt-4 border-t border-[#801419]/15 flex flex-col sm:flex-row items-center gap-3">
-            {/* Direct Order Button */}
-            <button
-              type="button"
-              onClick={scrollToMenu}
-              className="w-full sm:flex-1 py-3 px-5 rounded-sm bg-[#801419] hover:bg-[#630f14] text-amber-100 font-serif font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm border-2 border-[#d4af37] transition active:scale-95 cursor-pointer uppercase tracking-wider"
-            >
-              <Coffee className="w-4 h-4 text-amber-300" />
-              <span>Đặt Món Quán Xưa (Lấy Sau 5 Phút)</span>
-            </button>
+          {/* Action Buttons: Priority order (Menu -> Directions -> Order Ahead -> Table Booking) */}
+          <div className="pt-4 border-t border-[#801419]/15 flex flex-col gap-3">
+            <div className="flex flex-col sm:flex-row items-center gap-3">
+              {/* 1. Xem Thực Đơn & Giá */}
+              <button
+                type="button"
+                onClick={scrollToMenu}
+                className="w-full sm:flex-1 py-3 px-4 rounded-sm bg-[#801419] hover:bg-[#630f14] text-amber-100 font-serif font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm border-2 border-[#d4af37] transition active:scale-95 cursor-pointer uppercase tracking-wider"
+              >
+                <Coffee className="w-4 h-4 text-amber-300" />
+                <span>Xem Thực Đơn & Đặt Trước (5 Phút)</span>
+              </button>
 
-            {/* Google Maps Directions */}
-            <a
-              href={googleMapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto py-3 px-4 rounded-sm bg-[#faf5ec] hover:bg-[#ede2cb] border border-[#d6c7b2] text-stone-900 font-serif font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95"
-            >
-              <Navigation className="w-4 h-4 text-[#801419]" />
-              <span>Chỉ Đường Đến Quán</span>
-              <ExternalLink className="w-3.5 h-3.5 text-stone-500" />
-            </a>
+              {/* 2. Chỉ Đường Google Maps */}
+              <a
+                href={googleMapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={handleDirectionsClick}
+                className="w-full sm:w-auto py-3 px-5 rounded-sm bg-[#fffdfa] hover:bg-[#ede2cb] border-2 border-[#801419]/30 text-stone-900 font-serif font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer shadow-2xs"
+              >
+                <Navigation className="w-4 h-4 text-[#801419]" />
+                <span>Chỉ Đường Đến Booth</span>
+                <ExternalLink className="w-3.5 h-3.5 text-stone-500" />
+              </a>
+            </div>
+
+            {/* 3. Phụ trợ: Đặt Bàn (Nếu cần ngồi lại) */}
+            <div className="flex items-center justify-between pt-1 text-xs font-serif text-stone-500">
+              <span>Cần ngồi lại thưởng thức cà phê phin?</span>
+              <button
+                type="button"
+                onClick={() => onOpenTableBooking?.(store)}
+                className="text-[#801419] hover:underline font-bold inline-flex items-center gap-1 cursor-pointer"
+              >
+                <Armchair className="w-3.5 h-3.5" />
+                <span>Đặt Chỗ Ngồi Lại</span>
+              </button>
+            </div>
           </div>
+
         </div>
       </div>
     </section>

@@ -16,21 +16,14 @@ export const VOUCHERS: Voucher[] = [
     discountType: 'percentage',
     discountValue: 20,
     minOrder: 50000,
-    description: 'Giảm ngay 20% cho mọi đơn hàng từ 50.000đ tại Go Coffee',
+    description: 'Giảm 20% cho đơn đầu tiên từ 50.000đ tại GO.COFFEE',
   },
   {
     code: 'GOCOFE20',
     discountType: 'percentage',
     discountValue: 20,
     minOrder: 50000,
-    description: 'Giảm ngay 20% cho mọi đơn hàng từ 50.000đ',
-  },
-  {
-    code: 'HIGHLANDS20',
-    discountType: 'percentage',
-    discountValue: 20,
-    minOrder: 50000,
-    description: 'Giảm ngay 20% cho mọi đơn hàng từ 50.000đ',
+    description: 'Giảm 20% cho đơn đầu tiên từ 50.000đ',
   },
   {
     code: 'FREESHIP',
@@ -44,28 +37,14 @@ export const VOUCHERS: Voucher[] = [
     discountType: 'fixed',
     discountValue: 30000,
     minOrder: 99000,
-    description: 'Ưu đãi Tri Ân Go Coffee - Giảm 30.000đ cho đơn từ 99k',
-  },
-  {
-    code: 'GOCOFE30',
-    discountType: 'fixed',
-    discountValue: 30000,
-    minOrder: 99000,
-    description: 'Ưu đãi Tri Ân Go Coffee - Giảm 30.000đ cho đơn từ 99k',
-  },
-  {
-    code: 'TRIAN1999',
-    discountType: 'fixed',
-    discountValue: 30000,
-    minOrder: 99000,
-    description: 'Ưu đãi Tự Hào Cà Phê Việt - Giảm 30.000đ cho đơn từ 99k',
+    description: 'Ưu đãi Tri Ân GO.COFFEE - Giảm 30.000đ cho đơn từ 99k',
   },
   {
     code: 'BANMOI15',
     discountType: 'fixed',
     discountValue: 15000,
     minOrder: 45000,
-    description: 'Tặng 15.000đ cho khách hàng thành viên Go Coffee Community',
+    description: 'Tặng 15.000đ cho thành viên mới đặt đơn mang đi',
   },
 ];
 
@@ -73,30 +52,34 @@ export interface ExtendedStoreLocation extends StoreLocation {
   amenities?: string[];
   landmark?: string;
   image?: string;
+  deliveryTime?: string;
+  pickupTimeLabel?: string;
 }
 
 export const STORES: ExtendedStoreLocation[] = [
   {
     id: 'go-coffee-quan-1',
-    name: 'Go Coffee - Quận 1 (Takeaway & Giao Nhanh)',
-    address: '120 Pasteur, Phường Bến Nghé, Quận 1',
+    name: 'GO.COFFEE - Takeaway Booth 120 Pasteur (Dự kiến)',
+    address: 'Số 120 Pasteur, Phường Bến Nghé, Quận 1',
     district: 'Quận 1',
     city: 'Hồ Chí Minh',
-    distance: 'Trung tâm Quận 1',
+    distance: 'Đối diện Saigon Centre (Takashimaya)',
     estimatedPickupMinutes: 5,
-    phone: '1900 1755',
+    phone: '1900 1755 / 0909 123 456',
     hours: '06:30 - 23:00 (Hàng ngày)',
     isOpen: true,
-    landmark: 'Góc ngã tư Pasteur & Lê Lợi, đối diện Saigon Centre (Takashimaya)',
+    landmark: 'Góc ngã tư Pasteur & Lê Lợi, đối diện Saigon Centre. Có chỗ tấp lề xe máy & ô tô nhận ly nhanh.',
+    deliveryTime: '~15 - 20 phút (Giao hỏa tốc)',
+    pickupTimeLabel: '~5 phút (Chuẩn bị ghé lấy)',
     amenities: [
-      'Quầy pha chế & lấy nước Grab & Go trong 5 phút',
-      'Đóng gói ly 2 lớp chuyên dụng chống đổ cho xe máy',
-      'Chỗ tấp lề xe máy & ô tô nhận đồ uống nhanh',
-      'Thanh toán siêu tốc VietQR NAPAS 24/7 & MoMo không chạm',
-      '100% Hạt Robusta Cầu Đất xay pha tươi tại quầy',
-      'Dịch vụ giao tận nơi nội thành Quận 1 & các quận lân cận'
+      'Mô hình Takeaway Booth nhỏ gọn, chuẩn bị ly 2-in-1 sau ~5 phút',
+      'Thiết kế nắp ly tích hợp hộp bánh giòn & đai giấy mang đi 1 tay',
+      'Chỗ tấp lề xe máy & ô tô nhận nhanh không cần đỗ xe',
+      'Thanh toán không chạm VietQR NAPAS 24/7 & MoMo trong 1 giây',
+      '100% Hạt Robusta & Arabica Cầu Đất rang mộc truyền thống',
+      'Giao hàng hỏa tốc 15-20 phút tại Quận 1, 3, 4, Bình Thạnh'
     ],
-    image: '/images/gocoffee_quan1_storefront.jpg',
+    image: '/images/gocoffee_booth_120_pasteur.jpg',
   },
 ];
 
@@ -281,17 +264,18 @@ export const MENU_ITEMS: MenuItem[] = [
   // 5. Bánh Mì & Bánh Ngọt (Concept Xưa Cũ & Truyền Thống)
   {
     id: 'hl-banh-mi-cham-cafe',
-    name: 'Bánh Mì Chấm Cà Phê Sữa Đá',
-    vietnameseName: 'Bánh Mì Nóng Giòn Chấm Cà Phê Phin Sữa Đá Sài Gòn Xưa',
+    name: 'Bộ Cà Phê & Hộp Bánh Trên Nắp Ly',
+    vietnameseName: 'Ly Phin Sữa Đá + Hộp Bánh Giòn Gắn Nắp Ly Kèm Đai Giấy 2-in-1',
     category: 'pastry',
     price: 39000,
     originalPrice: 45000,
-    description: 'Nét ẩm thực hoài niệm của người Sài Gòn xưa: ổ bánh mì nóng giòn rụm bẻ đôi, chấm ngập vào ly cà phê phin sữa đá béo ngậy ngọt đượm hương Robusta Cầu Đất nguyên chất.',
-    image: '/images/banh_mi_cham_cafe_sua_da.jpg',
+    description: 'Sản phẩm chủ lực độc quyền GO.COFFEE: Một ly cà phê phin sữa đá đậm đà và một hộp bánh nhỏ giòn rụm gắn liền trên nắp ly. Đai giấy vintage giữ chắc chắn để bạn cầm gọn cả hai bằng một tay, dễ dàng tháo đai nhấc hộp bánh chấm ngập vào cà phê mọi lúc mọi nơi.',
+    image: '/images/gocoffee_lid_pastry_combo.jpg',
     isSignature: true,
+    isBestSeller: true,
     calories: 320,
     temperature: 'both',
-    tags: ['Concept Xưa Cũ', 'Món Ký Ức Tuổi Thơ', 'Signature Go Coffee', 'Sài Gòn Xưa'],
+    tags: ['Sản Phẩm Chủ Lực', 'Hộp Bánh Trên Nắp Ly', 'Chấm một miếng bánh, nhớ một thời', 'Một chút Sài Gòn xưa', 'Gia Truyền #1'],
   },
   {
     id: 'hl-banh-mi-khong',

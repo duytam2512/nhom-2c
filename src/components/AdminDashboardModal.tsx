@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { getStoreSyncConfig, saveStoreSyncConfig, sendDirectToGoogleSheets } from '../services/bookingSync';
 import { safeStorage } from '../utils/safeStorage';
+import { getConversionStats } from '../services/conversionTracker';
 
 interface AdminDashboardModalProps {
   isOpen: boolean;
@@ -764,6 +765,67 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                         {resyncMsg}
                       </div>
                     )}
+
+                    {/* Campaign & Creator Conversion Tracking Metrics */}
+                    {(() => {
+                      const stats = getConversionStats();
+                      return (
+                        <div className="p-4 rounded-2xl bg-[#faf5ec] border-2 border-[#801419]/30 space-y-3">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className="w-2.5 h-2.5 rounded-full bg-[#801419] animate-pulse" />
+                              <h4 className="font-bold text-[#801419] font-serif text-sm">
+                                Đo Lường Chiến Dịch "Chấm một miếng bánh, nhớ một thời" & Creator Tracking
+                              </h4>
+                            </div>
+                            <span className="px-2 py-0.5 rounded-xs bg-[#801419] text-amber-200 text-[10px] font-mono font-bold">
+                              120 Pasteur (Dự kiến)
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-center">
+                            <div className="p-2.5 bg-white rounded-xl border border-stone-200">
+                              <span className="text-[10px] text-stone-500 block">Xem Trang Bộ Món</span>
+                              <span className="text-lg font-black text-[#801419] font-mono">{stats.viewCombo}</span>
+                              <span className="text-[9px] text-stone-400 block">lượt xem</span>
+                            </div>
+
+                            <div className="p-2.5 bg-white rounded-xl border border-stone-200">
+                              <span className="text-[10px] text-stone-500 block">Bấm Chỉ Đường Booth</span>
+                              <span className="text-lg font-black text-amber-800 font-mono">{stats.directions}</span>
+                              <span className="text-[9px] text-stone-400 block">Google Maps</span>
+                            </div>
+
+                            <div className="p-2.5 bg-white rounded-xl border border-stone-200">
+                              <span className="text-[10px] text-stone-500 block">Bắt Đầu Đặt Món</span>
+                              <span className="text-lg font-black text-stone-900 font-mono">{stats.startOrder}</span>
+                              <span className="text-[9px] text-stone-400 block">lượt chọn món</span>
+                            </div>
+
+                            <div className="p-2.5 bg-white rounded-xl border border-stone-200">
+                              <span className="text-[10px] text-stone-500 block">Áp Mã GOCOFFEE20</span>
+                              <span className="text-lg font-black text-emerald-700 font-mono">{stats.applyVoucher}</span>
+                              <span className="text-[9px] text-stone-400 block">voucher đơn đầu</span>
+                            </div>
+
+                            <div className="p-2.5 bg-white rounded-xl border border-stone-200">
+                              <span className="text-[10px] text-stone-500 block">Đơn Hoàn Tất</span>
+                              <span className="text-lg font-black text-emerald-800 font-mono">{stats.orderCompleted}</span>
+                              <span className="text-[9px] text-emerald-600 block">thành công</span>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-wrap items-center justify-between text-[11px] text-stone-600 pt-1 border-t border-[#d6c7b2]">
+                            <span>
+                              Đã thu thập <strong>{stats.feedback}</strong> phiếu khảo sát độ chắc chắn bao bì & bánh nướng.
+                            </span>
+                            <span className="font-mono text-stone-500 text-[10px]">
+                              Tự động đối soát không trùng lặp đơn quảng cáo vs Creator
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })()}
 
                     {/* Bookings Table */}
                     <div className="space-y-3">

@@ -117,7 +117,7 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="bg-[#781318] text-amber-200 text-[11px] py-1.5 px-4 text-center font-serif tracking-wider flex items-center justify-center gap-2 overflow-x-auto whitespace-nowrap border-b border-[#4d0c10] shadow-inner">
         <span className="flex items-center gap-1.5">
           <span className="text-amber-400">❖</span>
-          <span>QUÁN CÀ PHÊ PHIN SÀI GÒN XƯA • 120 PASTEUR • GIAO HOẢ TỐC 5 PHÚT • MÃ ƯU ĐÃI: <strong className="text-white underline decoration-amber-300 font-mono">GOCOFFEE20</strong> (-20%)</span>
+          <span>GO.COFFEE • TAKEAWAY BOOTH 120 PASTEUR (DỰ KIẾN) • GHÉ LẤY SAU ~5 PHÚT • MÃ ƯU ĐÃI: <strong className="text-white underline decoration-amber-300 font-mono">GOCOFFEE20</strong> (Giảm 20% cho đơn đầu tiên từ 50.000đ)</span>
           <span className="text-amber-400">❖</span>
         </span>
       </div>

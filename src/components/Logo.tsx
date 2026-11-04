@@ -64,16 +64,15 @@ export const Logo: React.FC<LogoProps> = ({
         <div className="relative z-10 flex flex-col items-start leading-none pr-0.5 min-w-0">
           <div className="flex items-center gap-1 sm:gap-1.5 whitespace-nowrap">
             <span className={`font-black tracking-wider text-[#fffdfa] uppercase font-serif ${textSizes[size]}`}>
-              GO COFFEE
+              GO.COFFEE
             </span>
             <span className="text-[8px] sm:text-[9px] font-mono px-1 py-0.2 rounded-xs bg-[#d4af37] text-[#52090c] font-black uppercase tracking-tighter shrink-0">
-              1986
+              SÀI GÒN
             </span>
           </div>
           {showSubtitle && (
-            <span className="text-[8px] sm:text-[9px] font-serif italic text-amber-200 tracking-wider leading-none mt-0.5 whitespace-nowrap truncate max-w-[130px] sm:max-w-none">
-              <span className="sm:hidden">Phin Sài Gòn Xưa</span>
-              <span className="hidden sm:inline">Phin Sài Gòn Xưa • 120 Pasteur</span>
+            <span className="text-[8px] sm:text-[9.5px] font-serif italic text-amber-200 tracking-normal leading-none mt-1 whitespace-nowrap truncate max-w-[170px] sm:max-w-none">
+              Một ly đúng GU, rạng rỡ chuẩn YOU.
             </span>
           )}
         </div>

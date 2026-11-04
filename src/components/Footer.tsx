@@ -47,12 +47,12 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare, onResetHome, onO
 
           {/* Quick Menu Col */}
           <div className="space-y-3 font-serif">
-            <h4 className="text-xs font-bold uppercase tracking-widest text-amber-200">Món Xưa Đặc Sắc</h4>
+            <h4 className="text-xs font-bold uppercase tracking-widest text-amber-200">Món Xưa & Sản Phẩm Chủ Lực</h4>
             <ul className="space-y-2 text-xs text-stone-400 font-sans">
+              <li><a href="#menu" className="hover:text-amber-300 transition font-bold text-amber-200">Bộ Cà Phê & Hộp Bánh Nắp Ly (39k)</a></li>
               <li><a href="#menu" className="hover:text-amber-300 transition">Bánh Mì Chấm Cà Phê Sữa Đá</a></li>
               <li><a href="#menu" className="hover:text-amber-300 transition">Combo Phin Đen Đá & Bánh Mì</a></li>
               <li><a href="#menu" className="hover:text-amber-300 transition">Phin Sữa Đá Cầu Đất Đậm Vị</a></li>
-              <li><a href="#menu" className="hover:text-amber-300 transition">Cà Phê Muối Cố Đô Xưa</a></li>
               <li><a href="#menu" className="hover:text-amber-300 transition">Trà Sen Vàng Hạt Sen Huế</a></li>
               <li><a href="#menu" className="hover:text-amber-300 transition">Bánh Mì Không Nóng Giòn</a></li>
             </ul>
@@ -62,12 +62,12 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare, onResetHome, onO
           <div className="space-y-3 font-serif">
             <h4 className="text-xs font-bold uppercase tracking-widest text-amber-200">Góc Quán Sài Gòn</h4>
             <div className="space-y-2 text-xs text-stone-400 font-sans">
-              <p className="font-bold text-amber-100 font-serif">Go Coffee - 120 Pasteur</p>
+              <p className="font-bold text-amber-100 font-serif">GO.COFFEE - Takeaway Booth (Dự kiến)</p>
               <p>120 Pasteur, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh</p>
-              <p className="text-[11px] text-stone-500 font-serif italic">(Góc Pasteur & Lê Lợi, đối diện Saigon Centre - Takashimaya)</p>
+              <p className="text-[11px] text-stone-500 font-serif italic">(Góc Pasteur & Lê Lợi, đối diện Takashimaya / Saigon Centre)</p>
               <div className="pt-1 text-emerald-400 font-semibold flex items-center gap-1.5 font-serif">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>Mở cửa: 06:30 - 23:00 hàng ngày</span>
+                <span>Lấy sau ~5 phút • Giao hỏa tốc 15-20p</span>
               </div>
             </div>
           </div>
@@ -100,7 +100,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare, onResetHome, onO
         {/* Bottom bar with clean customer copyright and discreet owner portal link */}
         <div className="pt-8 border-t border-stone-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500 font-serif">
           <p>
-            © 2026 <strong>Go Coffee</strong>. Tự hào cà phê phin mộc Sài Gòn xưa.
+            © 2026 <strong>GO.COFFEE</strong> — <em>“Một ly đúng GU, rạng rỡ chuẩn YOU.”</em>
           </p>
           <div className="flex items-center gap-3 text-[11px]">
             <span className="flex items-center gap-1 text-stone-400">

@@ -54,7 +54,7 @@ export const StorySection: React.FC = () => {
           <div className="lg:col-span-7 space-y-6">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-sm bg-[#5c0f14] border border-[#d4af37] text-amber-200 text-xs font-serif font-black uppercase tracking-widest">
               <Flame className="w-3.5 h-3.5 text-amber-400" />
-              <span>Gìn Giữ Hồn Phố Thị Sài Gòn Xưa</span>
+              <span>Concept: Một Chút Sài Gòn Xưa</span>
             </div>
 
             <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black font-serif tracking-tight leading-snug text-[#fffdfa]">
@@ -63,7 +63,7 @@ export const StorySection: React.FC = () => {
             </h2>
 
             <p className="text-sm sm:text-base text-stone-300 leading-relaxed font-sans font-normal">
-              Trong nhịp sống hối hả của đô thị hiện đại, Go Coffee tại 120 Pasteur giữ lại cho người Sài Gòn một góc mộc mạc thân thương: chiếc phin nhôm tráng nước sôi, mùi cà phê rang củi ngào ngạt lan tỏa, ổ bánh mì nóng giòn rụm vừa ra lò xé chấm vào ly sữa đá béo ngậy. Một nét văn hóa bình dân nhưng chứa chan tình người phương Nam.
+              Trong nhịp sống hối hả của đô thị hiện đại, GO.COFFEE tại quầy Takeaway Booth 120 Pasteur giữ lại cho người Sài Gòn một góc mộc mạc thân thương: chiếc phin nhôm tráng nước sôi, mùi cà phê rang củi ngào ngạt lan tỏa, ổ bánh mì nóng giòn rụm vừa ra lò xé chấm vào ly sữa đá béo ngậy. Một nét văn hóa bình dân nhưng chứa chan tình người phương Nam — “Một ly đúng GU, rạng rỡ chuẩn YOU.”
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">

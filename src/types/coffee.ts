@@ -37,12 +37,13 @@ export interface CartItem {
   menuItemId: string;
   name: string;
   image: string;
-  basePrice: number;
+  basePrice?: number;
+  unitPrice?: number;
   totalPrice: number;
   size: 'S' | 'M' | 'L';
   temperature: 'cold' | 'hot';
-  sugarLevel: '0%' | '30%' | '50%' | '100%';
-  iceLevel: '0%' | '50%' | '100%';
+  sugarLevel: '0%' | '30%' | '50%' | '70%' | '100%';
+  iceLevel: '0%' | '50%' | '70%' | '100%';
   milkType: 'standard' | 'oat' | 'almond' | 'sweetened_condensed';
   toppings: Topping[];
   quantity: number;

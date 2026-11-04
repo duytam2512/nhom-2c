@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { CartItem, Order, PaymentMethodType, StoreLocation, Voucher } from '../types/coffee';
 import { submitCoffeeOrder } from '../services/bookingSync';
+import { trackConversion } from '../services/conversionTracker';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -155,6 +156,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
       // Dual-channel notify Telegram Bot & Google Sheets in background
       submitCoffeeOrder(newOrder).catch((e) => console.error('Order sync error:', e));
+
+      // Track order completed conversion
+      trackConversion('order_completed', {
+        orderCode: newOrder.code,
+        total: newOrder.total,
+        voucher: appliedVoucher?.code,
+        orderType: newOrder.orderType,
+        itemsCount: newOrder.items.length,
+      });
 
       setIsProcessing(false);
       onOrderSuccess(newOrder);

@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { CartItem, StoreLocation, Voucher } from '../types/coffee';
 import { STORES, VOUCHERS } from '../data/coffeeData';
+import { safeStorage } from '../utils/safeStorage';
+import { trackConversion } from '../services/conversionTracker';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -79,16 +81,34 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
   const handleApplyVoucher = (code: string) => {
     setVoucherError('');
-    const found = VOUCHERS.find((v) => v.code.toUpperCase() === code.trim().toUpperCase());
+    const codeUpper = code.trim().toUpperCase();
+    const found = VOUCHERS.find((v) => v.code.toUpperCase() === codeUpper);
     if (!found) {
       setVoucherError('Mã ưu đãi không hợp lệ hoặc đã hết hạn.');
       return;
     }
+
+    // Kiểm tra điều kiện đơn đầu tiên cho mã GOCOFFEE20
+    if (codeUpper === 'GOCOFFEE20' || codeUpper === 'GOCOFE20') {
+      let existingOrders: any[] = [];
+      try {
+        const raw = safeStorage.getItem('go_coffee_local_orders');
+        if (raw) existingOrders = JSON.parse(raw);
+      } catch (e) {}
+
+      if (Array.isArray(existingOrders) && existingOrders.length > 0) {
+        setVoucherError('Mã GOCOFFEE20 chỉ áp dụng cho đơn đầu tiên từ 50.000đ. Đơn tiếp theo bạn có thể áp dụng mã GOCOFFEE30 (-30k) hoặc FREESHIP!');
+        return;
+      }
+    }
+
     if (subtotal < found.minOrder) {
-      setVoucherError(`Đơn hàng tối thiểu ${found.minOrder.toLocaleString('vi-VN')}đ để áp dụng mã này.`);
+      setVoucherError(`Đơn hàng tối thiểu ${found.minOrder.toLocaleString('vi-VN')}đ để áp dụng mã ${found.code}.`);
       return;
     }
+
     setAppliedVoucher(found);
+    trackConversion('apply_voucher', { code: found.code, discountValue: found.discountValue });
     setVoucherInput('');
   };
 
