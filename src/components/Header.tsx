@@ -18,7 +18,8 @@ import {
   Flame,
   Star,
   Tag,
-  ExternalLink
+  ExternalLink,
+  RotateCcw
 } from 'lucide-react';
 import { Logo } from './Logo';
 import { CoffeeCategory, StoreLocation } from '../types/coffee';
@@ -33,6 +34,7 @@ interface HeaderProps {
   onSelectCategory?: (category: CoffeeCategory) => void;
   onOpenChatbot?: () => void;
   onResetHome?: () => void;
+  onOpenOrderTracker?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -45,6 +47,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectCategory,
   onOpenChatbot,
   onResetHome,
+  onOpenOrderTracker,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<'menu' | 'services' | 'explore' | null>(null);
@@ -309,6 +312,18 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Right: Action Buttons in Vintage Saigon Styling */}
         <div className="flex items-center gap-2 sm:gap-2.5">
+          {/* Order Tracker & Refund Action */}
+          {onOpenOrderTracker && (
+            <button
+              onClick={onOpenOrderTracker}
+              className="hidden lg:flex items-center gap-1.5 px-3 py-2 rounded-md bg-[#fffdfa] hover:bg-[#ede2cb] border border-[#801419]/35 text-[#801419] font-serif font-bold text-xs uppercase tracking-wider transition active:scale-95 cursor-pointer shadow-2xs"
+              title="Tra cứu tiến độ & Yêu cầu hủy đơn / hoàn tiền"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-[#801419]" />
+              <span>Đơn Hàng & Hoàn Tiền</span>
+            </button>
+          )}
+
           {/* Direct CTA: Đặt Món Nhanh (Vintage Ticket style) */}
           <button
             onClick={() => handleLinkClick('/thuc-don', 'menu')}
@@ -518,6 +533,23 @@ export const Header: React.FC<HeaderProps> = ({
                 -20%
               </span>
             </button>
+
+            {/* Tra Cứu Đơn & Hủy / Hoàn Tiền */}
+            {onOpenOrderTracker && (
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenOrderTracker();
+                }}
+                className="w-full text-left p-2.5 rounded-xl hover:bg-amber-50 text-[#801419] font-bold text-xs flex items-center justify-between border border-[#801419]/25 bg-amber-50/50 cursor-pointer"
+              >
+                <span className="flex items-center gap-2">
+                  <RotateCcw className="w-4 h-4 text-[#801419]" />
+                  <span>Tra Cứu Đơn & Hủy / Hoàn Tiền</span>
+                </span>
+                <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
+              </button>
+            )}
 
           </div>
         </div>

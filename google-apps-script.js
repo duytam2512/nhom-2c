@@ -33,7 +33,8 @@ var DEFAULT_TELEGRAM_CHAT_ID = ""; // Nhận tự động từ website hoặc đ
 function recordData(data) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var timestamp = Utilities.formatDate(new Date(), "Asia/Ho_Chi_Minh", "dd/MM/yyyy HH:mm:ss");
-  var isOrder = (data.type === "order" || Boolean(data.total) || Boolean(data.itemsSummary));
+  var isCancel = (data.type === "cancel_order");
+  var isOrder = (data.type === "order" || Boolean(data.total) || Boolean(data.itemsSummary) || isCancel);
   var sheetName = isOrder ? "ĐƠN HÀNG GO COFFEE" : "ĐẶT BÀN GO COFFEE";
   var sheet = ss.getSheetByName(sheetName);
 
@@ -80,15 +81,17 @@ function recordData(data) {
   var code = data.code || ((isOrder ? "GNC-" : "TB-") + Math.floor(1000 + Math.random() * 9000));
   var name = data.customerName || data.name || "Khách Hàng";
   var phone = "'" + (data.customerPhone || data.phone || "");
-  var note = data.note || data.customerNote || "Không có";
-  var status = "Đã tiếp nhận";
+  var note = isCancel
+    ? ("LÝ DO HỦY: " + (data.reason || "") + " | Hoàn về: " + (data.refundMethod || "VietQR") + " (" + (data.refundAccountInfo || "") + " - " + (data.refundAccountName || "") + ")")
+    : (data.note || data.customerNote || "Không có");
+  var status = isCancel ? "YÊU CẦU HOÀN TIỀN" : "Đã tiếp nhận";
   var lastRow = 0;
 
   if (isOrder) {
     var deliveryMethod = data.deliveryMethod || data.orderType || (data.deliveryAddress ? "Giao tận nơi" : "Tự lấy tại quầy");
     var address = data.deliveryAddress ? (deliveryMethod + " - " + data.deliveryAddress) : (deliveryMethod + " - 120 Pasteur, Q.1");
-    var pickupTime = data.pickupTime || "Lấy ngay (~5 - 8 phút)";
-    var itemsSummary = data.itemsSummary || (data.items ? JSON.stringify(data.items) : "Đồ uống Go Coffee");
+    var pickupTime = isCancel ? "ĐÃ HỦY ĐƠN" : (data.pickupTime || "Lấy ngay (~5 - 8 phút)");
+    var itemsSummary = data.itemsSummary || (data.items ? JSON.stringify(data.items) : (isCancel ? "Đơn yêu cầu hoàn tiền" : "Đồ uống Go Coffee"));
     var totalAmount = data.total ? Number(data.total).toLocaleString("vi-VN") + " đ" : "0 đ";
     var paymentMethod = (data.paymentMethod === "momo" ? "Ví MoMo" : data.paymentMethod === "cash" ? "Tiền mặt" : "VietQR Chuyển khoản");
 
@@ -147,7 +150,21 @@ function recordData(data) {
   if (chatId && TELEGRAM_BOT_TOKEN) {
     try {
       var msg = "";
-      if (isOrder) {
+      if (isCancel) {
+        msg = "⚠️ <b>YÊU CẦU HỦY ĐƠN & HOÀN TIỀN - GO COFFEE 120 PASTEUR!</b>\n"
+          + "━━━━━━━━━━━━━━━━━━━━\n"
+          + "📋 <b>Mã đơn cần hủy:</b> <code>" + code + "</code>\n"
+          + "👤 <b>Khách hàng:</b> <b>" + name + "</b>\n"
+          + "📞 <b>Số điện thoại:</b> <code>" + (data.customerPhone || data.phone || "") + "</code>\n"
+          + "💰 <b>Số tiền cần hoàn:</b> <b>" + (data.total ? Number(data.total).toLocaleString("vi-VN") + " đ" : "0 đ") + "</b>\n"
+          + "💳 <b>Nhận qua:</b> " + (data.refundMethod === "momo" ? "Ví MoMo" : data.refundMethod === "cash" ? "Tiền mặt" : "Chuyển khoản VietQR") + "\n"
+          + "🏦 <b>Số tài khoản / ví:</b> <code>" + (data.refundAccountInfo || "N/A") + "</code>\n"
+          + "👤 <b>Tên thụ hưởng:</b> <b>" + (data.refundAccountName || "") + "</b>\n"
+          + "❓ <b>Lý do hủy:</b> <i>" + (data.reason || "Khách yêu cầu") + "</i>\n"
+          + "⏰ <b>Thời gian yêu cầu:</b> " + timestamp + "\n"
+          + "━━━━━━━━━━━━━━━━━━━━\n"
+          + "🔔 <i>Quán vui lòng kiểm tra và xử lý hoàn tiền cho khách trong 5 - 15 phút!</i>";
+      } else if (isOrder) {
         msg = "☕ <b>CÓ ĐƠN ĐẶT CÀ PHÊ MỚI - GO COFFEE 120 PASTEUR!</b>\n"
           + "━━━━━━━━━━━━━━━━━━━━\n"
           + "📋 <b>Mã đơn:</b> <code>" + code + "</code>\n"

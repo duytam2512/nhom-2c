@@ -476,6 +476,34 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
     }
   };
 
+  const handleConfirmRefund = async (orderCode: string) => {
+    try {
+      await fetch('/api/admin/confirm-refund', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: orderCode }),
+      });
+
+      // Update in local safeStorage
+      const localOrdersStr = safeStorage.getItem('go_coffee_local_orders');
+      if (localOrdersStr) {
+        const orders = JSON.parse(localOrdersStr);
+        const idx = orders.findIndex((o: any) => o.code === orderCode);
+        if (idx > -1) {
+          orders[idx].status = 'cancelled';
+          orders[idx].refundStatus = 'completed';
+          safeStorage.setItem('go_coffee_local_orders', JSON.stringify(orders));
+        }
+      }
+
+      loadOverview();
+      setResyncMsg(`✅ Đã xác nhận hoàn tiền thành công cho đơn ${orderCode}!`);
+      setTimeout(() => setResyncMsg(null), 4000);
+    } catch (e) {
+      console.warn('Could not confirm refund:', e);
+    }
+  };
+
   const handleSaveGsc = () => {
     safeStorage.setItem('gsc_verification_code', gscCode);
     let meta = document.querySelector('meta[name="google-site-verification"]');
@@ -811,15 +839,16 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                                 <th className="p-3">Tổng Tiền</th>
                                 <th className="p-3">Thanh Toán</th>
                                 <th className="p-3">Hình Thức</th>
-                                <th className="p-3">Giờ Nhận Hàng</th>
+                                <th className="p-3">Giờ Nhận</th>
+                                <th className="p-3 text-right">Trạng Thái & Xử Lý</th>
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-stone-100 text-[11px]">
                               {overviewData.orders.map((ord: any, idx: number) => (
-                                <tr key={ord.id || idx} className="hover:bg-amber-50/40">
+                                <tr key={ord.id || idx} className={`hover:bg-amber-50/40 ${ord.status === 'refund_requested' ? 'bg-amber-50/60' : ''}`}>
                                   <td className="p-3 font-mono font-bold text-stone-900">{ord.code}</td>
                                   <td className="p-3 font-bold text-stone-800">{ord.customerName}</td>
-                                  <td className="p-3 text-stone-600 truncate max-w-[200px]">
+                                  <td className="p-3 text-stone-600 truncate max-w-[180px]">
                                     {Array.isArray(ord.items)
                                       ? ord.items.map((i: any) => `${i.quantity}x ${i.name}`).join(', ')
                                       : 'Đồ uống'}
@@ -839,6 +868,34 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                                     <span className="inline-flex items-center gap-1 font-bold text-[#b22830] bg-red-50 border border-red-200 px-2 py-0.5 rounded-md text-[10px]">
                                       {ord.pickupTime || ord.estimatedReadyTime || 'Lấy ngay'}
                                     </span>
+                                  </td>
+                                  <td className="p-3 text-right">
+                                    {ord.status === 'refund_requested' ? (
+                                      <div className="flex flex-col items-end gap-1">
+                                        <span className="inline-flex items-center gap-1 font-bold text-amber-900 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-full text-[10px] animate-pulse">
+                                          ⚠️ Yêu Cầu Hoàn Tiền
+                                        </span>
+                                        {ord.refundAccountInfo && (
+                                          <span className="text-[10px] text-stone-500 font-mono truncate max-w-[160px]">
+                                            {ord.refundAccountInfo}
+                                          </span>
+                                        )}
+                                        <button
+                                          onClick={() => handleConfirmRefund(ord.code)}
+                                          className="px-2 py-1 rounded-md bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-[10px] shadow-xs transition cursor-pointer"
+                                        >
+                                          ✓ Xác nhận đã hoàn tiền
+                                        </button>
+                                      </div>
+                                    ) : ord.status === 'cancelled' ? (
+                                      <span className="inline-flex items-center gap-1 font-bold text-stone-600 bg-stone-100 border border-stone-300 px-2 py-0.5 rounded-full text-[10px]">
+                                        Đã hủy & hoàn tiền
+                                      </span>
+                                    ) : (
+                                      <span className="inline-flex items-center gap-1 font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full text-[10px]">
+                                        Đang pha chế / Giao
+                                      </span>
+                                    )}
                                   </td>
                                 </tr>
                               ))}

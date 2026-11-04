@@ -125,6 +125,13 @@ export default function App() {
     setIsCheckoutOpen(true);
   };
 
+  const handleBuyNow = (customizedItem: CartItem) => {
+    handleAddToCart(customizedItem);
+    setCustomizingItem(null);
+    setIsCartOpen(false);
+    setIsCheckoutOpen(true);
+  };
+
   const handleOrderSuccess = (order: Order) => {
     setCurrentOrder(order);
     setCartItems([]); // clear cart
@@ -171,10 +178,23 @@ export default function App() {
         setIsTableBookingOpen(true);
       } else if (path === '/gio-hang') {
         setIsCartOpen(true);
+      } else if (path === '/theo-doi-don' || path === '/don-hang' || path === '/order') {
+        setIsOrderTrackerOpen(true);
       } else if (path === '/admin' || path === '/quan-tri' || path === '/owner') {
         setIsAdminModalOpen(true);
       }
     };
+
+    // Preload latest order from storage if customer previously ordered
+    try {
+      const localOrdersStr = safeStorage.getItem('go_coffee_local_orders');
+      if (localOrdersStr) {
+        const parsed = JSON.parse(localOrdersStr);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setCurrentOrder(parsed[0]);
+        }
+      }
+    } catch (e) {}
 
     handleUrlRoute();
     window.addEventListener('popstate', handleUrlRoute);
@@ -257,6 +277,7 @@ export default function App() {
           setSelectedCategory(category);
         }}
         onResetHome={handleResetHome}
+        onOpenOrderTracker={() => setIsOrderTrackerOpen(true)}
       />
 
       {/* Hero Section */}
@@ -272,6 +293,7 @@ export default function App() {
         {/* Menu Section */}
         <MenuSection
           onSelectItem={(item) => setCustomizingItem(item)}
+          onBuyNowItem={(item) => setCustomizingItem(item)}
           selectedCategory={selectedCategory}
           onSelectCategory={setSelectedCategory}
         />
@@ -319,6 +341,7 @@ export default function App() {
         isOpen={!!customizingItem}
         onClose={() => setCustomizingItem(null)}
         onAddToCart={handleAddToCart}
+        onBuyNow={handleBuyNow}
       />
 
       <CartDrawer
@@ -357,6 +380,7 @@ export default function App() {
         order={currentOrder}
         isOpen={isOrderTrackerOpen}
         onClose={() => setIsOrderTrackerOpen(false)}
+        onOrderUpdated={(updated) => setCurrentOrder(updated)}
       />
 
       <SeoShareModal

@@ -81,9 +81,15 @@ export interface Order {
   pickupTime?: string;
   paymentMethod: PaymentMethodType;
   paymentStatus: 'pending' | 'paid';
-  status: 'received' | 'brewing' | 'ready' | 'completed';
+  status: 'received' | 'brewing' | 'ready' | 'completed' | 'cancelled' | 'refund_requested';
   createdAt: string;
   estimatedReadyTime: string;
+  cancellationReason?: string;
+  refundMethod?: 'bank_transfer' | 'momo' | 'cash';
+  refundAccountInfo?: string;
+  refundAccountName?: string;
+  cancelledAt?: string;
+  refundStatus?: 'none' | 'pending' | 'completed';
 }
 
 export interface Voucher {

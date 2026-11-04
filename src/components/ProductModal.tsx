@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Plus, Minus, Check, Flame, Coffee, Sparkles } from 'lucide-react';
+import { X, Plus, Minus, Check, Flame, Coffee, Sparkles, Zap, ShoppingBag } from 'lucide-react';
 import { MenuItem, CartItem, Topping } from '../types/coffee';
 import { AVAILABLE_TOPPINGS } from '../data/coffeeData';
 
@@ -8,6 +8,7 @@ interface ProductModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddToCart: (cartItem: CartItem) => void;
+  onBuyNow?: (cartItem: CartItem) => void;
 }
 
 export const ProductModal: React.FC<ProductModalProps> = ({
@@ -15,6 +16,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   isOpen,
   onClose,
   onAddToCart,
+  onBuyNow,
 }) => {
   const [size, setSize] = useState<'S' | 'M' | 'L'>('M');
   const [temperature, setTemperature] = useState<'cold' | 'hot'>('cold');
@@ -57,24 +59,36 @@ export const ProductModal: React.FC<ProductModalProps> = ({
     }
   };
 
+  const createCurrentCartItem = (): CartItem => ({
+    id: `${item.id}-${Date.now()}`,
+    menuItemId: item.id,
+    name: item.name,
+    image: item.image,
+    basePrice: item.price,
+    totalPrice: unitPrice,
+    size,
+    temperature,
+    sugarLevel,
+    iceLevel,
+    milkType,
+    toppings: selectedToppings,
+    quantity,
+    specialInstructions: specialInstructions.trim() ? specialInstructions.trim() : undefined,
+  });
+
   const handleAdd = () => {
-    const newCartItem: CartItem = {
-      id: `${item.id}-${Date.now()}`,
-      menuItemId: item.id,
-      name: item.name,
-      image: item.image,
-      basePrice: item.price,
-      totalPrice: unitPrice,
-      size,
-      temperature,
-      sugarLevel,
-      iceLevel,
-      milkType,
-      toppings: selectedToppings,
-      quantity,
-      specialInstructions: specialInstructions.trim() ? specialInstructions.trim() : undefined,
-    };
+    const newCartItem = createCurrentCartItem();
     onAddToCart(newCartItem);
+    onClose();
+  };
+
+  const handleBuyNow = () => {
+    const newCartItem = createCurrentCartItem();
+    if (onBuyNow) {
+      onBuyNow(newCartItem);
+    } else {
+      onAddToCart(newCartItem);
+    }
     onClose();
   };
 
@@ -415,41 +429,58 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           </div>
         </div>
 
-        {/* Footer with Quantity & Add Button */}
-        <div className="p-4 bg-[#faf5ec] border-t border-[#801419]/15 flex items-center justify-between gap-4">
+        {/* Footer with Quantity & Two CTA Buttons (Add to Cart & Buy Now) */}
+        <div className="p-3 sm:p-4 bg-[#faf5ec] border-t border-[#801419]/15 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           {/* Quantity Selector */}
-          <div className="flex items-center gap-2 bg-[#fffdfa] px-2 py-1.5 rounded-sm border border-[#d6c7b2] shadow-xs">
+          <div className="flex items-center justify-center gap-2 bg-[#fffdfa] px-3 py-1.5 rounded-sm border border-[#d6c7b2] shadow-xs shrink-0 self-center sm:self-auto">
+            <span className="text-[11px] font-serif font-bold text-stone-600 mr-1 hidden sm:inline">Số lượng:</span>
             <button
               type="button"
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
               disabled={quantity <= 1}
               className="w-7 h-7 rounded-xs flex items-center justify-center text-stone-700 hover:bg-[#ede2cb] disabled:opacity-40 transition cursor-pointer"
+              title="Giảm 1"
             >
               <Minus className="w-3.5 h-3.5" />
             </button>
-            <span className="text-sm font-mono font-bold text-stone-900 w-6 text-center">
+            <span className="text-sm font-mono font-bold text-stone-900 w-7 text-center">
               {quantity}
             </span>
             <button
               type="button"
               onClick={() => setQuantity(quantity + 1)}
               className="w-7 h-7 rounded-xs flex items-center justify-center text-stone-700 hover:bg-[#ede2cb] transition cursor-pointer"
+              title="Tăng 1"
             >
               <Plus className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          {/* Add to Cart CTA */}
-          <button
-            type="button"
-            onClick={handleAdd}
-            className="flex-1 py-3 px-5 rounded-sm bg-[#801419] hover:bg-[#630f14] text-amber-100 font-serif font-bold text-sm shadow-sm border border-[#d4af37] flex items-center justify-between transition group cursor-pointer uppercase tracking-wider"
-          >
-            <span>Thêm Vào Phiếu Đặt Món</span>
-            <span className="text-amber-300 font-mono font-bold group-hover:translate-x-0.5 transition-transform">
-              {totalPrice.toLocaleString('vi-VN')}đ
-            </span>
-          </button>
+          {/* Action Buttons: Add to Cart AND Express Buy Now */}
+          <div className="flex-1 flex items-center gap-2 sm:gap-2.5">
+            {/* Button 1: Thêm vào giỏ hàng */}
+            <button
+              type="button"
+              onClick={handleAdd}
+              className="flex-1 py-3 px-3 sm:px-4 rounded-sm bg-[#fffdfa] hover:bg-[#f7eed9] text-[#801419] font-serif font-bold text-xs sm:text-sm shadow-xs border-2 border-[#801419] flex items-center justify-center gap-1.5 transition cursor-pointer uppercase tracking-wider active:scale-[0.98]"
+            >
+              <ShoppingBag className="w-4 h-4 shrink-0 text-[#801419]" />
+              <span className="truncate">Thêm Vào Giỏ</span>
+            </button>
+
+            {/* Button 2: Mua Ngay Lập Tức */}
+            <button
+              type="button"
+              onClick={handleBuyNow}
+              className="flex-1 py-3 px-3 sm:px-4 rounded-sm bg-[#d4af37] hover:bg-[#c29d2b] text-[#52090c] font-serif font-black text-xs sm:text-sm shadow-md border-2 border-[#801419] flex items-center justify-center gap-1.5 transition group cursor-pointer uppercase tracking-wider active:scale-[0.98]"
+            >
+              <Zap className="w-4 h-4 text-[#801419] fill-[#801419] shrink-0" />
+              <span className="truncate">Mua Ngay</span>
+              <span className="text-[#801419] font-mono font-black text-xs sm:text-sm ml-0.5">
+                • {totalPrice.toLocaleString('vi-VN')}đ
+              </span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

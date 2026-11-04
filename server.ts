@@ -667,6 +667,72 @@ ${itemsList}
   });
 });
 
+// Order Cancellation & Refund Request endpoint
+app.post('/api/order/cancel', async (req, res) => {
+  const { code, reason, refundMethod, refundAccountInfo, refundAccountName, total, customerName, customerPhone } = req.body;
+  const targetTelegramChatId = (req.body.telegramChatId || telegramChatId || '').trim();
+
+  // Find and update order in recentOrders
+  const foundOrder = recentOrders.find((o) => o.code === code);
+  if (foundOrder) {
+    foundOrder.status = 'refund_requested';
+    foundOrder.cancellationReason = reason;
+    foundOrder.refundMethod = refundMethod;
+    foundOrder.refundAccountInfo = refundAccountInfo;
+    foundOrder.refundAccountName = refundAccountName;
+    foundOrder.cancelledAt = new Date().toISOString();
+    foundOrder.refundStatus = 'pending';
+  }
+
+  const refundMethodLabel = refundMethod === 'bank_transfer' ? 'Chuyển khoản VietQR' : refundMethod === 'momo' ? 'Ví MoMo' : 'Tiền mặt';
+
+  const cancelMessage = `⚠️ <b>YÊU CẦU HỦY ĐƠN & HOÀN TIỀN - GO COFFEE!</b>
+━━━━━━━━━━━━━━━━━━━━
+📦 <b>Mã đơn:</b> <code>${code}</code>
+👤 <b>Khách hàng:</b> ${customerName || (foundOrder ? foundOrder.customerName : 'Khách hàng')}
+📞 <b>Điện thoại:</b> <code>${customerPhone || (foundOrder ? foundOrder.customerPhone : 'Chưa có')}</code>
+💰 <b>Số tiền cần hoàn:</b> <b>${Number(total || (foundOrder ? foundOrder.total : 0)).toLocaleString('vi-VN')} đ</b>
+💳 <b>Hình thức nhận hoàn:</b> <b>${refundMethodLabel}</b>
+🏦 <b>Thông tin tài khoản:</b> <code>${refundAccountInfo || 'N/A'}</code>
+👤 <b>Tên thụ hưởng:</b> <b>${refundAccountName || 'Chưa nhập'}</b>
+❓ <b>Lý do hủy đơn:</b> <i>${reason || 'Khách yêu cầu hủy'}</i>
+⏰ <b>Thời gian yêu cầu:</b> ${new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}
+━━━━━━━━━━━━━━━━━━━━
+🔔 <i>Vui lòng kiểm tra và xử lý hoàn tiền cho khách trong vòng 5 - 15 phút!</i>`;
+
+  const tgResult = await sendTelegramNotification(cancelMessage, targetTelegramChatId);
+
+  return res.json({
+    ok: true,
+    message: 'Đã tiếp nhận yêu cầu hủy đơn & hoàn tiền',
+    telegram: tgResult,
+  });
+});
+
+// Admin Confirm Refund endpoint
+app.post('/api/admin/confirm-refund', async (req, res) => {
+  const { code } = req.body;
+  const foundOrder = recentOrders.find((o) => o.code === code);
+  if (foundOrder) {
+    foundOrder.status = 'cancelled';
+    foundOrder.refundStatus = 'completed';
+    foundOrder.refundCompletedAt = new Date().toISOString();
+  }
+
+  const confirmMsg = `✅ <b>ĐÃ HOÀN TIỀN THÀNH CÔNG - GO COFFEE</b>
+━━━━━━━━━━━━━━━━━━━━
+📦 <b>Mã đơn:</b> <code>${code}</code>
+💰 <b>Số tiền:</b> <b>${foundOrder ? Number(foundOrder.total).toLocaleString('vi-VN') + ' đ' : 'N/A'}</b>
+👤 <b>Khách hàng:</b> ${foundOrder ? foundOrder.customerName : 'Khách hàng'}
+⏰ <b>Thời gian hoàn:</b> ${new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}
+━━━━━━━━━━━━━━━━━━━━
+Quán đã hoàn tất việc chuyển trả tiền cho khách hàng.`;
+
+  await sendTelegramNotification(confirmMsg, telegramChatId);
+
+  return res.json({ ok: true, message: `Đã xác nhận hoàn tiền cho đơn ${code}` });
+});
+
 // STORE OWNER / ADMIN PORTAL ENDPOINTS
 app.get('/api/admin/overview', (_req, res) => {
   return res.json({

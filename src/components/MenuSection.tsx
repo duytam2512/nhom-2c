@@ -20,12 +20,14 @@ import { MENU_ITEMS } from '../data/coffeeData';
 
 interface MenuSectionProps {
   onSelectItem: (item: MenuItem) => void;
+  onBuyNowItem?: (item: MenuItem) => void;
   selectedCategory?: CoffeeCategory;
   onSelectCategory?: (category: CoffeeCategory) => void;
 }
 
 export const MenuSection: React.FC<MenuSectionProps> = ({ 
   onSelectItem,
+  onBuyNowItem,
   selectedCategory: externalCategory,
   onSelectCategory: externalSetCategory
 }) => {
@@ -504,17 +506,37 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                   </span>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSelectItem(item);
-                  }}
-                  className="w-8 h-8 rounded-sm bg-[#801419] hover:bg-[#630f14] text-amber-200 border border-[#d4af37] flex items-center justify-center transition shadow-xs cursor-pointer active:scale-95"
-                  title="Chọn tùy chỉnh và đặt món"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelectItem(item);
+                    }}
+                    className="h-8 px-2.5 rounded-sm bg-[#fffdfa] hover:bg-[#ede2cb] text-[#801419] border border-[#801419]/40 flex items-center justify-center gap-1 transition shadow-2xs cursor-pointer active:scale-95 text-[11px] font-serif font-bold"
+                    title="Tùy chỉnh & thêm vào giỏ hàng"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Thêm</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (onBuyNowItem) {
+                        onBuyNowItem(item);
+                      } else {
+                        onSelectItem(item);
+                      }
+                    }}
+                    className="h-8 px-2.5 rounded-sm bg-[#d4af37] hover:bg-[#c29d2b] text-[#52090c] border border-[#801419] flex items-center justify-center gap-1 transition shadow-xs cursor-pointer active:scale-95 text-[11px] font-serif font-black"
+                    title="Mua ngay lập tức"
+                  >
+                    <Zap className="w-3 h-3 fill-[#52090c]" />
+                    <span>Mua ngay</span>
+                  </button>
+                </div>
               </div>
             </div>
           ))}

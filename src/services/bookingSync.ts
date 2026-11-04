@@ -321,3 +321,92 @@ export async function submitCoffeeOrder(order: any): Promise<{
     sheetSynced,
   };
 }
+
+export interface CancelOrderParams {
+  code: string;
+  reason: string;
+  refundMethod: 'bank_transfer' | 'momo' | 'cash';
+  refundAccountInfo: string;
+  refundAccountName: string;
+  customerNote?: string;
+}
+
+/**
+ * Submits an order cancellation and refund request:
+ * 1. Updates local storage state
+ * 2. Calls backend /api/order/cancel (notifies Telegram & persists)
+ * 3. Sends direct notification to Google Sheets Webhook
+ */
+export async function cancelCoffeeOrder(params: CancelOrderParams): Promise<{
+  ok: boolean;
+  message: string;
+}> {
+  const config = await getStoreSyncConfig();
+  const effectiveWebhook = config.webhookUrl;
+  const effectiveChatId = config.telegramChatId;
+  const cancelledAt = new Date().toISOString();
+
+  // 1. Update order in local storage
+  let currentOrder: any = null;
+  try {
+    const existingOrdersStr = safeStorage.getItem('go_coffee_local_orders');
+    if (existingOrdersStr) {
+      const orders = JSON.parse(existingOrdersStr);
+      const idx = orders.findIndex((o: any) => o.code === params.code);
+      if (idx > -1) {
+        orders[idx] = {
+          ...orders[idx],
+          status: 'refund_requested',
+          cancellationReason: params.reason,
+          refundMethod: params.refundMethod,
+          refundAccountInfo: params.refundAccountInfo,
+          refundAccountName: params.refundAccountName,
+          cancelledAt,
+          refundStatus: 'pending',
+        };
+        currentOrder = orders[idx];
+        safeStorage.setItem('go_coffee_local_orders', JSON.stringify(orders));
+      }
+    }
+  } catch (e) {
+    console.warn('Could not update order in safeStorage:', e);
+  }
+
+  const cancelPayload = {
+    type: 'cancel_order',
+    code: params.code,
+    reason: params.reason,
+    refundMethod: params.refundMethod,
+    refundAccountInfo: params.refundAccountInfo,
+    refundAccountName: params.refundAccountName,
+    total: currentOrder?.total || 0,
+    customerName: currentOrder?.customerName || 'Khách hàng',
+    customerPhone: currentOrder?.customerPhone || '',
+    cancelledAt,
+    webhookUrl: effectiveWebhook,
+    telegramChatId: effectiveChatId,
+  };
+
+  // 2. Call backend /api/order/cancel
+  try {
+    await fetch('/api/order/cancel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(cancelPayload),
+    });
+  } catch (err) {
+    // If backend offline (e.g. static host)
+  }
+
+  // 3. Direct Google Apps Script forward if available
+  if (effectiveWebhook) {
+    try {
+      await sendDirectToGoogleSheets(effectiveWebhook, cancelPayload);
+    } catch (err) {}
+  }
+
+  return {
+    ok: true,
+    message: 'Yêu cầu hủy đơn & hoàn tiền đã được gửi tới quán. Quán sẽ xử lý hoàn tiền trong 5 - 15 phút.',
+  };
+}
