@@ -1,6 +1,6 @@
 {
-  "name": "Go & Grab Coffee - Đặt Cà Phê Trực Tuyến & Thanh Toán Nhanh",
-  "description": "Nền tảng đặt cà phê mang đi cao cấp Go & Grab Coffee. Menu cà phê Robusta Cầu Đất, Cold Brew, trà trái cây tươi với thanh toán siêu tốc VietQR, MoMo và theo dõi đơn hàng thời gian thực.",
+  "name": "GO.COFFEE | Cà Phê Mang Đi 120 Pasteur Quận 1",
+  "description": "GO.COFFEE - Quán cà phê Takeaway tại 120 Pasteur, Phường Bến Nghé, Quận 1. Đặt món mang đi trực tuyến lấy nhanh sau 5 phút.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
