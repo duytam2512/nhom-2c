@@ -209,7 +209,7 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                 <span>Thực Đơn Cà Phê & Điểm Tâm Quán Xưa</span>
               </h3>
               <p className="text-[11px] text-amber-200/90 hidden sm:block font-sans">
-                Pha phin mộc 100% Cầu Đất • Chuẩn bị nhanh trong 5 phút • Giữ chỗ bàn không phụ thu
+                Pha phin mộc 100% Cầu Đất • Chuẩn bị nhanh sau ~5 phút • Mô hình Takeaway & Giao hàng siêu tốc
               </p>
             </div>
           </div>
@@ -493,11 +493,11 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                 </div>
               </div>
 
-              {/* Price & CTA Button (Mobile Anti-Overflow with Flex-wrap) */}
-              <div className="p-3 sm:p-4 pt-0 border-t border-[#801419]/10 mt-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-                <div className="min-w-0">
-                  <div className="flex items-baseline gap-1.5 whitespace-nowrap">
-                    <span className="text-base font-mono font-black text-[#801419] whitespace-nowrap overflow-hidden text-ellipsis">
+              {/* Price & CTA Button (Mobile Anti-Overflow 2-Row Layout) */}
+              <div className="p-3 sm:p-3.5 pt-0 border-t border-[#801419]/10 mt-auto flex flex-col gap-2">
+                <div className="flex items-center justify-between gap-1">
+                  <div className="flex items-baseline gap-1.5 min-w-0">
+                    <span className="text-base sm:text-lg font-mono font-black text-[#801419] whitespace-nowrap">
                       {item.price.toLocaleString('vi-VN')}đ
                     </span>
                     {item.originalPrice && (
@@ -506,24 +506,24 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                       </span>
                     )}
                   </div>
-                  <span className="text-[10px] font-serif text-stone-500 block truncate whitespace-nowrap">
-                    {item.category === 'pastry' ? 'Bánh gọi thêm' : item.category === 'combo' ? 'Combo ly + bánh' : 'Ly Size M (350ml)'}
+                  <span className="text-[10px] font-serif px-1.5 py-0.5 rounded-xs bg-[#f5eedc] text-stone-600 border border-[#dfc8a5]/60 shrink-0 whitespace-nowrap">
+                    {item.category === 'pastry' ? 'Bánh gọi thêm' : item.category === 'combo' ? 'Combo ly + bánh' : 'Size M (350ml)'}
                   </span>
                 </div>
 
-                {/* Actions: Add to Cart and Buy Now with flex-wrap and responsive sizing */}
-                <div className="flex items-center gap-1.5 w-full sm:w-auto shrink-0 flex-wrap sm:flex-nowrap">
+                {/* Actions: Add to Cart and Buy Now (100% width grid, never overflows or clips) */}
+                <div className="grid grid-cols-2 gap-1.5 w-full">
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
                       onSelectItem(item);
                     }}
-                    className="flex-1 sm:flex-none h-8 px-2.5 rounded-sm bg-[#fffdfa] hover:bg-[#ede2cb] text-[#801419] border border-[#801419]/40 flex items-center justify-center gap-1 transition shadow-2xs cursor-pointer active:scale-95 text-[11px] font-serif font-bold whitespace-nowrap"
+                    className="h-8 px-2 rounded-sm bg-[#fffdfa] hover:bg-[#ede2cb] text-[#801419] border border-[#801419]/40 flex items-center justify-center gap-1 transition shadow-2xs cursor-pointer active:scale-95 text-[11px] font-serif font-bold whitespace-nowrap min-w-0"
                     title="Tùy chỉnh & thêm vào giỏ hàng"
                   >
                     <Plus className="w-3.5 h-3.5 shrink-0" />
-                    <span>Thêm</span>
+                    <span className="truncate">Thêm</span>
                   </button>
 
                   <button
@@ -536,11 +536,11 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                         onSelectItem(item);
                       }
                     }}
-                    className="flex-1 sm:flex-none h-8 px-3 rounded-sm bg-[#d4af37] hover:bg-[#c29d2b] text-[#52090c] border border-[#801419] flex items-center justify-center gap-1 transition shadow-xs cursor-pointer active:scale-95 text-[11px] font-serif font-black whitespace-nowrap"
+                    className="h-8 px-2 rounded-sm bg-[#d4af37] hover:bg-[#c29d2b] text-[#52090c] border border-[#801419] flex items-center justify-center gap-1 transition shadow-xs cursor-pointer active:scale-95 text-[11px] font-serif font-black whitespace-nowrap min-w-0"
                     title="Mua ngay lập tức"
                   >
-                    <Zap className="w-3 h-3 fill-[#52090c] shrink-0" />
-                    <span>Mua ngay</span>
+                    <Zap className="w-3.5 h-3.5 fill-[#52090c] shrink-0" />
+                    <span className="truncate">Mua ngay</span>
                   </button>
                 </div>
               </div>

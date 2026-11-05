@@ -736,11 +736,11 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                     {/* Metrics row */}
                     <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                       <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200">
-                        <span className="text-[11px] text-amber-800 font-semibold block">Khách đặt bàn</span>
+                        <span className="text-[11px] text-amber-800 font-semibold block">Đơn lấy mang đi (Pickup)</span>
                         <span className="text-2xl font-black text-amber-950">
-                          {overviewData?.stats?.totalReservations || 0}
+                          {overviewData?.orders?.filter((o: any) => o.orderType === 'pickup')?.length || overviewData?.stats?.totalReservations || 0}
                         </span>
-                        <span className="text-[10px] text-amber-700 block mt-1">Lượt đặt bàn</span>
+                        <span className="text-[10px] text-amber-700 block mt-1">Lấy sau ~5 phút</span>
                       </div>
 
                       <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200">

@@ -457,26 +457,26 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           </div>
 
           {/* Action Buttons: Add to Cart AND Express Buy Now */}
-          <div className="flex-1 flex items-center gap-2 sm:gap-2.5">
+          <div className="flex-1 flex items-center gap-2 sm:gap-2.5 min-w-0">
             {/* Button 1: Thêm vào giỏ hàng */}
             <button
               type="button"
               onClick={handleAdd}
-              className="flex-1 py-3 px-3 sm:px-4 rounded-sm bg-[#fffdfa] hover:bg-[#f7eed9] text-[#801419] font-serif font-bold text-xs sm:text-sm shadow-xs border-2 border-[#801419] flex items-center justify-center gap-1.5 transition cursor-pointer uppercase tracking-wider active:scale-[0.98]"
+              className="flex-1 min-w-0 py-3 px-2 sm:px-4 rounded-sm bg-[#fffdfa] hover:bg-[#f7eed9] text-[#801419] font-serif font-bold text-xs sm:text-sm shadow-xs border-2 border-[#801419] flex items-center justify-center gap-1 sm:gap-1.5 transition cursor-pointer uppercase tracking-wider active:scale-[0.98]"
             >
               <ShoppingBag className="w-4 h-4 shrink-0 text-[#801419]" />
-              <span className="truncate">Thêm Vào Giỏ</span>
+              <span className="truncate">Thêm Giỏ</span>
             </button>
 
             {/* Button 2: Mua Ngay Lập Tức */}
             <button
               type="button"
               onClick={handleBuyNow}
-              className="flex-1 py-3 px-3 sm:px-4 rounded-sm bg-[#d4af37] hover:bg-[#c29d2b] text-[#52090c] font-serif font-black text-xs sm:text-sm shadow-md border-2 border-[#801419] flex items-center justify-center gap-1.5 transition group cursor-pointer uppercase tracking-wider active:scale-[0.98]"
+              className="flex-1 min-w-0 py-3 px-2 sm:px-4 rounded-sm bg-[#d4af37] hover:bg-[#c29d2b] text-[#52090c] font-serif font-black text-xs sm:text-sm shadow-md border-2 border-[#801419] flex items-center justify-center gap-1 sm:gap-1.5 transition group cursor-pointer uppercase tracking-wider active:scale-[0.98]"
             >
               <Zap className="w-4 h-4 text-[#801419] fill-[#801419] shrink-0" />
               <span className="truncate">Mua Ngay</span>
-              <span className="text-[#801419] font-mono font-black text-xs sm:text-sm ml-0.5">
+              <span className="text-[#801419] font-mono font-black text-[11px] sm:text-xs ml-0.5 shrink-0">
                 • {totalPrice.toLocaleString('vi-VN')}đ
               </span>
             </button>

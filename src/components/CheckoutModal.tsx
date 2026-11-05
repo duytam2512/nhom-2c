@@ -58,6 +58,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [customTimeInput, setCustomTimeInput] = useState<string>('09:00');
   const [isProcessing, setIsProcessing] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const handleSelectPickupTime = (time: string) => {
     setLocalPickupTime(time);
@@ -106,10 +107,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   const handleFinishPayment = () => {
     if (!customerName.trim() || !customerPhone.trim()) {
-      alert('Vui lòng nhập tên và số điện thoại nhận hàng.');
+      setFormError('Vui lòng nhập họ tên và số điện thoại để tiếp nhận đơn hàng.');
       return;
     }
-
+    setFormError(null);
     setIsProcessing(true);
 
     setTimeout(() => {
@@ -196,6 +197,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
         {/* Modal Scrollable Body */}
         <div className="p-5 overflow-y-auto space-y-5">
+          {formError && (
+            <div className="p-3 bg-red-50 border border-red-200 text-red-800 text-xs rounded-xl flex items-center gap-2 font-medium">
+              <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+              <span>{formError}</span>
+            </div>
+          )}
+
           {/* Customer Info Form */}
           <div className="p-4 rounded-xl bg-stone-50 border border-stone-200/80 space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-stone-800 flex items-center justify-between">
