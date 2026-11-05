@@ -52,7 +52,7 @@ export const SignatureComboModal: React.FC<SignatureComboModalProps> = ({
   const handleBuildCartItem = (): CartItem => {
     return {
       id: `cart-combo-${Date.now()}`,
-      menuItemId: 'hl-banh-mi-cham-cafe',
+      menuItemId: 'hl-combo-sang',
       name: 'Bộ Cà Phê & Hộp Bánh Trên Nắp Ly',
       size: 'M',
       temperature,

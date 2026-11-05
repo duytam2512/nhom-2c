@@ -20,7 +20,8 @@ import {
   LogOut, 
   Eye, 
   KeyRound,
-  Code2
+  Code2,
+  HardDrive
 } from 'lucide-react';
 import { getStoreSyncConfig, saveStoreSyncConfig, sendDirectToGoogleSheets } from '../services/bookingSync';
 import { safeStorage } from '../utils/safeStorage';
@@ -30,6 +31,7 @@ interface AdminDashboardModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSwitchToCustomerView?: () => void;
+  onOpenGoogleDrive?: () => void;
 }
 
 const APPS_SCRIPT_SOURCE = `/**
@@ -169,6 +171,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
   isOpen,
   onClose,
   onSwitchToCustomerView,
+  onOpenGoogleDrive,
 }) => {
   // Authentication
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -552,6 +555,20 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
+            {isAuthenticated && onOpenGoogleDrive && (
+              <button
+                onClick={() => {
+                  onClose();
+                  onOpenGoogleDrive();
+                }}
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold text-xs transition cursor-pointer shadow-xs"
+                title="Mở Google Drive Workspace (Xem tệp & Xuất báo cáo)"
+              >
+                <HardDrive className="w-3.5 h-3.5" />
+                <span>Google Drive</span>
+              </button>
+            )}
+
             {isAuthenticated && onSwitchToCustomerView && (
               <button
                 onClick={() => {

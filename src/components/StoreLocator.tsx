@@ -28,14 +28,12 @@ import { trackConversion } from '../services/conversionTracker';
 interface StoreLocatorProps {
   selectedStore: StoreLocation;
   onSelectStore: (store: StoreLocation) => void;
-  onOpenTableBooking?: (store?: StoreLocation) => void;
   onOrderNow?: () => void;
 }
 
 export const StoreLocator: React.FC<StoreLocatorProps> = ({
   selectedStore,
   onSelectStore,
-  onOpenTableBooking,
   onOrderNow,
 }) => {
   const store = STORES[0] || selectedStore;
@@ -103,7 +101,7 @@ export const StoreLocator: React.FC<StoreLocatorProps> = ({
         <p className="text-xs sm:text-base text-stone-700 max-w-2xl mx-auto leading-relaxed font-serif">
           Mô hình quầy mang đi nhỏ gọn tối ưu thời gian: <strong>Chuẩn bị ghé lấy sau ~5 phút</strong> hoặc <strong>Giao hỏa tốc ~15 - 20 phút</strong>.
           <span className="block text-[11px] text-amber-800 font-mono mt-1 font-bold">
-            * Địa điểm dự kiến trong bản demo: Số 120 Pasteur, Phường Bến Nghé, Quận 1 (đối diện Takashimaya / Saigon Centre).
+            * Địa điểm: Số 120 Pasteur, Phường Sài Gòn, Quận 1 (đối diện Takashimaya / Saigon Centre).
           </span>
         </p>
       </div>
@@ -186,7 +184,7 @@ export const StoreLocator: React.FC<StoreLocatorProps> = ({
                   Điểm Bán Takeaway (Dự Kiến Trong Bản Demo)
                 </span>
                 <h4 className="text-lg sm:text-xl font-black text-stone-900 font-serif">
-                  120 Pasteur, Phường Bến Nghé, Quận 1
+                  120 Pasteur, Phường Sài Gòn, Quận 1
                 </h4>
               </div>
               <span className="px-3 py-1 rounded-sm bg-[#ede2cb] text-[#801419] text-xs font-serif font-bold border border-[#801419]/30">
@@ -293,17 +291,13 @@ export const StoreLocator: React.FC<StoreLocatorProps> = ({
               </a>
             </div>
 
-            {/* 3. Phụ trợ: Đặt Bàn (Nếu cần ngồi lại) */}
+            {/* Dịch vụ: 100% Takeaway & Delivery */}
             <div className="flex items-center justify-between pt-1 text-xs font-serif text-stone-500">
-              <span>Cần ngồi lại thưởng thức cà phê phin?</span>
-              <button
-                type="button"
-                onClick={() => onOpenTableBooking?.(store)}
-                className="text-[#801419] hover:underline font-bold inline-flex items-center gap-1 cursor-pointer"
-              >
-                <Armchair className="w-3.5 h-3.5" />
-                <span>Đặt Chỗ Ngồi Lại</span>
-              </button>
+              <span className="flex items-center gap-1.5 text-stone-600">
+                <Coffee className="w-3.5 h-3.5 text-[#801419]" />
+                <span>Mô hình chuyên <strong>Takeaway (Mang đi) & Giao hàng hỏa tốc</strong></span>
+              </span>
+              <span className="text-[#801419] font-bold">120 Pasteur, Phường Sài Gòn</span>
             </div>
           </div>
 

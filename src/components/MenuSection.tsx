@@ -56,6 +56,14 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
       bgHover: 'hover:bg-red-50 hover:text-[#b22830] hover:border-red-300' 
     },
     { 
+      id: 'combo' as CoffeeCategory, 
+      name: 'Combo Mang Đi', 
+      icon: Zap, 
+      accentColor: 'text-[#b22830]', 
+      badgeColor: 'bg-red-50 text-[#b22830] border border-red-300',
+      bgHover: 'hover:bg-red-50 hover:text-[#b22830] hover:border-red-300' 
+    },
+    { 
       id: 'phin' as CoffeeCategory, 
       name: 'Cà Phê Phin', 
       icon: Flame, 
@@ -72,36 +80,28 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
       bgHover: 'hover:bg-amber-50 hover:text-[#b45309] hover:border-amber-300' 
     },
     { 
-      id: 'freeze' as CoffeeCategory, 
-      name: 'Freeze Đá Xay', 
-      icon: CupSoda, 
-      accentColor: 'text-[#047857]', 
-      badgeColor: 'bg-emerald-50 text-emerald-900 border border-emerald-200/50',
-      bgHover: 'hover:bg-emerald-50 hover:text-[#047857] hover:border-emerald-300' 
-    },
-    { 
       id: 'tea' as CoffeeCategory, 
-      name: 'Trà Sen Vàng & Đào', 
+      name: 'Trà', 
       icon: Leaf, 
       accentColor: 'text-[#d97706]', 
       badgeColor: 'bg-amber-50 text-amber-900 border border-amber-200/50',
       bgHover: 'hover:bg-amber-50 hover:text-[#d97706] hover:border-amber-300' 
     },
     { 
+      id: 'freeze' as CoffeeCategory, 
+      name: 'Đá Xay (Freeze)', 
+      icon: CupSoda, 
+      accentColor: 'text-[#047857]', 
+      badgeColor: 'bg-emerald-50 text-emerald-900 border border-emerald-200/50',
+      bgHover: 'hover:bg-emerald-50 hover:text-[#047857] hover:border-emerald-300' 
+    },
+    { 
       id: 'pastry' as CoffeeCategory, 
-      name: 'Bánh Mì & Bánh Ngọt', 
+      name: 'Bánh Gọi Thêm', 
       icon: Croissant, 
       accentColor: 'text-[#ea580c]', 
       badgeColor: 'bg-orange-50 text-orange-900 border border-orange-200/50',
       bgHover: 'hover:bg-orange-50 hover:text-[#ea580c] hover:border-orange-300' 
-    },
-    { 
-      id: 'combo' as CoffeeCategory, 
-      name: 'Combo Tiết Kiệm', 
-      icon: Zap, 
-      accentColor: 'text-[#b22830]', 
-      badgeColor: 'bg-red-50 text-[#b22830] border border-red-300',
-      bgHover: 'hover:bg-red-50 hover:text-[#b22830] hover:border-red-300' 
     },
   ];
 
@@ -460,11 +460,11 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                 {/* Content */}
                 <div className="p-4 space-y-2">
                   <div className="space-y-0.5">
-                    <h3 className="font-serif font-bold text-stone-900 text-sm sm:text-base group-hover:text-[#801419] transition line-clamp-1">
+                    <h3 className="font-serif font-bold text-stone-900 text-sm sm:text-base group-hover:text-[#801419] transition whitespace-nowrap overflow-hidden text-ellipsis" title={item.name}>
                       {item.name}
                     </h3>
                     {item.vietnameseName && (
-                      <p className="text-[11px] font-serif italic text-stone-500 truncate">
+                      <p className="text-[11px] font-serif italic text-stone-500 whitespace-nowrap overflow-hidden text-ellipsis" title={item.vietnameseName}>
                         {item.vietnameseName}
                       </p>
                     )}
@@ -474,12 +474,17 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                     {item.description}
                   </p>
 
-                  {/* Tags */}
+                  {/* Tags & Savings Badge */}
                   <div className="flex items-center gap-1.5 flex-wrap pt-1">
-                    {item.tags.slice(0, 3).map((tag, idx) => (
+                    {item.category === 'combo' && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-xs bg-emerald-100 text-emerald-800 font-serif font-bold border border-emerald-300 whitespace-nowrap">
+                        {item.id === 'hl-combo-sang' ? '⚡ Tiết kiệm 9.000đ' : '⚡ Tiết kiệm 12.000đ'}
+                      </span>
+                    )}
+                    {item.tags.slice(0, 2).map((tag, idx) => (
                       <span
                         key={idx}
-                        className="text-[10px] px-1.5 py-0.2 rounded-xs bg-[#ede2cb] text-stone-700 font-serif font-medium"
+                        className="text-[10px] px-1.5 py-0.2 rounded-xs bg-[#ede2cb] text-stone-700 font-serif font-medium whitespace-nowrap"
                       >
                         {tag}
                       </span>
@@ -488,35 +493,36 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                 </div>
               </div>
 
-              {/* Price & CTA Button */}
-              <div className="p-4 pt-0 flex items-center justify-between border-t border-[#801419]/10 mt-2">
-                <div>
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-base font-mono font-bold text-[#801419]">
+              {/* Price & CTA Button (Mobile Anti-Overflow with Flex-wrap) */}
+              <div className="p-3 sm:p-4 pt-0 border-t border-[#801419]/10 mt-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                <div className="min-w-0">
+                  <div className="flex items-baseline gap-1.5 whitespace-nowrap">
+                    <span className="text-base font-mono font-black text-[#801419] whitespace-nowrap overflow-hidden text-ellipsis">
                       {item.price.toLocaleString('vi-VN')}đ
                     </span>
                     {item.originalPrice && (
-                      <span className="text-xs font-mono text-stone-400 line-through">
+                      <span className="text-xs font-mono text-stone-400 line-through whitespace-nowrap">
                         {item.originalPrice.toLocaleString('vi-VN')}đ
                       </span>
                     )}
                   </div>
-                  <span className="text-[10px] font-serif text-stone-500 block">
-                    {item.category === 'pastry' ? 'Phần ăn kèm' : 'Ly Size M (350ml)'}
+                  <span className="text-[10px] font-serif text-stone-500 block truncate whitespace-nowrap">
+                    {item.category === 'pastry' ? 'Bánh gọi thêm' : item.category === 'combo' ? 'Combo ly + bánh' : 'Ly Size M (350ml)'}
                   </span>
                 </div>
 
-                <div className="flex items-center gap-1.5 shrink-0">
+                {/* Actions: Add to Cart and Buy Now with flex-wrap and responsive sizing */}
+                <div className="flex items-center gap-1.5 w-full sm:w-auto shrink-0 flex-wrap sm:flex-nowrap">
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
                       onSelectItem(item);
                     }}
-                    className="h-8 px-2.5 rounded-sm bg-[#fffdfa] hover:bg-[#ede2cb] text-[#801419] border border-[#801419]/40 flex items-center justify-center gap-1 transition shadow-2xs cursor-pointer active:scale-95 text-[11px] font-serif font-bold"
+                    className="flex-1 sm:flex-none h-8 px-2.5 rounded-sm bg-[#fffdfa] hover:bg-[#ede2cb] text-[#801419] border border-[#801419]/40 flex items-center justify-center gap-1 transition shadow-2xs cursor-pointer active:scale-95 text-[11px] font-serif font-bold whitespace-nowrap"
                     title="Tùy chỉnh & thêm vào giỏ hàng"
                   >
-                    <Plus className="w-3.5 h-3.5" />
+                    <Plus className="w-3.5 h-3.5 shrink-0" />
                     <span>Thêm</span>
                   </button>
 
@@ -530,10 +536,10 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                         onSelectItem(item);
                       }
                     }}
-                    className="h-8 px-2.5 rounded-sm bg-[#d4af37] hover:bg-[#c29d2b] text-[#52090c] border border-[#801419] flex items-center justify-center gap-1 transition shadow-xs cursor-pointer active:scale-95 text-[11px] font-serif font-black"
+                    className="flex-1 sm:flex-none h-8 px-3 rounded-sm bg-[#d4af37] hover:bg-[#c29d2b] text-[#52090c] border border-[#801419] flex items-center justify-center gap-1 transition shadow-xs cursor-pointer active:scale-95 text-[11px] font-serif font-black whitespace-nowrap"
                     title="Mua ngay lập tức"
                   >
-                    <Zap className="w-3 h-3 fill-[#52090c]" />
+                    <Zap className="w-3 h-3 fill-[#52090c] shrink-0" />
                     <span>Mua ngay</span>
                   </button>
                 </div>

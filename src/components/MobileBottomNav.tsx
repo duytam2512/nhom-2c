@@ -4,7 +4,6 @@ import { Home, Coffee, MapPin, ShoppingBag } from 'lucide-react';
 interface MobileBottomNavProps {
   cartCount: number;
   onOpenCart: () => void;
-  onOpenTableBooking: () => void;
   onScrollToMenu: () => void;
   onScrollToStores: () => void;
   onGoHome: () => void;

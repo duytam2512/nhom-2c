@@ -42,7 +42,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
 
   if (!isOpen || !item) return null;
 
-  const isPureFood = item.category === 'pastry' && item.id !== 'hl-banh-mi-cham-cafe';
+  const isPureFood = item.category === 'pastry';
 
   // Calculate pricing
   const sizePriceAddon = isPureFood ? 0 : size === 'S' ? 0 : size === 'M' ? 6000 : 12000;
@@ -341,7 +341,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
               </div>
 
               {/* Milk type upgrade if coffee (phin/phindi/traditional/banh mi cham) */}
-              {(['phin', 'phindi', 'espresso', 'traditional'].includes(item.category) || item.id === 'hl-banh-mi-cham-cafe') && (
+              {['phin', 'phindi', 'espresso', 'traditional'].includes(item.category) && (
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-wider text-stone-800">
                     Tùy chọn loại sữa

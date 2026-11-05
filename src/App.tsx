@@ -16,8 +16,8 @@ import { CartDrawer } from './components/CartDrawer';
 import { CheckoutModal } from './components/CheckoutModal';
 import { OrderTrackerModal } from './components/OrderTrackerModal';
 import { SeoShareModal } from './components/SeoShareModal';
-import { TableBookingModal } from './components/TableBookingModal';
 import { AdminDashboardModal } from './components/AdminDashboardModal';
+import { GoogleDriveModal } from './components/GoogleDriveModal';
 import { ChatbotWidget } from './components/ChatbotWidget';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { SignatureComboModal } from './components/SignatureComboModal';
@@ -64,15 +64,11 @@ export default function App() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isOrderTrackerOpen, setIsOrderTrackerOpen] = useState(false);
   const [isSeoShareOpen, setIsSeoShareOpen] = useState(false);
-  const [isTableBookingOpen, setIsTableBookingOpen] = useState(false);
+  const [isGoogleDriveOpen, setIsGoogleDriveOpen] = useState(false);
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [isComboModalOpen, setIsComboModalOpen] = useState(false);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [currentOrder, setCurrentOrder] = useState<Order | null>(null);
-
-  const openBookingModal = () => {
-    setIsTableBookingOpen(true);
-  };
 
   // Toast feedback
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -192,12 +188,12 @@ export default function App() {
           const el = document.getElementById('menu');
           if (el) el.scrollIntoView({ behavior: 'smooth' });
         }, 100);
-      } else if (path === '/dat-ban') {
-        setIsTableBookingOpen(true);
       } else if (path === '/gio-hang') {
         setIsCartOpen(true);
       } else if (path === '/theo-doi-don' || path === '/don-hang' || path === '/order') {
         setIsOrderTrackerOpen(true);
+      } else if (path === '/drive' || path === '/google-drive') {
+        setIsGoogleDriveOpen(true);
       } else if (path === '/admin' || path === '/quan-tri' || path === '/owner') {
         setIsAdminModalOpen(true);
       }
@@ -239,9 +235,9 @@ export default function App() {
     setSelectedCategory('all');
     setIsCartOpen(false);
     setIsCheckoutOpen(false);
-    setIsTableBookingOpen(false);
     setIsOrderTrackerOpen(false);
     setIsSeoShareOpen(false);
+    setIsGoogleDriveOpen(false);
     setIsChatbotOpen(false);
     setIsComboModalOpen(false);
     setIsFeedbackModalOpen(false);
@@ -298,7 +294,6 @@ export default function App() {
         cartCount={totalCartCount}
         onOpenCart={() => setIsCartOpen(true)}
         onOpenSeoShare={() => setIsSeoShareOpen(true)}
-        onOpenTableBooking={openBookingModal}
         onOpenChatbot={() => setIsChatbotOpen(true)}
         selectedStore={selectedStore}
         onSelectCategory={(category) => {
@@ -306,6 +301,7 @@ export default function App() {
         }}
         onResetHome={handleResetHome}
         onOpenOrderTracker={() => setIsOrderTrackerOpen(true)}
+        onOpenGoogleDrive={() => setIsGoogleDriveOpen(true)}
       />
 
       {/* Main flow: Hero -> PackagingGuide -> MenuSection -> StoreLocator -> StorySection */}
@@ -317,7 +313,6 @@ export default function App() {
           onOpenStoreLocator={scrollToStores}
           onCustomizeItem={(item) => setCustomizingItem(item)}
           onOpenSeoShare={() => setIsSeoShareOpen(true)}
-          onOpenTableBooking={() => setIsTableBookingOpen(true)}
           onOpenChatbot={() => setIsChatbotOpen(true)}
         />
 
@@ -361,10 +356,6 @@ export default function App() {
             setSelectedStore(store);
             showToast(`Đã chuyển điểm nhận cà phê: ${store.name}`);
           }}
-          onOpenTableBooking={(store) => {
-            if (store) setSelectedStore(store);
-            setIsTableBookingOpen(true);
-          }}
           onOrderNow={scrollToMenu}
         />
 
@@ -377,13 +368,13 @@ export default function App() {
         onOpenSeoShare={() => setIsSeoShareOpen(true)} 
         onResetHome={handleResetHome}
         onOpenAdmin={() => setIsAdminModalOpen(true)}
+        onOpenGoogleDrive={() => setIsGoogleDriveOpen(true)}
       />
 
       {/* Dedicated Native-feel Mobile Bottom Navigation Bar (Phone-optimized) */}
       <MobileBottomNav
         cartCount={totalCartCount}
         onOpenCart={() => setIsCartOpen(true)}
-        onOpenTableBooking={openBookingModal}
         onScrollToMenu={scrollToMenu}
         onScrollToStores={scrollToStores}
         onGoHome={handleResetHome}
@@ -461,26 +452,22 @@ export default function App() {
         onClose={() => setIsFeedbackModalOpen(false)}
       />
 
-      {/* Table Reservation Customer Modal */}
-      <TableBookingModal
-        isOpen={isTableBookingOpen}
-        onClose={() => {
-          setIsTableBookingOpen(false);
-          if (typeof window !== 'undefined' && window.location.pathname === '/dat-ban') {
-            window.history.pushState(null, '', '/');
-          }
-        }}
-        selectedStore={selectedStore}
-        onBookingSuccess={(res) => showToast(`Đặt bàn thành công cho ${res.guestCount} khách! Mã vé: ${res.code}`)}
-        onGoToMenu={scrollToMenu}
-      />
-
       {/* Barista AI Chatbot Widget */}
       <ChatbotWidget
         isOpen={isChatbotOpen}
         onToggle={() => setIsChatbotOpen((prev) => !prev)}
-        onOpenTableBooking={() => setIsTableBookingOpen(true)}
         onScrollToMenu={scrollToMenu}
+      />
+
+      {/* Google Drive Workspace Modal */}
+      <GoogleDriveModal
+        isOpen={isGoogleDriveOpen}
+        onClose={() => {
+          setIsGoogleDriveOpen(false);
+          if (typeof window !== 'undefined' && (window.location.pathname === '/drive' || window.location.pathname === '/google-drive')) {
+            window.history.pushState(null, '', '/');
+          }
+        }}
       />
 
       {/* Store Owner / Admin Dedicated Portal */}
@@ -498,6 +485,7 @@ export default function App() {
         onSwitchToCustomerView={() => {
           setIsAdminModalOpen(false);
         }}
+        onOpenGoogleDrive={() => setIsGoogleDriveOpen(true)}
       />
     </div>
   );

@@ -32,7 +32,6 @@ export interface ChatMessage {
 interface ChatbotWidgetProps {
   isOpen: boolean;
   onToggle: () => void;
-  onOpenTableBooking?: () => void;
   onScrollToMenu?: () => void;
 }
 
@@ -61,7 +60,6 @@ const QUICK_SUGGESTIONS = [
 export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   isOpen,
   onToggle,
-  onOpenTableBooking,
   onScrollToMenu,
 }) => {
   const [messages, setMessages] = useState<ChatMessage[]>(INITIAL_MESSAGES);
@@ -241,10 +239,8 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
       // Detect actions in bot response
       let suggestedAction: ChatMessage['suggestedAction'] = undefined;
       const lowerReply = botReply.toLowerCase();
-      if (lowerReply.includes('đặt bàn') || lowerReply.includes('giữ chỗ') || lowerReply.includes('khung giờ')) {
-        suggestedAction = { type: 'booking', label: '🪑 Đặt Bàn Ngay' };
-      } else if (lowerReply.includes('thực đơn') || lowerReply.includes('món') || lowerReply.includes('cà phê muối') || lowerReply.includes('cold brew')) {
-        suggestedAction = { type: 'menu', label: '☕ Xem Thực Đơn Đầy Đủ' };
+      if (lowerReply.includes('thực đơn') || lowerReply.includes('món') || lowerReply.includes('đặt món') || lowerReply.includes('mang đi') || lowerReply.includes('giao hàng')) {
+        suggestedAction = { type: 'menu', label: '☕ Xem Thực Đơn & Đặt Món' };
       }
 
       const botMsg: ChatMessage = {
@@ -467,30 +463,17 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                       </div>
 
                       {/* Interactive Button in AI response */}
-                      {msg.suggestedAction && (
+                      {msg.suggestedAction && msg.suggestedAction.type === 'menu' && (
                         <div className="mt-2.5 pt-2 border-t border-stone-100 flex items-center gap-2">
-                          {msg.suggestedAction.type === 'booking' && (
-                            <button
-                              onClick={() => {
-                                onOpenTableBooking?.();
-                              }}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-[11px] shadow-xs transition cursor-pointer"
-                            >
-                              <Calendar className="w-3.5 h-3.5" />
-                              <span>{msg.suggestedAction.label}</span>
-                            </button>
-                          )}
-                          {msg.suggestedAction.type === 'menu' && (
-                            <button
-                              onClick={() => {
-                                onScrollToMenu?.();
-                              }}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#b22830] hover:bg-[#8c141c] text-white font-bold text-[11px] shadow-xs transition cursor-pointer"
-                            >
-                              <Coffee className="w-3.5 h-3.5" />
-                              <span>{msg.suggestedAction.label}</span>
-                            </button>
-                          )}
+                          <button
+                            onClick={() => {
+                              onScrollToMenu?.();
+                            }}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#801419] hover:bg-[#630f14] text-amber-200 font-bold text-[11px] shadow-xs transition cursor-pointer"
+                          >
+                            <Coffee className="w-3.5 h-3.5" />
+                            <span>{msg.suggestedAction.label}</span>
+                          </button>
                         </div>
                       )}
                     </div>

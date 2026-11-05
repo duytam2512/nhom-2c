@@ -28,7 +28,6 @@ interface HeroProps {
   onOpenStoreLocator?: () => void;
   onCustomizeItem?: (item: MenuItem) => void;
   onOpenSeoShare?: () => void;
-  onOpenTableBooking?: () => void;
   onOpenChatbot?: () => void;
 }
 
@@ -40,7 +39,7 @@ export const Hero: React.FC<HeroProps> = ({
 }) => {
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
-  const signatureItem = MENU_ITEMS.find((m) => m.id === 'hl-banh-mi-cham-cafe') || MENU_ITEMS[0];
+  const signatureItem = MENU_ITEMS.find((m) => m.id === 'hl-combo-sang') || MENU_ITEMS[0];
 
   const handleCopyCode = (code: string) => {
     if (navigator.clipboard) {

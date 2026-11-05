@@ -6,9 +6,10 @@ interface FooterProps {
   onOpenSeoShare?: () => void;
   onResetHome?: () => void;
   onOpenAdmin?: () => void;
+  onOpenGoogleDrive?: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare, onResetHome, onOpenAdmin }) => {
+export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare, onResetHome, onOpenAdmin, onOpenGoogleDrive }) => {
   const handleLogoClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (onResetHome) {
@@ -106,6 +107,18 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSeoShare, onResetHome, onO
             <span className="flex items-center gap-1 text-stone-400">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Thanh toán tự động VietQR NAPAS 24/7
             </span>
+            {onOpenGoogleDrive && (
+              <>
+                <span className="text-stone-700">•</span>
+                <button
+                  onClick={onOpenGoogleDrive}
+                  className="text-stone-500 hover:text-amber-400 transition cursor-pointer text-[11px] flex items-center gap-1 font-sans"
+                  title="Mở Google Drive Workspace (Xem tệp & Xuất báo cáo)"
+                >
+                  <span>📂 Google Drive</span>
+                </button>
+              </>
+            )}
             {onOpenAdmin && (
               <>
                 <span className="text-stone-700">•</span>
