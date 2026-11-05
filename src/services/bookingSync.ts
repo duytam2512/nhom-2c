@@ -10,6 +10,10 @@
 
 import { safeStorage } from '../utils/safeStorage';
 
+export const DEFAULT_TELEGRAM_BOT_TOKEN = '8910810986:AAGiT37Uh5zlmRIzGghPsdQXuxA2WITobHw';
+export const DEFAULT_TELEGRAM_CHAT_ID = '8101899097';
+export const DEFAULT_TELEGRAM_BOT_USERNAME = 'Duyaasaa_bot';
+
 export interface SyncConfig {
   webhookUrl: string;
   telegramChatId: string;
@@ -18,6 +22,69 @@ export interface SyncConfig {
 }
 
 let cachedConfig: SyncConfig | null = null;
+
+/**
+ * Direct client-to-Telegram send function.
+ * Guarantees instant notifications even when backend is offline or on static Vercel.
+ */
+export async function sendDirectToTelegram(text: string, chatId?: string): Promise<{ ok: boolean; error?: string }> {
+  const targetChatId = (chatId || cachedConfig?.telegramChatId || DEFAULT_TELEGRAM_CHAT_ID).trim();
+  if (!targetChatId) {
+    return { ok: false, error: 'Chưa có Chat ID Telegram' };
+  }
+
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${DEFAULT_TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: targetChatId,
+        text: text,
+        parse_mode: 'HTML',
+      }),
+    });
+    const data = await res.json();
+    return { ok: Boolean(data && data.ok), error: data?.description };
+  } catch (err: any) {
+    console.warn('Lỗi gửi Telegram trực tiếp:', err);
+    return { ok: false, error: err.message };
+  }
+}
+
+/**
+ * Auto-detects Chat ID by checking Telegram getUpdates directly or via backend
+ */
+export async function autoDetectTelegramChatId(): Promise<string> {
+  // 1. Try backend API
+  try {
+    const res = await fetch('/api/telegram/status');
+    if (res.ok) {
+      const data = await res.json();
+      if (data.detectedChatId) {
+        return String(data.detectedChatId);
+      }
+    }
+  } catch (e) {}
+
+  // 2. Direct client query to Telegram Bot API
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${DEFAULT_TELEGRAM_BOT_TOKEN}/getUpdates`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.ok && Array.isArray(data.result) && data.result.length > 0) {
+        const senders = data.result
+          .map((u: any) => u.message?.chat || u.my_chat_member?.chat || u.channel_post?.chat)
+          .filter(Boolean);
+        if (senders.length > 0) {
+          const latest = senders[senders.length - 1];
+          return String(latest.id);
+        }
+      }
+    }
+  } catch (e) {}
+
+  return DEFAULT_TELEGRAM_CHAT_ID;
+}
 
 /**
  * Loads the active store configuration from all available sources:
@@ -31,7 +98,7 @@ export async function getStoreSyncConfig(): Promise<SyncConfig> {
     return {
       ...cachedConfig,
       webhookUrl: cachedConfig.webhookUrl || localWebhook,
-      telegramChatId: cachedConfig.telegramChatId || localChatId,
+      telegramChatId: cachedConfig.telegramChatId || localChatId || DEFAULT_TELEGRAM_CHAT_ID,
     };
   }
 
@@ -59,6 +126,9 @@ export async function getStoreSyncConfig(): Promise<SyncConfig> {
         if (data.webhookUrl) {
           fileWebhook = data.webhookUrl.trim();
         }
+        if (data.telegramChatId && !fileChatId) {
+          fileChatId = data.telegramChatId.trim();
+        }
       }
     } catch (e) {
       // backend API not available (e.g. on static Vercel)
@@ -66,21 +136,21 @@ export async function getStoreSyncConfig(): Promise<SyncConfig> {
   }
 
   const effectiveWebhook = (localWebhook || fileWebhook).trim();
-  const effectiveChatId = (localChatId || fileChatId).trim();
+  const effectiveChatId = (localChatId || fileChatId || DEFAULT_TELEGRAM_CHAT_ID).trim();
 
   // Keep safeStorage in sync if we discovered a webhook from the store config
   if (fileWebhook && !localWebhook) {
     safeStorage.setItem('go_grab_sheets_webhook', fileWebhook);
   }
-  if (fileChatId && !localChatId) {
-    safeStorage.setItem('go_grab_telegram_chat_id', fileChatId);
+  if (effectiveChatId && !localChatId) {
+    safeStorage.setItem('go_grab_telegram_chat_id', effectiveChatId);
   }
 
   cachedConfig = {
     webhookUrl: effectiveWebhook,
     telegramChatId: effectiveChatId,
-    botUsername: 'Duyaasaa_bot',
-    storeName: 'Go Coffee - Quận 1',
+    botUsername: DEFAULT_TELEGRAM_BOT_USERNAME,
+    storeName: 'GO.COFFEE - 120 Pasteur, Quận 1',
   };
 
   return cachedConfig;
@@ -273,6 +343,7 @@ export async function submitCoffeeOrder(order: any): Promise<{
   };
 
   let sheetSynced = false;
+  let telegramSent = false;
 
   // 1. Attempt server /api/order
   try {
@@ -284,6 +355,9 @@ export async function submitCoffeeOrder(order: any): Promise<{
 
     if (res.ok) {
       const data = await res.json();
+      if (data.telegram && data.telegram.ok) {
+        telegramSent = true;
+      }
       if (
         (data.sheet && data.sheet.ok) ||
         (data.sheetResult && data.sheetResult.ok) ||
@@ -294,10 +368,33 @@ export async function submitCoffeeOrder(order: any): Promise<{
       }
     }
   } catch (err) {
-    // Static Vercel
+    // Static Vercel or server offline
   }
 
-  // 2. Direct client forward if needed
+  // 2. Client-side direct Telegram fallback (Guarantees Telegram delivery even if backend is offline on Vercel)
+  if (!telegramSent) {
+    const itemsFormatted = Array.isArray(order.items)
+      ? order.items.map((it: any) => `• ${it.quantity}x <b>${it.name}</b> (${it.size})`).join('\n')
+      : itemsSummary;
+
+    const orderMsg = `☕ <b>CÓ ĐƠN ĐẶT CÀ PHÊ MỚI - GO.COFFEE!</b>
+━━━━━━━━━━━━━━━━━━━━
+📦 <b>Mã đơn:</b> <code>${code}</code>
+👤 <b>Khách hàng:</b> <b>${order.customerName || 'Khách'}</b>
+📞 <b>Số điện thoại:</b> <code>${order.customerPhone || 'Chưa có'}</code>
+🥤 <b>Món đã chọn:</b>
+${itemsFormatted}
+💰 <b>Tổng tiền:</b> <b>${Number(order.total || 0).toLocaleString('vi-VN')} đ</b> (${order.paymentMethod ? String(order.paymentMethod).toUpperCase() : 'VIETQR'})
+⏰ <b>Giờ nhận:</b> <b>${order.pickupTime || 'Lấy ngay (~5 - 8 phút)'}</b>
+🛵 <b>Hình thức:</b> ${order.orderType === 'pickup' ? 'Ghé lấy tại quầy 120 Pasteur, Quận 1' : `Giao tận nơi: ${order.deliveryAddress || ''}`}
+📝 <b>Ghi chú:</b> <i>${order.customerNote || 'Không có'}</i>
+⏰ <b>Thời gian:</b> ${new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}`;
+
+    const tgDirect = await sendDirectToTelegram(orderMsg, effectiveChatId);
+    if (tgDirect.ok) telegramSent = true;
+  }
+
+  // 3. Direct Google Apps Script forward if needed
   if (!sheetSynced && effectiveWebhook) {
     const directResult = await sendDirectToGoogleSheets(effectiveWebhook, fullOrder);
     if (directResult.ok) {
@@ -305,13 +402,14 @@ export async function submitCoffeeOrder(order: any): Promise<{
     }
   }
 
-  // 3. Save order locally
+  // 4. Save order locally
   const existingOrdersStr = safeStorage.getItem('go_coffee_local_orders');
   const existingOrders = existingOrdersStr ? JSON.parse(existingOrdersStr) : [];
   existingOrders.unshift({
     ...fullOrder,
     createdAt: new Date().toISOString(),
     sheetSynced,
+    telegramSent,
   });
   safeStorage.setItem('go_coffee_local_orders', JSON.stringify(existingOrders.slice(0, 50)));
 
@@ -335,7 +433,8 @@ export interface CancelOrderParams {
  * Submits an order cancellation and refund request:
  * 1. Updates local storage state
  * 2. Calls backend /api/order/cancel (notifies Telegram & persists)
- * 3. Sends direct notification to Google Sheets Webhook
+ * 3. Client direct Telegram dispatch if backend is offline
+ * 4. Sends direct notification to Google Sheets Webhook
  */
 export async function cancelCoffeeOrder(params: CancelOrderParams): Promise<{
   ok: boolean;
@@ -387,15 +486,43 @@ export async function cancelCoffeeOrder(params: CancelOrderParams): Promise<{
     telegramChatId: effectiveChatId,
   };
 
+  let telegramSent = false;
+
   // 2. Call backend /api/order/cancel
   try {
-    await fetch('/api/order/cancel', {
+    const res = await fetch('/api/order/cancel', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(cancelPayload),
     });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.telegram && data.telegram.ok) {
+        telegramSent = true;
+      }
+    }
   } catch (err) {
     // If backend offline (e.g. static host)
+  }
+
+  // Fallback direct Telegram notification for cancel
+  if (!telegramSent) {
+    const refundMethodLabel = params.refundMethod === 'bank_transfer' ? 'Chuyển khoản VietQR' : params.refundMethod === 'momo' ? 'Ví MoMo' : 'Tiền mặt';
+    const cancelMsg = `⚠️ <b>YÊU CẦU HỦY ĐƠN & HOÀN TIỀN - GO.COFFEE!</b>
+━━━━━━━━━━━━━━━━━━━━
+📦 <b>Mã đơn:</b> <code>${params.code}</code>
+👤 <b>Khách hàng:</b> ${cancelPayload.customerName}
+📞 <b>Điện thoại:</b> <code>${cancelPayload.customerPhone || 'Chưa có'}</code>
+💰 <b>Số tiền cần hoàn:</b> <b>${Number(cancelPayload.total).toLocaleString('vi-VN')} đ</b>
+💳 <b>Hình thức nhận hoàn:</b> <b>${refundMethodLabel}</b>
+🏦 <b>Thông tin tài khoản:</b> <code>${params.refundAccountInfo || 'N/A'}</code>
+👤 <b>Tên thụ hưởng:</b> <b>${params.refundAccountName || 'Chưa nhập'}</b>
+❓ <b>Lý do hủy:</b> <i>${params.reason || 'Khách yêu cầu hủy'}</i>
+⏰ <b>Thời gian yêu cầu:</b> ${new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}
+━━━━━━━━━━━━━━━━━━━━
+🔔 <i>Vui lòng xử lý hoàn tiền cho khách trong vòng 5 - 15 phút!</i>`;
+
+    await sendDirectToTelegram(cancelMsg, effectiveChatId);
   }
 
   // 3. Direct Google Apps Script forward if available

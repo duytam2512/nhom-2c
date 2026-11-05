@@ -23,7 +23,15 @@ import {
   Code2,
   HardDrive
 } from 'lucide-react';
-import { getStoreSyncConfig, saveStoreSyncConfig, sendDirectToGoogleSheets } from '../services/bookingSync';
+import { 
+  getStoreSyncConfig, 
+  saveStoreSyncConfig, 
+  sendDirectToGoogleSheets,
+  sendDirectToTelegram,
+  autoDetectTelegramChatId,
+  DEFAULT_TELEGRAM_CHAT_ID,
+  DEFAULT_TELEGRAM_BOT_USERNAME
+} from '../services/bookingSync';
 import { safeStorage } from '../utils/safeStorage';
 import { getConversionStats } from '../services/conversionTracker';
 
@@ -49,7 +57,7 @@ const APPS_SCRIPT_SOURCE = `/**
  */
 
 var TELEGRAM_BOT_TOKEN = "8910810986:AAGiT37Uh5zlmRIzGghPsdQXuxA2WITobHw";
-var DEFAULT_TELEGRAM_CHAT_ID = "";
+var DEFAULT_TELEGRAM_CHAT_ID = "8101899097";
 
 function doPost(e) {
   return handleIncoming(e);
@@ -195,11 +203,11 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
   const [copiedScript, setCopiedScript] = useState(false);
 
   // Telegram Config
-  const [telegramChatId, setTelegramChatId] = useState('');
+  const [telegramChatId, setTelegramChatId] = useState(DEFAULT_TELEGRAM_CHAT_ID);
   const [isDetectingChatId, setIsDetectingChatId] = useState(false);
   const [isTestingTelegram, setIsTestingTelegram] = useState(false);
   const [telegramStatusMsg, setTelegramStatusMsg] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
-  const [botUsername, setBotUsername] = useState('Duyaasaa_bot');
+  const [botUsername, setBotUsername] = useState(DEFAULT_TELEGRAM_BOT_USERNAME);
 
   // Google Search Console code
   const [gscCode, setGscCode] = useState('nrAVFB15M9l_r9TXRbhoGsaeHsW1Kwz0AdvR1trLhCM');
@@ -214,7 +222,11 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
     const savedWebhook = safeStorage.getItem('go_grab_sheets_webhook');
     if (savedWebhook) setWebhookUrl(savedWebhook);
     const savedChatId = safeStorage.getItem('go_grab_telegram_chat_id');
-    if (savedChatId) setTelegramChatId(savedChatId);
+    if (savedChatId) {
+      setTelegramChatId(savedChatId);
+    } else {
+      setTelegramChatId(DEFAULT_TELEGRAM_CHAT_ID);
+    }
     const savedGsc = safeStorage.getItem('gsc_verification_code');
     if (savedGsc) setGscCode(savedGsc);
   }, [isOpen]);
@@ -409,15 +421,22 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
     setIsDetectingChatId(true);
     setTelegramStatusMsg({ type: 'info', text: 'Đang quét tin nhắn mới nhất trên @Duyaasaa_bot...' });
     try {
-      const res = await fetch('/api/telegram/status');
-      const data = await res.json();
-      if (data.detectedChatId) {
-        const idStr = String(data.detectedChatId);
-        setTelegramChatId(idStr);
-        safeStorage.setItem('go_grab_telegram_chat_id', idStr);
+      const detectedId = await autoDetectTelegramChatId();
+      if (detectedId) {
+        setTelegramChatId(detectedId);
+        safeStorage.setItem('go_grab_telegram_chat_id', detectedId);
+        await saveStoreSyncConfig({ webhookUrl: webhookUrl.trim(), telegramChatId: detectedId });
+        try {
+          await fetch('/api/telegram/config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chatId: detectedId }),
+          });
+        } catch (e) {}
+
         setTelegramStatusMsg({
           type: 'success',
-          text: `🎉 Đã tìm thấy Chat ID của bạn: ${idStr}! Đã tự động lưu cấu hình.`,
+          text: `🎉 Đã tìm thấy Chat ID của bạn: ${detectedId}! Đã tự động lưu cấu hình toàn hệ thống.`,
         });
       } else {
         setTelegramStatusMsg({
@@ -435,22 +454,39 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
   const handleTestTelegram = async () => {
     setIsTestingTelegram(true);
     setTelegramStatusMsg({ type: 'info', text: 'Đang gửi thông báo kiểm tra đến Telegram...' });
+    const targetId = (telegramChatId.trim() || DEFAULT_TELEGRAM_CHAT_ID);
+
     try {
-      const res = await fetch('/api/telegram/test', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chatId: telegramChatId.trim() }),
-      });
-      const data = await res.json();
-      if (data.ok) {
+      let sent = false;
+      // 1. Try server endpoint
+      try {
+        const res = await fetch('/api/telegram/test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chatId: targetId }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.ok) sent = true;
+        }
+      } catch (e) {}
+
+      // 2. Client direct fallback if server offline (e.g. static host Vercel)
+      if (!sent) {
+        const testMsg = `☕ <b>GO.COFFEE - TEST THÔNG BÁO BOT!</b>\n━━━━━━━━━━━━━━━━━━━━\n✅ <b>Thông báo từ Bảng Quản Trị GO.COFFEE!</b>\n🤖 Bot: <b>@${botUsername}</b>\n🆔 Chat ID: <code>${targetId}</code>\n⏰ Thời gian: ${new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}\n━━━━━━━━━━━━━━━━━━━━\n🔔 Hệ thống thông báo Telegram đã hoạt động hoàn hảo!`;
+        const directRes = await sendDirectToTelegram(testMsg, targetId);
+        if (directRes.ok) sent = true;
+      }
+
+      if (sent) {
         setTelegramStatusMsg({
           type: 'success',
-          text: '🎉 Đã gửi thông báo thành công! Hãy mở ứng dụng Telegram để kiểm tra.',
+          text: `🎉 Đã gửi thông báo thành công đến Chat ID ${targetId}! Hãy mở ứng dụng Telegram (@${botUsername}) để kiểm tra.`,
         });
       } else {
         setTelegramStatusMsg({
           type: 'error',
-          text: data.error || 'Gửi thất bại. Hãy chắc chắn bạn đã bấm START với @Duyaasaa_bot.',
+          text: 'Gửi thất bại. Hãy chắc chắn bạn đã mở Telegram, tìm @Duyaasaa_bot và bấm nút "START" ít nhất 1 lần.',
         });
       }
     } catch (err: any) {
@@ -458,6 +494,22 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
     } finally {
       setIsTestingTelegram(false);
     }
+  };
+
+  const handleSaveTelegramChatId = async () => {
+    const cleanId = (telegramChatId.trim() || DEFAULT_TELEGRAM_CHAT_ID);
+    setTelegramChatId(cleanId);
+    safeStorage.setItem('go_grab_telegram_chat_id', cleanId);
+    await saveStoreSyncConfig({ webhookUrl: webhookUrl.trim(), telegramChatId: cleanId });
+    try {
+      await fetch('/api/telegram/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chatId: cleanId }),
+      });
+    } catch (e) {}
+    setTelegramStatusMsg({ type: 'success', text: `✅ Đã lưu Chat ID (${cleanId}) thành công trên toàn hệ thống!` });
+    setTimeout(() => setTelegramStatusMsg(null), 3500);
   };
 
   const handleResyncAll = async () => {
@@ -1137,11 +1189,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
                         <div className="flex gap-2">
                           <button
                             type="button"
-                            onClick={() => {
-                              safeStorage.setItem('go_grab_telegram_chat_id', telegramChatId.trim());
-                              setTelegramStatusMsg({ type: 'success', text: '✅ Đã lưu Chat ID Telegram!' });
-                              setTimeout(() => setTelegramStatusMsg(null), 3000);
-                            }}
+                            onClick={handleSaveTelegramChatId}
                             className="px-4 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold transition cursor-pointer shrink-0"
                           >
                             Lưu Chat ID

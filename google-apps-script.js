@@ -25,7 +25,7 @@
  */
 
 var TELEGRAM_BOT_TOKEN = "8910810986:AAGiT37Uh5zlmRIzGghPsdQXuxA2WITobHw";
-var DEFAULT_TELEGRAM_CHAT_ID = ""; // Nhận tự động từ website hoặc điền Chat ID của bạn
+var DEFAULT_TELEGRAM_CHAT_ID = "8101899097"; // Chat ID của chủ quán @Duyaasaa_bot
 
 /**
  * Xử lý ghi nhận Đơn hàng hoặc Đặt bàn vào Google Sheet và bắn tin nhắn Telegram

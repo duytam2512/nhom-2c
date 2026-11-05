@@ -124,10 +124,13 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-// Telegram Bot configuration & utilities
 const DEFAULT_TELEGRAM_BOT_TOKEN = '8910810986:AAGiT37Uh5zlmRIzGghPsdQXuxA2WITobHw';
-let telegramBotToken = process.env.TELEGRAM_BOT_TOKEN || DEFAULT_TELEGRAM_BOT_TOKEN;
-let telegramChatId = process.env.TELEGRAM_CHAT_ID || '';
+const DEFAULT_TELEGRAM_CHAT_ID = '8101899097';
+let telegramBotToken = (process.env.TELEGRAM_BOT_TOKEN || '').trim();
+if (!telegramBotToken || !telegramBotToken.includes(':')) {
+  telegramBotToken = DEFAULT_TELEGRAM_BOT_TOKEN;
+}
+let telegramChatId = (process.env.TELEGRAM_CHAT_ID || '').trim() || DEFAULT_TELEGRAM_CHAT_ID;
 
 async function autoDetectChatId(): Promise<string | null> {
   if (!telegramBotToken) return null;
@@ -223,9 +226,10 @@ app.get('/api/telegram/status', async (_req, res) => {
 app.post('/api/telegram/config', (req, res) => {
   const { chatId, botToken } = req.body;
   if (chatId !== undefined) {
-    telegramChatId = String(chatId).trim();
+    telegramChatId = String(chatId).trim() || DEFAULT_TELEGRAM_CHAT_ID;
+    persistAppConfig({ telegramChatId });
   }
-  if (botToken) {
+  if (botToken && String(botToken).includes(':')) {
     telegramBotToken = String(botToken).trim();
   }
   return res.json({
@@ -236,26 +240,19 @@ app.post('/api/telegram/config', (req, res) => {
 });
 
 app.post('/api/telegram/test', async (req, res) => {
-  let targetChatId = req.body.chatId || telegramChatId;
+  let targetChatId = (req.body.chatId || telegramChatId || '').trim();
   if (!targetChatId) {
-    targetChatId = (await autoDetectChatId()) || '';
+    targetChatId = (await autoDetectChatId()) || DEFAULT_TELEGRAM_CHAT_ID;
   }
 
-  if (!targetChatId) {
-    return res.status(400).json({
-      ok: false,
-      error: 'Chưa phát hiện Chat ID. Hãy mở Telegram, tìm bot @Duyaasaa_bot hoặc click https://t.me/Duyaasaa_bot, bấm nút "START", rồi thử lại!',
-    });
-  }
-
-  const testMessage = `☕ <b>GO COFFEE - TEST KẾT NỐI</b>
+  const testMessage = `☕ <b>GO COFFEE - TEST KẾT NỐI BOT THÀNH CÔNG!</b>
 ━━━━━━━━━━━━━━━━━━━━
-✅ <b>Kết nối Telegram Bot thành công!</b>
+✅ <b>Kết nối Telegram Bot đã kích hoạt!</b>
 🤖 Bot: <b>@Duyaasaa_bot</b>
 🆔 Chat ID: <code>${targetChatId}</code>
 ⏰ Thời gian: ${new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}
 ━━━━━━━━━━━━━━━━━━━━
-Hệ thống sẵn sàng nhận thông tin đặt bàn & đơn hàng mới tự động đẩy về Telegram và Google Sheet!`;
+Hệ thống sẵn sàng tự động rung chuông báo đơn mới và yêu cầu hoàn tiền tức thì!`;
 
   const result = await sendTelegramNotification(testMessage, targetChatId);
   return res.json(result);
@@ -281,13 +278,18 @@ function loadAppConfig() {
   } catch (err) {
     console.warn('Could not read app-config.json:', err);
   }
+  if (!telegramChatId) {
+    telegramChatId = DEFAULT_TELEGRAM_CHAT_ID;
+  }
 }
 
 function persistAppConfig(updates: { googleSheetsWebhookUrl?: string; telegramChatId?: string }) {
   try {
     let current: any = {
-      storeName: 'Go Coffee - Quận 1',
+      storeName: 'GO.COFFEE - 120 Pasteur, Quận 1',
       botUsername: 'Duyaasaa_bot',
+      googleSheetsWebhookUrl: googleSheetsWebhookUrl,
+      telegramChatId: telegramChatId || DEFAULT_TELEGRAM_CHAT_ID,
     };
     if (fs.existsSync(APP_CONFIG_FILE)) {
       try {
@@ -327,7 +329,7 @@ app.post('/api/booking/webhook', (req, res) => {
     googleSheetsWebhookUrl = (webhookUrl || '').trim();
   }
   if (newChatId !== undefined) {
-    telegramChatId = (newChatId || '').trim();
+    telegramChatId = (newChatId || '').trim() || DEFAULT_TELEGRAM_CHAT_ID;
   }
   persistAppConfig({
     googleSheetsWebhookUrl,
