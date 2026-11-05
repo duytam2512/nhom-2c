@@ -64,7 +64,7 @@ export const SignatureComboModal: React.FC<SignatureComboModalProps> = ({
       unitPrice,
       totalPrice: unitPrice,
       specialInstructions: 'Hộp bánh nắp ly đai giấy 2-in-1 mang đi',
-      image: '/images/gocoffee_lid_pastry_combo.jpg',
+      image: '/images/drive/Ca-phe-kem-hop-banh.png',
     };
   };
 
@@ -129,11 +129,11 @@ export const SignatureComboModal: React.FC<SignatureComboModalProps> = ({
             <div className="sm:col-span-5 relative">
               <div className="rounded-md overflow-hidden border-2 border-[#801419]/30 aspect-square relative shadow-md bg-stone-950">
                 <img
-                  src={activeTab === 'intro' ? '/images/gocoffee_lid_pastry_combo.jpg' : '/images/gocoffee_cham_banh_mi.jpg'}
+                  src={activeTab === 'intro' ? '/images/drive/Ca-phe-kem-hop-banh.png' : '/images/drive/go-coffee.png'}
                   alt="Bộ Cà Phê & Hộp Bánh Trên Nắp Ly"
                   className="w-full h-full object-cover transition-all duration-500"
                   onError={(e) => {
-                    (e.currentTarget as HTMLImageElement).src = '/images/gocoffee_lid_pastry_combo.jpg';
+                    (e.currentTarget as HTMLImageElement).src = '/images/drive/Ca-phe-kem-hop-banh.png';
                   }}
                 />
                 <span className="absolute top-2 left-2 px-2 py-0.5 rounded-xs bg-[#801419] text-amber-200 text-[10px] font-serif font-black uppercase border border-[#d4af37]">

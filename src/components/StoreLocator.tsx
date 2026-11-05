@@ -43,28 +43,28 @@ export const StoreLocator: React.FC<StoreLocatorProps> = ({
 
   const STORE_PHOTOS = [
     {
-      url: '/images/gocoffee_booth_120_pasteur.jpg',
-      fallbackUrl: '/images/gocoffee_quan1_storefront.jpg',
-      label: 'Takeaway Booth 120 Pasteur',
-      tag: '120 Pasteur, Q.1 (Dự kiến)',
-      title: 'Quầy Kiosk Takeaway GO.COFFEE Pasteur',
-      desc: 'Thiết kế booth hiện đại pha nét Sài Gòn xưa ngay góc phố Pasteur & Lê Lợi (đối diện Saigon Centre). Tấp xe máy lấy nhanh trong 5 phút mà không cần tìm chỗ gửi xe.'
+      url: '/images/drive/booth-120-pasteur.png',
+      fallbackUrl: '/images/drive/booth-120-pasteur.png',
+      label: 'Bốt Bán Hàng 120 Pasteur',
+      tag: 'Kiosk Takeaway Chuẩn',
+      title: 'Quầy Kiosk Takeaway GO.COFFEE 120 Pasteur',
+      desc: 'Thiết kế chuẩn nhận diện thương hiệu GO.COFFEE góc Pasteur & Lê Lợi: kích thước 2.8m x 1.6m x 2.4m, phối màu gỗ sọc, đồng cổ điển và vải canvas sang trọng.'
     },
     {
-      url: '/images/gocoffee_lid_pastry_combo.jpg',
-      fallbackUrl: '/images/gocoffee_pasteur_handover.jpg',
+      url: '/images/drive/Ca-phe-kem-hop-banh.png',
+      fallbackUrl: '/images/drive/go-coffee.png',
       label: 'Ly Cà Phê Nắp Hộp Bánh',
-      tag: 'Độc Quyền 2-in-1',
+      tag: 'Món Đặc Trưng Có Quai',
       title: 'Trao Tay Bộ Ly & Bánh Cầm Gọn 1 Tay',
-      desc: 'Hộp bánh giòn rụm gắn liền trên nắp ly kèm đai giấy kraft sang trọng, thuận tiện mang đi làm hoặc đi dạo phố.'
+      desc: 'Hộp bánh giòn rụm gắn liền trên nắp ly kèm đai giấy tháo rời đặc trưng của GO.COFFEE, thuận tiện mang đi 1 tay không lo rơi rớt.'
     },
     {
-      url: '/images/gocoffee_cham_banh_mi.jpg',
-      fallbackUrl: '/images/gocoffee_pasteur_barista.jpg',
-      label: 'Pha Phin Cầu Đất',
-      tag: 'Chấm một miếng bánh, nhớ một thời',
-      title: 'Hương Vị Phin Cà Phê Sữa Đá Đậm Đà',
-      desc: 'Chiết xuất từ hạt Robusta & Arabica Cầu Đất nguyên chất, hòa quyện cùng sữa đặc béo ngậy để chấm miếng bánh nướng nóng rụm.'
+      url: '/images/drive/khach.png',
+      fallbackUrl: '/images/drive/go-coffee.png',
+      label: 'Khách Hàng Thực Tế',
+      tag: 'Một ly đúng GU',
+      title: 'Khoảnh Khắc Cầm Ly & Chấm Bánh Thực Tế',
+      desc: 'Hình ảnh khách hàng thưởng thức những ly GO.COFFEE mang đi cùng ổ bánh mì nướng giòn rụm chấm cà phê phin sữa đá đậm đà.'
     }
   ];
 

@@ -426,7 +426,7 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
                     onError={(e) => {
                       const target = e.currentTarget as HTMLImageElement;
                       target.onerror = null;
-                      target.src = '/images/banh_mi_cham_cafe_sua_da.jpg';
+                      target.src = '/images/products/phin-sua-da.jpg';
                     }}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 filter contrast-105"
                   />
@@ -459,12 +459,12 @@ export const MenuSection: React.FC<MenuSectionProps> = ({
 
                 {/* Content */}
                 <div className="p-4 space-y-2">
-                  <div className="space-y-0.5">
-                    <h3 className="font-serif font-bold text-stone-900 text-sm sm:text-base group-hover:text-[#801419] transition whitespace-nowrap overflow-hidden text-ellipsis" title={item.name}>
+                  <div className="space-y-1">
+                    <h3 className="font-sans font-bold text-stone-900 text-sm sm:text-[15px] leading-snug group-hover:text-[#801419] transition line-clamp-1 sm:line-clamp-2 min-h-[1.375rem] sm:min-h-[2.5rem]" title={item.name}>
                       {item.name}
                     </h3>
                     {item.vietnameseName && (
-                      <p className="text-[11px] font-serif italic text-stone-500 whitespace-nowrap overflow-hidden text-ellipsis" title={item.vietnameseName}>
+                      <p className="text-[11px] font-sans text-stone-500 truncate" title={item.vietnameseName}>
                         {item.vietnameseName}
                       </p>
                     )}

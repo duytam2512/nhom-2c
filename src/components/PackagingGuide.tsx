@@ -4,15 +4,15 @@
  */
 
 import React from 'react';
-import { 
-  Coffee, 
-  Sparkles, 
-  ArrowRight, 
-  Check, 
-  HelpCircle, 
-  MessageSquareHeart, 
-  ShieldCheck, 
-  Clock, 
+import {
+  Coffee,
+  Sparkles,
+  ArrowRight,
+  Check,
+  HelpCircle,
+  MessageSquareHeart,
+  ShieldCheck,
+  Clock,
   QrCode,
   Layers,
   HandMetal
@@ -59,9 +59,9 @@ export const PackagingGuide: React.FC<PackagingGuideProps> = ({
     <section id="packaging-guide" className="py-14 lg:py-18 bg-[#fdf9f2] border-b-2 border-[#801419]/20 relative overflow-hidden">
       {/* Background Decorative Stamp */}
       <div className="absolute right-4 top-1/2 -translate-y-1/2 w-96 h-96 bg-[#d4af37]/10 rounded-full blur-3xl pointer-events-none" />
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        
+
         {/* Section Heading */}
         <div className="text-center max-w-3xl mx-auto space-y-3 mb-12">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-sm bg-[#ede2cb] text-[#801419] text-xs font-serif font-black uppercase tracking-widest border border-[#801419]/40 shadow-2xs">
@@ -84,7 +84,7 @@ export const PackagingGuide: React.FC<PackagingGuideProps> = ({
           {steps.map((item, idx) => {
             const Icon = item.icon;
             return (
-              <div 
+              <div
                 key={idx}
                 className="bg-[#fffdfa] rounded-md border-2 border-[#801419]/30 p-6 sm:p-7 relative flex flex-col justify-between shadow-md hover:shadow-xl transition-all duration-300 group hover:-translate-y-1"
               >
@@ -131,12 +131,12 @@ export const PackagingGuide: React.FC<PackagingGuideProps> = ({
         <div className="bg-[#23150d] text-amber-100 rounded-md p-6 sm:p-8 border-2 border-[#d4af37] shadow-xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-5 relative">
             <div className="rounded-sm overflow-hidden border-2 border-amber-200/50 aspect-4/3 relative shadow-lg">
-              <img 
-                src="/images/gocoffee_cham_banh_mi.jpg"
-                alt="Chấm bánh mì vào cà phê phin sữa đá" 
+              <img
+                src="/images/drive/Ca-phe-kem-hop-banh.png"
+                alt="4 Bước thưởng thức bánh mì chấm cà phê phin nắp ly GO.COFFEE"
                 className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                 onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).src = '/images/gocoffee_lid_pastry_combo.jpg';
+                  (e.currentTarget as HTMLImageElement).src = '/images/drive/Ca-phe-kem-hop-banh.png';
                 }}
               />
               <div className="absolute top-2 left-2 px-2.5 py-1 bg-[#801419] text-amber-200 text-[10px] font-serif font-black uppercase rounded-xs border border-amber-300 shadow-md">

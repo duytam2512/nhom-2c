@@ -16,9 +16,12 @@ export const StorySection: React.FC = () => {
             <div className="space-y-4">
               <div className="rounded-md overflow-hidden aspect-4/5 shadow-2xl border-2 border-[#d4af37]/60 p-1 bg-[#23150d]">
                 <img
-                  src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=700&q=80"
-                  alt="Hạt cà phê Tây Nguyên rang mộc"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 filter sepia-25"
+                  src="/images/drive/booth-120-pasteur.png"
+                  alt="Quầy Kiosk Takeaway 120 Pasteur GO.COFFEE"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 filter contrast-105"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = '/images/drive/booth-120-pasteur.png';
+                  }}
                 />
               </div>
               <div className="p-4 rounded-md bg-[#23150d] border border-[#d4af37]/40 space-y-1">
@@ -34,16 +37,13 @@ export const StorySection: React.FC = () => {
               </div>
               <div className="rounded-md overflow-hidden aspect-4/5 shadow-2xl border-2 border-[#d4af37]/60 p-1 bg-[#23150d]">
                 <img
-                  src="/images/gocoffee_quan1_barista.jpg"
-                  alt="Barista Việt Nam pha phin truyền thống tại Go Coffee Quận 1"
+                  src="/images/drive/khach.png"
+                  alt="Khách hàng trải nghiệm ly cà phê và bánh mì GO.COFFEE"
                   referrerPolicy="no-referrer"
                   loading="eager"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 filter sepia-20"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 filter contrast-105"
                   onError={(e) => {
-                    const target = e.currentTarget;
-                    if (target.src.indexOf('1793580330531') === -1) {
-                      target.src = '/images/gocoffee_quan1_barista_1793580330531.jpg';
-                    }
+                    (e.currentTarget as HTMLImageElement).src = '/images/drive/go-coffee.png';
                   }}
                 />
               </div>

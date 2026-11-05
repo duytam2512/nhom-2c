@@ -242,12 +242,12 @@ export const Hero: React.FC<HeroProps> = ({
               <div className="rounded-lg overflow-hidden shadow-2xl border-4 border-[#fffdfa] bg-stone-950 aspect-4/5 relative group transition-all duration-500 ring-2 ring-[#801419]/40 cursor-pointer"
                    onClick={handleOpenCombo}>
                 <img
-                  src="/images/gocoffee_lid_pastry_combo.jpg"
+                  src="/images/drive/Ca-phe-kem-hop-banh.png"
                   alt="Bộ Cà Phê & Hộp Bánh Trên Nắp Ly kèm đai giấy"
                   onError={(e) => {
                     const target = e.currentTarget as HTMLImageElement;
                     target.onerror = null;
-                    target.src = '/images/banh_mi_cham_cafe_sua_da.jpg';
+                    target.src = '/images/drive/go-coffee.png';
                   }}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 filter contrast-105"
                 />

@@ -103,7 +103,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
             onError={(e) => {
               const target = e.currentTarget as HTMLImageElement;
               target.onerror = null;
-              target.src = '/images/banh_mi_cham_cafe_sua_da.jpg';
+              target.src = '/images/products/phin-sua-da.jpg';
             }}
             className="absolute inset-0 w-full h-full object-cover filter contrast-105"
           />
